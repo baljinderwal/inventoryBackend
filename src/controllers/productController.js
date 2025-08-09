@@ -1,5 +1,14 @@
 import * as productService from '../services/productService.js';
 
+export const getAllProducts = async (req, res) => {
+  try {
+    const products = await productService.getAllProducts();
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving products', error: error.message });
+  }
+};
+
 export const getProduct = async (req, res) => {
   try {
     const { id: sku } = req.params;

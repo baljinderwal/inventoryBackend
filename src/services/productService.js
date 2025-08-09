@@ -30,3 +30,12 @@ export const deleteProduct = async (sku) => {
   const result = await redisClient.del(`${PRODUCT_KEY_PREFIX}${sku}`);
   return result;
 };
+
+export const getAllProducts = async () => {
+  const keys = await redisClient.keys(`${PRODUCT_KEY_PREFIX}*`);
+  if (!keys.length) {
+    return [];
+  }
+  const products = await redisClient.mget(keys);
+  return products.map(product => JSON.parse(product));
+};
