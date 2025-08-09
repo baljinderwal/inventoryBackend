@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  getAllProducts,
   getProduct,
   createProduct,
   updateProduct,
@@ -51,6 +52,24 @@ const router = Router();
  *   name: Products
  *   description: The products managing API
  */
+
+/**
+ * @swagger
+ * /products:
+ *   get:
+ *     summary: Returns the list of all the products
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: The list of the products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ */
+router.get('/', getAllProducts);
 
 /**
  * @swagger
