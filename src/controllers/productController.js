@@ -2,8 +2,8 @@ import * as productService from '../services/productService.js';
 
 export const getProduct = async (req, res) => {
   try {
-    const { id } = req.params;
-    const product = await productService.getProductById(id);
+    const { id: sku } = req.params;
+    const product = await productService.getProductById(sku);
 
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
@@ -17,13 +17,14 @@ export const getProduct = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const { id, name, price, description } = req.body;
+    const { name, sku, category, price, costPrice, stock } = req.body;
 
-    if (!id) {
-      return res.status(400).json({ message: 'Product ID is required' });
+    if (!sku) {
+      return res.status(400).json({ message: 'Product SKU is required' });
     }
 
-    await productService.createProduct({ id, name, price, description });
+    const newProduct = { name, sku, category, price, costPrice, stock };
+    await productService.createProduct(newProduct);
     res.status(201).json({ message: 'Product created successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error creating product', error: error.message });
@@ -32,10 +33,10 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id: sku } = req.params;
     const updates = req.body;
 
-    const updatedProduct = await productService.updateProduct(id, updates);
+    const updatedProduct = await productService.updateProduct(sku, updates);
 
     if (!updatedProduct) {
       return res.status(404).json({ message: 'Product not found' });
@@ -49,8 +50,8 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   try {
-    const { id } = req.params;
-    const result = await productService.deleteProduct(id);
+    const { id: sku } = req.params;
+    const result = await productService.deleteProduct(sku);
 
     if (result === 0) {
       return res.status(404).json({ message: 'Product not found' });

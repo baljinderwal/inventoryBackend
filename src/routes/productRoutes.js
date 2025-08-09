@@ -15,26 +15,34 @@ const router = Router();
  *     Product:
  *       type: object
  *       required:
- *         - id
  *         - name
+ *         - sku
  *       properties:
- *         id:
- *           type: string
- *           description: The auto-generated id of the product
  *         name:
  *           type: string
  *           description: The name of the product
+ *         sku:
+ *           type: string
+ *           description: The Stock Keeping Unit (SKU), unique identifier for the product
+ *         category:
+ *           type: string
+ *           description: The category of the product
  *         price:
  *           type: number
- *           description: The price of the product
- *         description:
- *           type: string
- *           description: The description of the product
+ *           description: The selling price of the product
+ *         costPrice:
+ *           type: number
+ *           description: The cost price of the product
+ *         stock:
+ *           type: number
+ *           description: The number of items in stock
  *       example:
- *         id: "101"
- *         name: "Laptop"
+ *         name: "Gaming Laptop"
+ *         sku: "GL-XYZ-001"
+ *         category: "Electronics"
  *         price: 1200
- *         description: "A powerful gaming laptop"
+ *         costPrice: 950
+ *         stock: 50
  */
 
 /**
@@ -48,7 +56,7 @@ const router = Router();
  * @swagger
  * /products/{id}:
  *   get:
- *     summary: Get a product by ID
+ *     summary: Get a product by SKU
  *     tags: [Products]
  *     parameters:
  *       - in: path
@@ -56,10 +64,10 @@ const router = Router();
  *         schema:
  *           type: string
  *         required: true
- *         description: The product ID
+ *         description: The product SKU
  *     responses:
  *       200:
- *         description: The product description by id
+ *         description: The product description by SKU
  *         content:
  *           application/json:
  *             schema:
@@ -93,7 +101,7 @@ router.post('/', createProduct);
  * @swagger
  * /products/{id}:
  *   put:
- *     summary: Update a product by ID
+ *     summary: Update a product by SKU
  *     tags: [Products]
  *     parameters:
  *       - in: path
@@ -101,7 +109,7 @@ router.post('/', createProduct);
  *         schema:
  *           type: string
  *         required: true
- *         description: The product ID
+ *         description: The product SKU
  *     requestBody:
  *       required: true
  *       content:
@@ -122,7 +130,7 @@ router.put('/:id', updateProduct);
  * @swagger
  * /products/{id}:
  *   delete:
- *     summary: Delete a product by ID
+ *     summary: Delete a product by SKU
  *     tags: [Products]
  *     parameters:
  *       - in: path
@@ -130,7 +138,7 @@ router.put('/:id', updateProduct);
  *         schema:
  *           type: string
  *         required: true
- *         description: The product ID
+ *         description: The product SKU
  *     responses:
  *       200:
  *         description: The product was deleted
