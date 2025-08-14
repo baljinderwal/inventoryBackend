@@ -7,6 +7,7 @@ import orderRoutes from './routes/orderRoutes.js';
 import supplierRoutes from './routes/supplierRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import stockRoutes from './routes/stockRoutes.js';
+import locationRoutes from './routes/locationRoutes.js';
 
 const app = express();
 
@@ -21,5 +22,6 @@ app.use('/orders', orderRoutes);
 app.use('/suppliers', supplierRoutes);
 app.use('/users', userRoutes);
 app.use('/stock', stockRoutes);
+app.use('/locations', locationRoutes);
 
 export default app;
