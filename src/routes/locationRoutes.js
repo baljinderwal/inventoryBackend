@@ -20,7 +20,7 @@ const router = Router();
  *         - address
  *       properties:
  *         id:
- *           type: string
+ *           type: integer
  *           description: The auto-generated id of the location
  *         name:
  *           type: string
@@ -29,7 +29,7 @@ const router = Router();
  *           type: string
  *           description: The address of the location
  *       example:
- *         id: "d5fE_asz"
+ *         id: 1
  *         name: "Main Warehouse"
  *         address: "123 Main St, Anytown, USA"
  */
