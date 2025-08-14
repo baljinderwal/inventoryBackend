@@ -5,10 +5,11 @@ const LOCATION_ID_COUNTER_KEY = 'location:id_counter';
 
 export const getAllLocations = async () => {
   const keys = await redisClient.keys(`${LOCATION_KEY_PREFIX}*`);
-  if (!keys.length) {
+  const locationKeys = keys.filter(key => key !== LOCATION_ID_COUNTER_KEY);
+  if (!locationKeys.length) {
     return [];
   }
-  const locations = await redisClient.mget(keys);
+  const locations = await redisClient.mget(locationKeys);
   return locations.map(location => JSON.parse(location));
 };
 
