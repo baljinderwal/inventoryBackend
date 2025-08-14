@@ -61,3 +61,23 @@ export const deleteOrder = async (id) => {
   const result = await redisClient.del(`${ORDER_KEY_PREFIX}${id}`);
   return result;
 };
+
+export const getOrdersBySupplier = async (supplierId) => {
+  const keys = await redisClient.keys(`${ORDER_KEY_PREFIX}*`);
+  if (keys.length === 0) {
+    return [];
+  }
+  const orders = await redisClient.mget(keys);
+  const parsedOrders = orders.map(order => JSON.parse(order));
+  return parsedOrders.filter(order => order.supplier && order.supplier.id == supplierId);
+};
+
+export const getOrdersByStatus = async (status) => {
+  const keys = await redisClient.keys(`${ORDER_KEY_PREFIX}*`);
+  if (keys.length === 0) {
+    return [];
+  }
+  const orders = await redisClient.mget(keys);
+  const parsedOrders = orders.map(order => JSON.parse(order));
+  return parsedOrders.filter(order => order.status === status);
+};

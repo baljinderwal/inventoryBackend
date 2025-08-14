@@ -71,3 +71,13 @@ export const deleteSupplier = async (req, res) => {
     res.status(500).json({ message: 'Error deleting supplier', error: error.message });
   }
 };
+
+export const getProductsBySupplier = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const products = await supplierService.getProductsBySupplier(id);
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving products for supplier', error: error.message });
+  }
+};
