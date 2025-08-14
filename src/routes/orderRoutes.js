@@ -189,7 +189,7 @@ router.put('/:id', updateOrder);
  *       - in: path
  *         name: id
  *         schema:
-_          type: string
+ *           type: string
  *         required: true
  *         description: The order ID
  *     responses:
