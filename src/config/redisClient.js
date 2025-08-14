@@ -1,7 +1,4 @@
 import Redis from 'ioredis';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 // Load from environment variables
 const REDIS_HOST = process.env.REDIS_HOST;
