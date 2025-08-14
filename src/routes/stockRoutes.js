@@ -1,0 +1,179 @@
+import { Router } from 'express';
+import {
+  getAllStock,
+  getStock,
+  createStock,
+  updateStock,
+  deleteStock,
+} from '../controllers/stockController.js';
+
+const router = Router();
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Batch:
+ *       type: object
+ *       properties:
+ *         batchNumber:
+ *           type: string
+ *         expiryDate:
+ *           type: string
+ *           format: date-time
+ *         quantity:
+ *           type: number
+ *     Stock:
+ *       type: object
+ *       required:
+ *         - productId
+ *         - quantity
+ *         - warehouse
+ *       properties:
+ *         id:
+ *           type: number
+ *           description: The auto-generated id of the stock entry
+ *         productId:
+ *           type: number
+ *           description: The ID of the product
+ *         quantity:
+ *           type: number
+ *           description: The total quantity of the product in stock
+ *         warehouse:
+ *           type: string
+ *           description: The warehouse where the product is stored
+ *         batches:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Batch'
+ *       example:
+ *         productId: 1
+ *         quantity: 150
+ *         warehouse: "A"
+ *         batches:
+ *           - batchNumber: "B001"
+ *             expiryDate: "2026-11-10T10:00:00Z"
+ *             quantity: 150
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Stock
+ *   description: The stock managing API
+ */
+
+/**
+ * @swagger
+ * /stock:
+ *   get:
+ *     summary: Returns the list of all the stock entries
+ *     tags: [Stock]
+ *     responses:
+ *       200:
+ *         description: The list of the stock entries
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Stock'
+ */
+router.get('/', getAllStock);
+
+/**
+ * @swagger
+ * /stock/{productId}:
+ *   get:
+ *     summary: Get stock information by product ID
+ *     tags: [Stock]
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         schema:
+ *           type: number
+ *         required: true
+ *         description: The product ID
+ *     responses:
+ *       200:
+ *         description: The stock information by product ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Stock'
+ *       404:
+ *         description: The stock information was not found
+ */
+router.get('/:productId', getStock);
+
+/**
+ * @swagger
+ * /stock:
+ *   post:
+ *     summary: Create a new stock entry
+ *     tags: [Stock]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Stock'
+ *     responses:
+ *       201:
+ *         description: The stock entry was successfully created
+ *       500:
+ *         description: Some server error
+ */
+router.post('/', createStock);
+
+/**
+ * @swagger
+ * /stock/{productId}:
+ *   put:
+ *     summary: Update a stock entry by product ID
+ *     tags: [Stock]
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         schema:
+ *           type: number
+ *         required: true
+ *         description: The product ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Stock'
+ *     responses:
+ *       200:
+ *         description: The stock entry was updated
+ *       404:
+ *         description: The stock entry was not found
+ *       500:
+ *         description: Some server error
+ */
+router.put('/:productId', updateStock);
+
+/**
+ * @swagger
+ * /stock/{productId}:
+ *   delete:
+ *     summary: Delete a stock entry by product ID
+ *     tags: [Stock]
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         schema:
+ *           type: number
+ *         required: true
+ *         description: The product ID
+ *     responses:
+ *       200:
+ *         description: The stock entry was deleted
+ *       404:
+ *         description: The stock entry was not found
+ */
+router.delete('/:productId', deleteStock);
+
+export default router;

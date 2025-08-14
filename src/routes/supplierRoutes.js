@@ -5,6 +5,7 @@ import {
   createSupplier,
   updateSupplier,
   deleteSupplier,
+  getProductsBySupplier,
 } from '../controllers/supplierController.js';
 
 const router = Router();
@@ -93,6 +94,33 @@ router.get('/', getAllSuppliers);
  *         description: The supplier was not found
  */
 router.get('/:id', getSupplier);
+
+/**
+ * @swagger
+ * /suppliers/{id}/products:
+ *   get:
+ *     summary: Get all products for a specific supplier
+ *     tags: [Suppliers]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: The supplier ID
+ *     responses:
+ *       200:
+ *         description: A list of products for the specified supplier
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ *       404:
+ *         description: The supplier was not found
+ */
+router.get('/:id/products', getProductsBySupplier);
 
 /**
  * @swagger

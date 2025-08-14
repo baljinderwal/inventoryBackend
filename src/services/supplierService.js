@@ -1,4 +1,5 @@
 import redisClient from '../config/redisClient.js';
+import { getProductByNumericId } from './productService.js';
 
 const SUPPLIER_KEY_PREFIX = 'supplier:';
 
@@ -38,4 +39,18 @@ export const getAllSuppliers = async () => {
   }
   const suppliers = await redisClient.mget(keys);
   return suppliers.map(supplier => JSON.parse(supplier));
+};
+
+export const getProductsBySupplier = async (supplierId) => {
+  const supplier = await getSupplierById(supplierId);
+  if (!supplier || !supplier.products) {
+    return [];
+  }
+
+  const productPromises = supplier.products.map(productId => {
+    return getProductByNumericId(productId);
+  });
+
+  const products = await Promise.all(productPromises);
+  return products.filter(p => p !== null);
 };

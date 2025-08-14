@@ -39,3 +39,8 @@ export const getAllProducts = async () => {
   const products = await redisClient.mget(keys);
   return products.map(product => JSON.parse(product));
 };
+
+export const getProductByNumericId = async (id) => {
+  const allProducts = await getAllProducts();
+  return allProducts.find(p => p.id === id);
+};

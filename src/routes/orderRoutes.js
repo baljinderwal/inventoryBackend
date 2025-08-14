@@ -5,6 +5,8 @@ import {
   createOrder,
   updateOrder,
   deleteOrder,
+  getOrdersBySupplier,
+  getOrdersByStatus,
 } from '../controllers/orderController.js';
 
 const router = Router();
@@ -96,6 +98,60 @@ const router = Router();
  *                 $ref: '#/components/schemas/Order'
  */
 router.get('/', getAllOrders);
+
+/**
+ * @swagger
+ * /orders/supplier/{supplierId}:
+ *   get:
+ *     summary: Get all orders from a specific supplier
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: supplierId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The supplier ID
+ *     responses:
+ *       200:
+ *         description: A list of orders from the specified supplier
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Order'
+ *       404:
+ *         description: No orders found for this supplier
+ */
+router.get('/supplier/:supplierId', getOrdersBySupplier);
+
+/**
+ * @swagger
+ * /orders/status/{status}:
+ *   get:
+ *     summary: Get all orders with a specific status
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: status
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The order status
+ *     responses:
+ *       200:
+ *         description: A list of orders with the specified status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Order'
+ *       404:
+ *         description: No orders found with this status
+ */
+router.get('/status/:status', getOrdersByStatus);
 
 /**
  * @swagger

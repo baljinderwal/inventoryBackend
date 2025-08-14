@@ -65,3 +65,23 @@ export const deleteOrder = async (req, res) => {
     res.status(500).json({ message: 'Error deleting order', error: error.message });
   }
 };
+
+export const getOrdersBySupplier = async (req, res) => {
+  try {
+    const { supplierId } = req.params;
+    const orders = await orderService.getOrdersBySupplier(supplierId);
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving orders by supplier', error: error.message });
+  }
+};
+
+export const getOrdersByStatus = async (req, res) => {
+  try {
+    const { status } = req.params;
+    const orders = await orderService.getOrdersByStatus(status);
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving orders by status', error: error.message });
+  }
+};
