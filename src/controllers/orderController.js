@@ -1,0 +1,67 @@
+import * as orderService from '../services/orderService.js';
+
+export const getAllOrders = async (req, res) => {
+  try {
+    const { sort, _order: order } = req.query;
+    const orders = await orderService.getAllOrders(sort, order);
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving orders', error: error.message });
+  }
+};
+
+export const getOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const order = await orderService.getOrderById(id);
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.status(200).json(order);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving order', error: error.message });
+  }
+};
+
+export const createOrder = async (req, res) => {
+  try {
+    const newOrder = await orderService.createOrder(req.body);
+    res.status(201).json(newOrder);
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating order', error: error.message });
+  }
+};
+
+export const updateOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    const updatedOrder = await orderService.updateOrder(id, updates);
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.status(200).json(updatedOrder);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating order', error: error.message });
+  }
+};
+
+export const deleteOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await orderService.deleteOrder(id);
+
+    if (result === 0) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.status(200).json({ message: 'Order deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting order', error: error.message });
+  }
+};
