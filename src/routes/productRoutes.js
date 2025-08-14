@@ -6,12 +6,18 @@ import {
   updateProduct,
   deleteProduct,
 } from '../controllers/productController.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
 /**
  * @swagger
  * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  *   schemas:
  *     Product:
  *       type: object
@@ -19,6 +25,9 @@ const router = Router();
  *         - name
  *         - sku
  *       properties:
+ *         id:
+ *           type: number
+ *           description: The numeric ID of the product
  *         name:
  *           type: string
  *           description: The name of the product
@@ -38,6 +47,7 @@ const router = Router();
  *           type: number
  *           description: The number of items in stock
  *       example:
+ *         id: 1
  *         name: "Gaming Laptop"
  *         sku: "GL-XYZ-001"
  *         category: "Electronics"
@@ -59,6 +69,8 @@ const router = Router();
  *   get:
  *     summary: Returns the list of all the products
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: The list of the products
@@ -69,7 +81,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/Product'
  */
-router.get('/', getAllProducts);
+router.get('/', protect, getAllProducts);
 
 /**
  * @swagger
@@ -77,6 +89,8 @@ router.get('/', getAllProducts);
  *   get:
  *     summary: Get a product by SKU
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -94,7 +108,7 @@ router.get('/', getAllProducts);
  *       404:
  *         description: The product was not found
  */
-router.get('/:id', getProduct);
+router.get('/:id', protect, getProduct);
 
 /**
  * @swagger
@@ -102,6 +116,8 @@ router.get('/:id', getProduct);
  *   post:
  *     summary: Create a new product
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -114,7 +130,7 @@ router.get('/:id', getProduct);
  *       500:
  *         description: Some server error
  */
-router.post('/', createProduct);
+router.post('/', protect, createProduct);
 
 /**
  * @swagger
@@ -122,6 +138,8 @@ router.post('/', createProduct);
  *   put:
  *     summary: Update a product by SKU
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -143,7 +161,7 @@ router.post('/', createProduct);
  *       500:
  *         description: Some server error
  */
-router.put('/:id', updateProduct);
+router.put('/:id', protect, updateProduct);
 
 /**
  * @swagger
@@ -151,6 +169,8 @@ router.put('/:id', updateProduct);
  *   delete:
  *     summary: Delete a product by SKU
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -164,6 +184,6 @@ router.put('/:id', updateProduct);
  *       404:
  *         description: The product was not found
  */
-router.delete('/:id', deleteProduct);
+router.delete('/:id', protect, deleteProduct);
 
 export default router;

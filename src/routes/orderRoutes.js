@@ -8,6 +8,7 @@ import {
   getOrdersBySupplier,
   getOrdersByStatus,
 } from '../controllers/orderController.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
@@ -75,6 +76,8 @@ const router = Router();
  *   get:
  *     summary: Returns the list of all the orders
  *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: sort
@@ -97,7 +100,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/Order'
  */
-router.get('/', getAllOrders);
+router.get('/', protect, getAllOrders);
 
 /**
  * @swagger
@@ -105,6 +108,8 @@ router.get('/', getAllOrders);
  *   get:
  *     summary: Get all orders from a specific supplier
  *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: supplierId
@@ -124,7 +129,7 @@ router.get('/', getAllOrders);
  *       404:
  *         description: No orders found for this supplier
  */
-router.get('/supplier/:supplierId', getOrdersBySupplier);
+router.get('/supplier/:supplierId', protect, getOrdersBySupplier);
 
 /**
  * @swagger
@@ -132,6 +137,8 @@ router.get('/supplier/:supplierId', getOrdersBySupplier);
  *   get:
  *     summary: Get all orders with a specific status
  *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: status
@@ -151,7 +158,7 @@ router.get('/supplier/:supplierId', getOrdersBySupplier);
  *       404:
  *         description: No orders found with this status
  */
-router.get('/status/:status', getOrdersByStatus);
+router.get('/status/:status', protect, getOrdersByStatus);
 
 /**
  * @swagger
@@ -159,6 +166,8 @@ router.get('/status/:status', getOrdersByStatus);
  *   get:
  *     summary: Get an order by ID
  *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -176,7 +185,7 @@ router.get('/status/:status', getOrdersByStatus);
  *       404:
  *         description: The order was not found
  */
-router.get('/:id', getOrder);
+router.get('/:id', protect, getOrder);
 
 /**
  * @swagger
@@ -184,6 +193,8 @@ router.get('/:id', getOrder);
  *   post:
  *     summary: Create a new order
  *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -200,7 +211,7 @@ router.get('/:id', getOrder);
  *       500:
  *         description: Some server error
  */
-router.post('/', createOrder);
+router.post('/', protect, createOrder);
 
 /**
  * @swagger
@@ -208,6 +219,8 @@ router.post('/', createOrder);
  *   put:
  *     summary: Update an order by ID
  *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -233,7 +246,7 @@ router.post('/', createOrder);
  *       500:
  *         description: Some server error
  */
-router.put('/:id', updateOrder);
+router.put('/:id', protect, updateOrder);
 
 /**
  * @swagger
@@ -241,6 +254,8 @@ router.put('/:id', updateOrder);
  *   delete:
  *     summary: Delete an order by ID
  *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -254,6 +269,6 @@ router.put('/:id', updateOrder);
  *       404:
  *         description: The order was not found
  */
-router.delete('/:id', deleteOrder);
+router.delete('/:id', protect, deleteOrder);
 
 export default router;

@@ -3,7 +3,7 @@ import redisClient from '../config/redisClient.js';
 const USER_KEY_PREFIX = 'user:';
 
 export const getAllUsers = async () => {
-  const keys = await redisClient.keys(`${USER_KEY_PREFIX}*`);
+  const keys = await redisClient.keys(`${USER_KEY_PREFIX}[0-9]*`);
   if (!keys.length) {
     return [];
   }
@@ -16,8 +16,16 @@ export const getUserById = async (id) => {
   return user ? JSON.parse(user) : null;
 };
 
-export const createUser = async (user) => {
-  await redisClient.set(`${USER_KEY_PREFIX}${user.id}`, JSON.stringify(user));
+export const createUser = async (userData) => {
+    const newId = await redisClient.incr('user:id_counter');
+    const newUser = { ...userData, id: newId };
+
+    const pipeline = redisClient.pipeline();
+    pipeline.set(`${USER_KEY_PREFIX}${newUser.id}`, JSON.stringify(newUser));
+    pipeline.set(`user:email:${newUser.email}`, newUser.id);
+    await pipeline.exec();
+
+    return newUser;
 };
 
 export const updateUser = async (id, updates) => {
@@ -36,6 +44,23 @@ export const updateUser = async (id, updates) => {
 };
 
 export const deleteUser = async (id) => {
-  const result = await redisClient.del(`${USER_KEY_PREFIX}${id}`);
-  return result;
+  const user = await getUserById(id);
+  if (!user) {
+    return 0;
+  }
+
+  const pipeline = redisClient.pipeline();
+  pipeline.del(`${USER_KEY_PREFIX}${id}`);
+  pipeline.del(`user:email:${user.email}`);
+  const results = await pipeline.exec();
+
+  return results[0][1];
+};
+
+export const getUserByEmail = async (email) => {
+    const userId = await redisClient.get(`user:email:${email}`);
+    if (!userId) {
+        return null;
+    }
+    return await getUserById(userId);
 };

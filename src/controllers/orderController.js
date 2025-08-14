@@ -30,7 +30,7 @@ export const createOrder = async (req, res) => {
     const newOrder = await orderService.createOrder(req.body);
     res.status(201).json(newOrder);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating order', error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
