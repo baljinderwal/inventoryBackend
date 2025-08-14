@@ -4,6 +4,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
 import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import supplierRoutes from './routes/supplierRoutes.js';
 
 const app = express();
 
@@ -15,5 +16,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);
+app.use('/suppliers', supplierRoutes);
 
 export default app;
