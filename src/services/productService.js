@@ -7,8 +7,16 @@ export const getProductById = async (sku) => {
   return product ? JSON.parse(product) : null;
 };
 
-export const createProduct = async (product) => {
-  await redisClient.set(`${PRODUCT_KEY_PREFIX}${product.sku}`, JSON.stringify(product));
+export const createProduct = async (productData) => {
+  const newId = await redisClient.incr('product:id_counter');
+  const newProduct = { ...productData, id: newId };
+
+  const pipeline = redisClient.pipeline();
+  pipeline.set(`${PRODUCT_KEY_PREFIX}${newProduct.sku}`, JSON.stringify(newProduct));
+  pipeline.set(`product:id:${newProduct.id}`, newProduct.sku);
+
+  await pipeline.exec();
+  return newProduct;
 };
 
 export const updateProduct = async (sku, updates) => {
@@ -27,8 +35,21 @@ export const updateProduct = async (sku, updates) => {
 };
 
 export const deleteProduct = async (sku) => {
-  const result = await redisClient.del(`${PRODUCT_KEY_PREFIX}${sku}`);
-  return result;
+  const key = `${PRODUCT_KEY_PREFIX}${sku}`;
+  const productJSON = await redisClient.get(key);
+  if (!productJSON) {
+    return 0;
+  }
+  const product = JSON.parse(productJSON);
+
+  const pipeline = redisClient.pipeline();
+  pipeline.del(key);
+  if (product.id) {
+    pipeline.del(`product:id:${product.id}`);
+  }
+
+  const results = await pipeline.exec();
+  return results[0][1]; // Result of the first del command
 };
 
 export const getAllProducts = async () => {
@@ -41,6 +62,9 @@ export const getAllProducts = async () => {
 };
 
 export const getProductByNumericId = async (id) => {
-  const allProducts = await getAllProducts();
-  return allProducts.find(p => p.id === id);
+  const sku = await redisClient.get(`product:id:${id}`);
+  if (!sku) {
+    return null;
+  }
+  return await getProductById(sku);
 };

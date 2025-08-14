@@ -26,15 +26,11 @@ export const getProduct = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, sku, category, price, costPrice, stock } = req.body;
-
-    if (!sku) {
+    if (!req.body.sku) {
       return res.status(400).json({ message: 'Product SKU is required' });
     }
-
-    const newProduct = { name, sku, category, price, costPrice, stock };
-    await productService.createProduct(newProduct);
-    res.status(201).json({ message: 'Product created successfully' });
+    const newProduct = await productService.createProduct(req.body);
+    res.status(201).json(newProduct);
   } catch (error) {
     res.status(500).json({ message: 'Error creating product', error: error.message });
   }

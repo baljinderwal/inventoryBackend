@@ -8,6 +8,7 @@ import supplierRoutes from './routes/supplierRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import stockRoutes from './routes/stockRoutes.js';
 import locationRoutes from './routes/locationRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
 const app = express();
 
@@ -23,5 +24,6 @@ app.use('/suppliers', supplierRoutes);
 app.use('/users', userRoutes);
 app.use('/stock', stockRoutes);
 app.use('/locations', locationRoutes);
+app.use('/auth', authRoutes);
 
 export default app;

@@ -6,6 +6,7 @@ import {
   updateUser,
   deleteUser,
 } from '../controllers/userController.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
@@ -58,6 +59,8 @@ const router = Router();
  *   get:
  *     summary: Returns the list of all the users
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: The list of the users
@@ -68,7 +71,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/User'
  */
-router.get('/', getAllUsers);
+router.get('/', protect, getAllUsers);
 
 /**
  * @swagger
@@ -76,6 +79,8 @@ router.get('/', getAllUsers);
  *   get:
  *     summary: Get a user by ID
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -93,14 +98,16 @@ router.get('/', getAllUsers);
  *       404:
  *         description: The user was not found
  */
-router.get('/:id', getUser);
+router.get('/:id', protect, getUser);
 
 /**
  * @swagger
  * /users:
  *   post:
- *     summary: Create a new user
+ *     summary: Create a new user (Admin)
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -113,7 +120,7 @@ router.get('/:id', getUser);
  *       500:
  *         description: Some server error
  */
-router.post('/', createUser);
+router.post('/', protect, createUser);
 
 /**
  * @swagger
@@ -121,6 +128,8 @@ router.post('/', createUser);
  *   put:
  *     summary: Update a user by ID
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -142,7 +151,7 @@ router.post('/', createUser);
  *       500:
  *         description: Some server error
  */
-router.put('/:id', updateUser);
+router.put('/:id', protect, updateUser);
 
 /**
  * @swagger
@@ -150,6 +159,8 @@ router.put('/:id', updateUser);
  *   delete:
  *     summary: Delete a user by ID
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -163,6 +174,6 @@ router.put('/:id', updateUser);
  *       404:
  *         description: The user was not found
  */
-router.delete('/:id', deleteUser);
+router.delete('/:id', protect, deleteUser);
 
 export default router;

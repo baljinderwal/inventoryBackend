@@ -6,6 +6,7 @@ import {
   updateLocation,
   deleteLocation,
 } from '../controllers/locationController.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
@@ -47,6 +48,8 @@ const router = Router();
  *   get:
  *     summary: Returns the list of all the locations
  *     tags: [Locations]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: The list of the locations
@@ -57,7 +60,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/Location'
  */
-router.get('/', getAllLocations);
+router.get('/', protect, getAllLocations);
 
 /**
  * @swagger
@@ -65,6 +68,8 @@ router.get('/', getAllLocations);
  *   get:
  *     summary: Get a location by id
  *     tags: [Locations]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -82,7 +87,7 @@ router.get('/', getAllLocations);
  *       404:
  *         description: The location was not found
  */
-router.get('/:id', getLocation);
+router.get('/:id', protect, getLocation);
 
 /**
  * @swagger
@@ -90,6 +95,8 @@ router.get('/:id', getLocation);
  *   post:
  *     summary: Create a new location
  *     tags: [Locations]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -102,7 +109,7 @@ router.get('/:id', getLocation);
  *       500:
  *         description: Some server error
  */
-router.post('/', createLocation);
+router.post('/', protect, createLocation);
 
 /**
  * @swagger
@@ -110,6 +117,8 @@ router.post('/', createLocation);
  *   put:
  *     summary: Update a location by id
  *     tags: [Locations]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -131,7 +140,7 @@ router.post('/', createLocation);
  *       500:
  *         description: Some server error
  */
-router.put('/:id', updateLocation);
+router.put('/:id', protect, updateLocation);
 
 /**
  * @swagger
@@ -139,6 +148,8 @@ router.put('/:id', updateLocation);
  *   delete:
  *     summary: Delete a location by id
  *     tags: [Locations]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -152,6 +163,6 @@ router.put('/:id', updateLocation);
  *       404:
  *         description: The location was not found
  */
-router.delete('/:id', deleteLocation);
+router.delete('/:id', protect, deleteLocation);
 
 export default router;

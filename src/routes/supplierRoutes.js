@@ -7,6 +7,7 @@ import {
   deleteSupplier,
   getProductsBySupplier,
 } from '../controllers/supplierController.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
@@ -58,6 +59,8 @@ const router = Router();
  *   get:
  *     summary: Returns the list of all the suppliers
  *     tags: [Suppliers]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: The list of the suppliers
@@ -68,7 +71,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/Supplier'
  */
-router.get('/', getAllSuppliers);
+router.get('/', protect, getAllSuppliers);
 
 /**
  * @swagger
@@ -76,6 +79,8 @@ router.get('/', getAllSuppliers);
  *   get:
  *     summary: Get a supplier by ID
  *     tags: [Suppliers]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -93,7 +98,7 @@ router.get('/', getAllSuppliers);
  *       404:
  *         description: The supplier was not found
  */
-router.get('/:id', getSupplier);
+router.get('/:id', protect, getSupplier);
 
 /**
  * @swagger
@@ -101,6 +106,8 @@ router.get('/:id', getSupplier);
  *   get:
  *     summary: Get all products for a specific supplier
  *     tags: [Suppliers]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -120,7 +127,7 @@ router.get('/:id', getSupplier);
  *       404:
  *         description: The supplier was not found
  */
-router.get('/:id/products', getProductsBySupplier);
+router.get('/:id/products', protect, getProductsBySupplier);
 
 /**
  * @swagger
@@ -128,6 +135,8 @@ router.get('/:id/products', getProductsBySupplier);
  *   post:
  *     summary: Create a new supplier
  *     tags: [Suppliers]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -140,7 +149,7 @@ router.get('/:id/products', getProductsBySupplier);
  *       500:
  *         description: Some server error
  */
-router.post('/', createSupplier);
+router.post('/', protect, createSupplier);
 
 /**
  * @swagger
@@ -148,6 +157,8 @@ router.post('/', createSupplier);
  *   put:
  *     summary: Update a supplier by ID
  *     tags: [Suppliers]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -169,7 +180,7 @@ router.post('/', createSupplier);
  *       500:
  *         description: Some server error
  */
-router.put('/:id', updateSupplier);
+router.put('/:id', protect, updateSupplier);
 
 /**
  * @swagger
@@ -177,6 +188,8 @@ router.put('/:id', updateSupplier);
  *   delete:
  *     summary: Delete a supplier by ID
  *     tags: [Suppliers]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -190,6 +203,6 @@ router.put('/:id', updateSupplier);
  *       404:
  *         description: The supplier was not found
  */
-router.delete('/:id', deleteSupplier);
+router.delete('/:id', protect, deleteSupplier);
 
 export default router;

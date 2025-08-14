@@ -6,6 +6,7 @@ import {
   updateStock,
   deleteStock,
 } from '../controllers/stockController.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
@@ -69,6 +70,8 @@ const router = Router();
  *   get:
  *     summary: Returns the list of all the stock entries
  *     tags: [Stock]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: The list of the stock entries
@@ -79,7 +82,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/Stock'
  */
-router.get('/', getAllStock);
+router.get('/', protect, getAllStock);
 
 /**
  * @swagger
@@ -87,6 +90,8 @@ router.get('/', getAllStock);
  *   get:
  *     summary: Get stock information by product ID
  *     tags: [Stock]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: productId
@@ -104,7 +109,7 @@ router.get('/', getAllStock);
  *       404:
  *         description: The stock information was not found
  */
-router.get('/:productId', getStock);
+router.get('/:productId', protect, getStock);
 
 /**
  * @swagger
@@ -112,6 +117,8 @@ router.get('/:productId', getStock);
  *   post:
  *     summary: Create a new stock entry
  *     tags: [Stock]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -124,7 +131,7 @@ router.get('/:productId', getStock);
  *       500:
  *         description: Some server error
  */
-router.post('/', createStock);
+router.post('/', protect, createStock);
 
 /**
  * @swagger
@@ -132,6 +139,8 @@ router.post('/', createStock);
  *   put:
  *     summary: Update a stock entry by product ID
  *     tags: [Stock]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: productId
@@ -153,7 +162,7 @@ router.post('/', createStock);
  *       500:
  *         description: Some server error
  */
-router.put('/:productId', updateStock);
+router.put('/:productId', protect, updateStock);
 
 /**
  * @swagger
@@ -161,6 +170,8 @@ router.put('/:productId', updateStock);
  *   delete:
  *     summary: Delete a stock entry by product ID
  *     tags: [Stock]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: productId
@@ -174,6 +185,6 @@ router.put('/:productId', updateStock);
  *       404:
  *         description: The stock entry was not found
  */
-router.delete('/:productId', deleteStock);
+router.delete('/:productId', protect, deleteStock);
 
 export default router;
