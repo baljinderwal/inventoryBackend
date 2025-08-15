@@ -6,7 +6,7 @@ import {
   updateUser,
   deleteUser,
   getMe,
-  updateUserProfile,
+  updateMe,
 } from '../controllers/userController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -61,7 +61,7 @@ router.get('/me', protect, getMe);
  *       404:
  *         description: User not found
  */
-router.put('/me', protect, updateUserProfile);
+router.put('/me', protect, updateMe);
 
 /**
  * @swagger

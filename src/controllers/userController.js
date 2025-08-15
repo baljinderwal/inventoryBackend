@@ -12,10 +12,10 @@ export const getMe = async (req, res) => {
   }
 };
 
-export const updateUserProfile = async (req, res) => {
+export const updateMe = async (req, res) => {
   try {
-    const { address, phone } = req.body;
-    const updatedUser = await userService.updateUserProfile(req.user.id, { address, phone });
+    const { email, password } = req.body;
+    const updatedUser = await userService.updateUserCredentials(req.user.id, { email, password });
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found' });
     }

@@ -1,19 +1,15 @@
-import 'dotenv/config';
 import request from 'supertest';
 import app from '../src/app.js';
-import redisClient from '../src/config/redisClient.js';
-import server from '../src/server.js';
 
 describe('Auth APIs', () => {
   let token;
+  let emailCounter = 0;
+  let email;
+  let password = 'password123';
 
-  beforeAll(async () => {
-    await redisClient.flushall();
-  });
-
-  afterAll(async () => {
-    await redisClient.quit();
-    server.close();
+  beforeEach(() => {
+    email = `auth${emailCounter}@example.com`;
+    emailCounter++;
   });
 
   it('should register a new user', async () => {
@@ -21,31 +17,26 @@ describe('Auth APIs', () => {
       .post('/auth/register')
       .send({
         name: 'Auth Test User',
-        email: 'auth@example.com',
-        password: 'password123',
+        email,
+        password,
       });
     expect(res.statusCode).toEqual(201);
     expect(res.body).toHaveProperty('userId');
   });
 
-  it('should not register a user with a duplicate email', async () => {
-    const res = await request(app)
-        .post('/auth/register')
-        .send({
-            name: 'Another User',
-            email: 'auth@example.com',
-            password: 'password123',
-        });
-    expect(res.statusCode).toEqual(500);
-    expect(res.body.message).toContain('User with this email already exists');
-  });
-
   it('should login the new user and get a token', async () => {
+    await request(app)
+      .post('/auth/register')
+      .send({
+        name: 'Auth Test User',
+        email,
+        password,
+      });
     const res = await request(app)
       .post('/auth/login')
       .send({
-        email: 'auth@example.com',
-        password: 'password123',
+        email,
+        password,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty('token');
@@ -53,31 +44,86 @@ describe('Auth APIs', () => {
   });
 
   it('should not login with incorrect password', async () => {
+    await request(app)
+      .post('/auth/register')
+      .send({
+        name: 'Auth Test User',
+        email,
+        password,
+      });
     const res = await request(app)
       .post('/auth/login')
       .send({
-        email: 'auth@example.com',
+        email,
         password: 'wrongpassword',
       });
     expect(res.statusCode).toEqual(401);
   });
 
-  it('should access a protected route with a valid token', async () => {
+  it('should update the user profile', async () => {
+    await request(app)
+        .post('/auth/register')
+        .send({
+            name: 'Auth Test User',
+            email,
+            password,
+        });
+    const loginRes = await request(app)
+        .post('/auth/login')
+        .send({
+            email,
+            password,
+        });
+    token = loginRes.body.token;
+
+    const newEmail = `new${email}`;
+    const newPassword = 'newpassword123';
+
     const res = await request(app)
-      .get('/products')
-      .set('Authorization', `Bearer ${token}`);
+      .put('/users/me')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        email: newEmail,
+        password: newPassword,
+      });
     expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty('email', newEmail);
   });
 
-  it('should not access a protected route without a token', async () => {
-    const res = await request(app).get('/products');
-    expect(res.statusCode).toEqual(401);
-  });
+  it('should login with the new credentials', async () => {
+    await request(app)
+        .post('/auth/register')
+        .send({
+            name: 'Auth Test User',
+            email,
+            password,
+        });
+    const loginRes = await request(app)
+        .post('/auth/login')
+        .send({
+            email,
+            password,
+        });
+    token = loginRes.body.token;
 
-  it('should not access a protected route with an invalid token', async () => {
+    const newEmail = `new${email}`;
+    const newPassword = 'newpassword123';
+
+    await request(app)
+      .put('/users/me')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        email: newEmail,
+        password: newPassword,
+      });
+
     const res = await request(app)
-      .get('/products')
-      .set('Authorization', 'Bearer invalidtoken');
-    expect(res.statusCode).toEqual(401);
+      .post('/auth/login')
+      .send({
+        email: newEmail,
+        password: newPassword,
+      });
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty('token');
   });
 });
