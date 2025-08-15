@@ -2,6 +2,14 @@
 
 This is a backend API built with Node.js, Express, and ioredis. It provides CRUD functionality for managing products, orders, suppliers, stock, and users stored in a Redis database.
 
+## New Features
+
+This version includes several major new features:
+
+-   **Authentication**: The API is now protected with JWT-based authentication. All data-related endpoints require a valid token.
+-   **Stock Management**: The order creation process now includes stock validation. The system checks for product availability and sufficient stock before creating an order and decrements stock levels accordingly.
+-   **Performance Improvements**: The data access layer for orders and products has been refactored to use efficient Redis indexes, significantly improving the performance of filtering and lookup operations.
+
 ## Prerequisites
 
 - Node.js
@@ -10,39 +18,85 @@ This is a backend API built with Node.js, Express, and ioredis. It provides CRUD
 
 ## Getting Started
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd redis-product-api
-   ```
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository-url>
+    cd redis-product-api
+    ```
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-3. **Set up environment variables:**
-   Create a `.env` file in the root of the project and add your Redis connection details. For a local Redis instance, you can use:
-   ```
-   REDIS_HOST=localhost
-   REDIS_PORT=6379
-   REDIS_PASSWORD=
-   ```
+3.  **Set up environment variables:**
+    Create a `.env` file in the root of the project and add your Redis connection details and a JWT secret.
+    ```
+    REDIS_HOST=localhost
+    REDIS_PORT=6379
+    REDIS_PASSWORD=
+    JWT_SECRET=your_super_secret_key
+    ```
 
-4. **Start Redis using Docker:**
-   ```bash
-   docker run -d -p 6379:6379 --name my-redis redis
-   ```
+4.  **Start Redis using Docker:**
+    ```bash
+    docker run -d -p 6379:6379 --name my-redis redis
+    ```
 
-5. **Start the server:**
-   ```bash
-   npm start
-   ```
-   The server will be running on `http://localhost:4000`.
+5.  **Start the server:**
+    ```bash
+    npm start
+    ```
+    The server will be running on `http://localhost:4000`.
+
+## Authentication
+
+The API uses JSON Web Tokens (JWT) to authenticate requests. To access protected endpoints, you must first register and log in to obtain a token.
+
+### 1. Register a new user
+
+Send a `POST` request to `/auth/register` with the user's name, email, and password.
+
+```json
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "password": "password123"
+}
+```
+
+### 2. Login
+
+Send a `POST` request to `/auth/login` with the registered email and password.
+
+```json
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+```
+
+The API will return a JWT token.
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI..."
+}
+```
+
+### 3. Accessing Protected Routes
+
+To access a protected route, include the token in the `Authorization` header of your request, prefixed with `Bearer `.
+
+```
+Authorization: Bearer <your_jwt_token>
+```
 
 ## API Documentation
 
 The API is documented using Swagger. Once the server is running, you can access the Swagger UI at `http://localhost:4000/api-docs`.
+
+You can use the "Authorize" button in the Swagger UI to add your JWT token and test the protected endpoints directly from the documentation.
 
 ## File-by-File Description
 
@@ -66,6 +120,7 @@ The API is documented using Swagger. Once the server is running, you can access 
 
 #### `src/controllers`
 
+- **`src/controllers/authController.js`**: This file contains the controller functions for user registration and login.
 - **`src/controllers/orderController.js`**: This file contains the controller functions for the `orders` resource. These functions handle the incoming HTTP requests, call the appropriate service functions to interact with the database, and then send the HTTP responses. It includes functions for all the CRUD operations (`getAllOrders`, `getOrder`, `createOrder`, `updateOrder`, `deleteOrder`) as well as the enhanced query endpoints (`getOrdersBySupplier`, `getOrdersByStatus`).
 - **`src/controllers/productController.js`**: This file contains the controller functions for the `products` resource. These functions handle the incoming HTTP requests, call the appropriate service functions to interact with the database, and then send the HTTP responses. It includes functions for all the CRUD operations (`getAllProducts`, `getProduct`, `createProduct`, `updateProduct`, `deleteProduct`).
 - **`src/controllers/locationController.js`**: This file contains the controller functions for the `locations` resource. These functions handle the incoming HTTP requests, call the appropriate service functions to interact with the database, and then send the HTTP responses. It includes functions for all the CRUD operations (`getAllLocations`, `getLocation`, `createLocation`, `updateLocation`, `deleteLocation`).
@@ -73,8 +128,13 @@ The API is documented using Swagger. Once the server is running, you can access 
 - **`src/controllers/supplierController.js`**: This file contains the controller functions for the `suppliers` resource. These functions handle the incoming HTTP requests, call the appropriate service functions to interact with the database, and then send the HTTP responses. It includes functions for all the CRUD operations (`getAllSuppliers`, `getSupplier`, `createSupplier`, `updateSupplier`, `deleteSupplier`) as well as the enhanced query endpoint (`getProductsBySupplier`).
 - **`src/controllers/userController.js`**: This file contains the controller functions for the `users` resource. These functions handle the incoming HTTP requests, call the appropriate service functions to interact with the database, and then send the HTTP responses. It includes functions for all the CRUD operations (`getAllUsers`, `getUser`, `createUser`, `updateUser`, `deleteUser`).
 
+#### `src/middleware`
+
+- **`src/middleware/authMiddleware.js`**: This file contains the `protect` middleware, which verifies the JWT token from the `Authorization` header to protect routes.
+
 #### `src/routes`
 
+- **`src/routes/authRoutes.js`**: This file defines the API routes for authentication (`/register`, `/login`).
 - **`src/routes/orderRoutes.js`**: This file defines the API routes for the `orders` resource. It uses an Express Router to create the routes and associates them with the corresponding controller functions from `orderController.js`. This file also contains the Swagger JSDoc annotations that define the `Order` schema and the API endpoints for the Swagger documentation.
 - **`src/routes/productRoutes.js`**: This file defines the API routes for the `products` resource. It uses an Express Router to create the routes and associates them with the corresponding controller functions from `productController.js`. This file also contains the Swagger JSDoc annotations that define the `Product` schema and the API endpoints for the Swagger documentation.
 - **`src/routes/locationRoutes.js`**: This file defines the API routes for the `locations` resource. It uses an Express Router to create the routes and associates them with the corresponding controller functions from `locationController.js`. This file also contains the Swagger JSDoc annotations that define the `Location` schema and the API endpoints for the Swagger documentation.
@@ -84,12 +144,13 @@ The API is documented using Swagger. Once the server is running, you can access 
 
 #### `src/services`
 
-- **`src/services/orderService.js`**: This file contains the service functions for the `orders` resource. These functions encapsulate the business logic and interact with the Redis database to perform CRUD operations and other data-related tasks. It uses the `redisClient` to store and retrieve order data, which is prefixed with `order:`. It also includes functions to get orders by supplier and status.
-- **`src/services/productService.js`**: This file contains the service functions for the `products` resource. These functions encapsulate the business logic and interact with the Redis database to perform CRUD operations and other data-related tasks. It uses the `redisClient` to store and retrieve product data, which is prefixed with `product:`. It also includes a function to get a product by its numeric ID, which is used by the supplier service.
+- **`src/services/authService.js`**: This service handles the logic for user registration (password hashing) and login (password verification and JWT creation).
+- **`src/services/orderService.js`**: This file contains the service functions for the `orders` resource. These functions encapsulate the business logic and interact with the Redis database. **It now includes stock validation before creating an order.** It also uses efficient Redis sets for indexing orders by status and supplier.
+- **`src/services/productService.js`**: This file contains the service functions for the `products` resource. These functions encapsulate the business logic and interact with the Redis database. **It now auto-generates numeric IDs and maintains an index for them.**
 - **`src/services/locationService.js`**: This file contains the service functions for the `locations` resource. These functions encapsulate the business logic and interact with the Redis database to perform CRUD operations. It uses the `redisClient` to store and retrieve location data, which is prefixed with `location:`. It uses a Redis counter to generate auto-incrementing integer IDs for new locations.
 - **`src/services/stockService.js`**: This file contains the service functions for the `stock` resource. These functions encapsulate the business logic and interact with the Redis database to perform CRUD operations and other data-related tasks. It uses the `redisClient` to store and retrieve stock data, which is prefixed with `stock:`.
 - **`src/services/supplierService.js`**: This file contains the service functions for the `suppliers` resource. These functions encapsulate the business logic and interact with the Redis database to perform CRUD operations and other data-related tasks. It uses the `redisClient` to store and retrieve supplier data, which is prefixed with `supplier:`. It also includes a function to get all products for a specific supplier.
-- **`src/services/userService.js`**: This file contains the service functions for the `users` resource. These functions encapsulate the business logic and interact with the Redis database to perform CRUD operations. It uses the `redisClient` to store and retrieve user data, which is prefixed with `user:`.
+- **`src/services/userService.js`**: This file contains the service functions for the `users` resource. These functions encapsulate the business logic and interact with the Redis database. **It now auto-generates user IDs and maintains an index for user emails.**
 
 ### `test` Directory
 
