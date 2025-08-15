@@ -1,5 +1,30 @@
 import * as userService from '../services/userService.js';
 
+export const getMe = async (req, res) => {
+  try {
+    const user = await userService.getUserById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving user profile', error: error.message });
+  }
+};
+
+export const updateUserProfile = async (req, res) => {
+  try {
+    const { address, phone } = req.body;
+    const updatedUser = await userService.updateUserProfile(req.user.id, { address, phone });
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating user profile', error: error.message });
+  }
+};
+
 export const getAllUsers = async (req, res) => {
   try {
     const users = await userService.getAllUsers();
