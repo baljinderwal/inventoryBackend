@@ -60,6 +60,16 @@ Users can maintain a wishlist of products they are interested in.
 - **Add to Wishlist**: Add a product to the wishlist with `POST /wishlist`.
 - **Remove from Wishlist**: Remove a product with `DELETE /wishlist/{productId}`.
 
+### Customer Management
+The API now includes endpoints for managing customer data.
+- **CRUD Operations**: Full support for creating, reading, updating, and deleting customers.
+- **Secure Access**: All customer-related endpoints are protected and require authentication.
+
+### Sales Order Management
+The API now includes endpoints for managing sales orders.
+- **CRUD Operations**: Full support for creating, reading,updating, and deleting sales orders.
+- **Secure Access**: All sales order endpoints are protected and require authentication.
+
 ## Prerequisites
 
 - Node.js
@@ -171,6 +181,8 @@ You can use the "Authorize" button in the Swagger UI to add your JWT token and t
 #### `src/controllers`
 
 - **`src/controllers/authController.js`**: This file contains the controller functions for user registration and login.
+- **`src/controllers/customerController.js`**: This file contains the controller functions for the `customers` resource. These functions handle the incoming HTTP requests, call the appropriate service functions to interact with the database, and then send the HTTP responses. It includes functions for all the CRUD operations (`getAllCustomers`, `getCustomer`, `createCustomer`, `updateCustomer`, `deleteCustomer`).
+- **`src/controllers/salesOrderController.js`**: This file contains the controller functions for the `salesOrders` resource. These functions handle the incoming HTTP requests, call the appropriate service functions to interact with the database, and then send the HTTP responses. It includes functions for all the CRUD operations (`getAllSalesOrders`, `getSalesOrder`, `createSalesOrder`, `updateSalesOrder`, `deleteSalesOrder`).
 - **`src/controllers/orderController.js`**: This file contains the controller functions for the `orders` resource. These functions handle the incoming HTTP requests, call the appropriate service functions to interact with the database, and then send the HTTP responses. It includes functions for all the CRUD operations (`getAllOrders`, `getOrder`, `createOrder`, `updateOrder`, `deleteOrder`) as well as the enhanced query endpoints (`getOrdersBySupplier`, `getOrdersByStatus`).
 - **`src/controllers/productController.js`**: This file contains the controller functions for the `products` resource. These functions handle the incoming HTTP requests, call the appropriate service functions to interact with the database, and then send the HTTP responses. It includes functions for all the CRUD operations (`getAllProducts`, `getProduct`, `createProduct`, `updateProduct`, `deleteProduct`).
 - **`src/controllers/locationController.js`**: This file contains the controller functions for the `locations` resource. These functions handle the incoming HTTP requests, call the appropriate service functions to interact with the database, and then send the HTTP responses. It includes functions for all the CRUD operations (`getAllLocations`, `getLocation`, `createLocation`, `updateLocation`, `deleteLocation`).
@@ -188,6 +200,8 @@ You can use the "Authorize" button in the Swagger UI to add your JWT token and t
 #### `src/routes`
 
 - **`src/routes/authRoutes.js`**: This file defines the API routes for authentication (`/register`, `/login`).
+- **`src/routes/customerRoutes.js`**: This file defines the API routes for the `customers` resource. It uses an Express Router to create the routes and associates them with the corresponding controller functions from `customerController.js`. This file also contains the Swagger JSDoc annotations that define the `Customer` schema and the API endpoints for the Swagger documentation.
+- **`src/routes/salesOrderRoutes.js`**: This file defines the API routes for the `salesOrders` resource. It uses an Express Router to create the routes and associates them with the corresponding controller functions from `salesOrderController.js`. This file also contains the Swagger JSDoc annotations that define the `SalesOrder` schema and the API endpoints for the Swagger documentation.
 - **`src/routes/orderRoutes.js`**: This file defines the API routes for the `orders` resource. It uses an Express Router to create the routes and associates them with the corresponding controller functions from `orderController.js`. This file also contains the Swagger JSDoc annotations that define the `Order` schema and the API endpoints for the Swagger documentation.
 - **`src/routes/productRoutes.js`**: This file defines the API routes for the `products` resource. It uses an Express Router to create the routes and associates them with the corresponding controller functions from `productController.js`. This file also contains the Swagger JSDoc annotations that define the `Product` schema and the API endpoints for the Swagger documentation.
 - **`src/routes/locationRoutes.js`**: This file defines the API routes for the `locations` resource. It uses an Express Router to create the routes and associates them with the corresponding controller functions from `locationController.js`. This file also contains the Swagger JSDoc annotations that define the `Location` schema and the API endpoints for the Swagger documentation.
@@ -201,6 +215,8 @@ You can use the "Authorize" button in the Swagger UI to add your JWT token and t
 #### `src/services`
 
 - **`src/services/authService.js`**: This service handles the logic for user registration (password hashing) and login (password verification and JWT creation).
+- **`src/services/customerService.js`**: This file contains the service functions for the `customers` resource. These functions encapsulate the business logic and interact with the in-memory data store to perform CRUD operations.
+- **`src/services/salesOrderService.js`**: This file contains the service functions for the `salesOrders` resource. These functions encapsulate the business logic and interact with the in-memory data store to perform CRUD operations.
 - **`src/services/orderService.js`**: This file contains the service functions for the `orders` resource. These functions encapsulate the business logic and interact with the Redis database. **It now includes stock validation before creating an order.** It also uses efficient Redis sets for indexing orders by status and supplier.
 - **`src/services/productService.js`**: This file contains the service functions for the `products` resource. These functions encapsulate the business logic and interact with the Redis database. **It now auto-generates numeric IDs and maintains an index for them.**
 - **`src/services/locationService.js`**: This file contains the service functions for the `locations` resource. These functions encapsulate the business logic and interact with the Redis database to perform CRUD operations. It uses the `redisClient` to store and retrieve location data, which is prefixed with `location:`. It uses a Redis counter to generate auto-incrementing integer IDs for new locations.

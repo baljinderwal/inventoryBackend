@@ -12,6 +12,8 @@ import authRoutes from './routes/authRoutes.js';
 import promotionRoutes from './routes/promotionRoutes.js';
 import auditRoutes from './routes/auditRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
+import customerRoutes from './routes/customerRoutes.js';
+import salesOrderRoutes from './routes/salesOrderRoutes.js';
 
 const app = express();
 
@@ -31,5 +33,7 @@ app.use('/auth', authRoutes);
 app.use('/promotions', promotionRoutes);
 app.use('/audit', auditRoutes);
 app.use('/wishlist', wishlistRoutes);
+app.use('/customers', customerRoutes);
+app.use('/sales-orders', salesOrderRoutes);
 
 export default app;
