@@ -2,6 +2,7 @@ import 'dotenv/config';
 import app from './app.js';
 import './config/redisClient.js';
 import * as userService from './services/userService.js';
+import { initWebSocketServer } from './services/notificationService.js';
 
 const users = [
   { id: 1, name: 'Admin User', email: 'admin@example.com', password: 'password', role: 'Admin' },
@@ -28,5 +29,7 @@ const server = app.listen(PORT, () => {
     seedUsers();
   }
 });
+
+initWebSocketServer(server);
 
 export default server;

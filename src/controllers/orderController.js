@@ -28,7 +28,8 @@ export const getOrder = async (req, res) => {
 
 export const createOrder = async (req, res) => {
   try {
-    const newOrder = await orderService.createOrder(req.body);
+    const orderData = { ...req.body, userId: req.user.id };
+    const newOrder = await orderService.createOrder(orderData);
     await logAction(req.user.id, 'CREATE_ORDER', { orderId: newOrder.id, details: newOrder });
     res.status(201).json(newOrder);
   } catch (error) {

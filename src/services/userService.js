@@ -43,6 +43,22 @@ export const updateUser = async (id, updates) => {
   return updatedUser;
 };
 
+export const updateUserProfile = async (id, profileData) => {
+  const key = `${USER_KEY_PREFIX}${id}`;
+  const existingUser = await redisClient.get(key);
+
+  if (!existingUser) {
+    return null;
+  }
+
+  const user = JSON.parse(existingUser);
+  const { address, phone } = profileData;
+  const updatedUser = { ...user, address, phone };
+
+  await redisClient.set(key, JSON.stringify(updatedUser));
+  return updatedUser;
+};
+
 export const deleteUser = async (id) => {
   const user = await getUserById(id);
   if (!user) {

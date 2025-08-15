@@ -11,6 +11,7 @@ import locationRoutes from './routes/locationRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import promotionRoutes from './routes/promotionRoutes.js';
 import auditRoutes from './routes/auditRoutes.js';
+import wishlistRoutes from './routes/wishlistRoutes.js';
 
 const app = express();
 
@@ -29,5 +30,6 @@ app.use('/locations', locationRoutes);
 app.use('/auth', authRoutes);
 app.use('/promotions', promotionRoutes);
 app.use('/audit', auditRoutes);
+app.use('/wishlist', wishlistRoutes);
 
 export default app;

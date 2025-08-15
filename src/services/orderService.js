@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getProductByNumericId } from './productService.js';
 import { getStockByProductId } from './stockService.js';
 import * as promotionService from './promotionService.js';
+import { sendNotificationToUser } from './notificationService.js';
 
 const ORDER_KEY_PREFIX = 'order:';
 const STOCK_KEY_PREFIX = 'stock:'; // Assuming stock service uses this, good to have it here
@@ -72,7 +73,7 @@ export const createOrder = async (orderData) => {
     // All checks passed, prepare the transaction
     const orderId = uuidv4();
     const status = order.status || 'pending';
-    const newOrder = { ...order, id: orderId, status, createdAt: new Date().toISOString(), originalTotal };
+    const newOrder = { ...order, id: orderId, status, createdAt: new Date().toISOString(), originalTotal, userId: orderData.userId };
 
     const multi = transactionClient.multi();
 
@@ -131,6 +132,14 @@ export const updateOrder = async (id, updates) => {
   if (updates.status && updates.status !== existingOrder.status) {
     pipeline.srem(`orders:status:${existingOrder.status}`, id);
     pipeline.sadd(`orders:status:${updates.status}`, id);
+    if (updatedOrder.userId) {
+      sendNotificationToUser(updatedOrder.userId, {
+        type: 'ORDER_STATUS_UPDATE',
+        orderId: id,
+        status: updates.status,
+        message: `Your order ${id} has been updated to ${updates.status}.`
+      });
+    }
   }
 
   // Handle supplier update

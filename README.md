@@ -44,6 +44,22 @@ The API now logs critical actions performed by users, providing a clear record o
 - **Logged Actions**: The system logs actions such as creating an order, updating stock, and deleting a product.
 - **Admin Access**: Users with the `admin` role can retrieve the audit logs.
 
+### User Profile Management
+Users can manage their profile information, including their address and phone number.
+- **View Profile**: Authenticated users can view their own profile using the `GET /users/me` endpoint.
+- **Update Profile**: Users can update their address and phone number using the `PUT /users/me` endpoint.
+
+### Real-time Notifications
+The API uses WebSockets to provide real-time notifications to users about their orders.
+- **How it works**: When an order's status is updated, a notification is sent to the user who placed the order.
+- **Connecting**: Clients can connect to the WebSocket server using their JWT token. `ws://localhost:4000?token=<your_jwt_token>`
+
+### Wishlist Functionality
+Users can maintain a wishlist of products they are interested in.
+- **View Wishlist**: Get the list of product IDs in the wishlist with `GET /wishlist`.
+- **Add to Wishlist**: Add a product to the wishlist with `POST /wishlist`.
+- **Remove from Wishlist**: Remove a product with `DELETE /wishlist/{productId}`.
+
 ## Prerequisites
 
 - Node.js
