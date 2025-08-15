@@ -89,16 +89,23 @@ The API now includes endpoints for managing sales orders.
     npm install
     ```
 
-3.  **Set up environment variables:**
-    Create a `.env` file in the root of the project and add your Redis connection details and a JWT secret.
-    ```
-    REDIS_HOST=localhost
-    REDIS_PORT=6379
-    REDIS_PASSWORD=
-    JWT_SECRET=your_super_secret_key
-    ```
+### Environment Variables
 
-4.  **Start Redis using Docker:**
+Before starting the server, you need to create a `.env` file in the root of the project to store your environment variables.
+
+Create a file named `.env` and add the following content:
+
+```
+JWT_SECRET=mysecret
+REDIS_HOST=localhost
+REDIS_PORT=6379
+```
+
+- `JWT_SECRET`: A secret key used for signing JSON Web Tokens. For production, this should be a long, complex, and randomly generated string.
+- `REDIS_HOST`: The hostname of your Redis server.
+- `REDIS_PORT`: The port your Redis server is running on.
+
+3.  **Start Redis using Docker:**
     ```bash
     docker run -d -p 6379:6379 --name my-redis redis
     ```
@@ -150,6 +157,17 @@ To access a protected route, include the token in the `Authorization` header of 
 
 ```
 Authorization: Bearer <your_jwt_token>
+```
+
+### 4. Update User Profile
+
+Authenticated users can update their email and password by sending a `PUT` request to `/users/me`.
+
+```json
+{
+  "email": "new.email@example.com",
+  "password": "new_strong_password"
+}
 ```
 
 ## API Documentation
