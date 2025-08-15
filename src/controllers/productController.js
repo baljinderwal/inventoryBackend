@@ -2,7 +2,15 @@ import * as productService from '../services/productService.js';
 
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await productService.getAllProducts();
+    const { category, sortBy, sortOrder, page, limit } = req.query;
+    const options = {
+        category,
+        sortBy,
+        sortOrder,
+        page: page ? parseInt(page, 10) : 1,
+        limit: limit ? parseInt(limit, 10) : 10,
+    };
+    const products = await productService.getAllProducts(options);
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving products', error: error.message });

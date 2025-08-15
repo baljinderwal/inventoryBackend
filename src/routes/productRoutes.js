@@ -7,6 +7,7 @@ import {
   deleteProduct,
 } from '../controllers/productController.js';
 import { protect } from '../middleware/authMiddleware.js';
+import authorize from '../middleware/authorize.js';
 
 const router = Router();
 
@@ -184,6 +185,6 @@ router.put('/:id', protect, updateProduct);
  *       404:
  *         description: The product was not found
  */
-router.delete('/:id', protect, deleteProduct);
+router.delete('/:id', protect, authorize('admin'), deleteProduct);
 
 export default router;
