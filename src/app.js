@@ -9,6 +9,8 @@ import userRoutes from './routes/userRoutes.js';
 import stockRoutes from './routes/stockRoutes.js';
 import locationRoutes from './routes/locationRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import promotionRoutes from './routes/promotionRoutes.js';
+import auditRoutes from './routes/auditRoutes.js';
 
 const app = express();
 
@@ -25,5 +27,7 @@ app.use('/users', userRoutes);
 app.use('/stock', stockRoutes);
 app.use('/locations', locationRoutes);
 app.use('/auth', authRoutes);
+app.use('/promotions', promotionRoutes);
+app.use('/audit', auditRoutes);
 
 export default app;

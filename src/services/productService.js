@@ -64,6 +64,14 @@ export const updateProduct = async (sku, updates) => {
   return updatedProduct;
 };
 
+export const updateProductById = async (id, updates) => {
+    const sku = await redisClient.get(`product:id:${id}`);
+    if (!sku) {
+        return null;
+    }
+    return await updateProduct(sku, updates);
+};
+
 export const deleteProduct = async (sku) => {
   const key = `${PRODUCT_KEY_PREFIX}${sku}`;
   const productJSON = await redisClient.get(key);

@@ -1,4 +1,5 @@
 import * as productService from '../services/productService.js';
+import { logAction } from '../services/auditService.js';
 
 export const getAllProducts = async (req, res) => {
   try {
@@ -38,6 +39,7 @@ export const createProduct = async (req, res) => {
       return res.status(400).json({ message: 'Product SKU is required' });
     }
     const newProduct = await productService.createProduct(req.body);
+    await logAction(req.user.id, 'CREATE_PRODUCT', { productId: newProduct.id, details: newProduct });
     res.status(201).json(newProduct);
   } catch (error) {
     res.status(500).json({ message: 'Error creating product', error: error.message });
@@ -55,6 +57,7 @@ export const updateProduct = async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
+    await logAction(req.user.id, 'UPDATE_PRODUCT', { sku, changes: updates });
     res.status(200).json({ message: 'Product updated successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error updating product', error: error.message });
@@ -70,6 +73,7 @@ export const deleteProduct = async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
+    await logAction(req.user.id, 'DELETE_PRODUCT', { sku });
     res.status(200).json({ message: 'Product deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting product', error: error.message });
