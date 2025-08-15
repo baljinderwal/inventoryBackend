@@ -1,7 +1,7 @@
 import express from 'express';
 import * as promotionController from '../controllers/promotionController.js';
 import { protect } from '../middleware/authMiddleware.js';
-import { authorize } from '../middleware/authorize.js';
+import authorize from '../middleware/authorize.js';
 
 const router = express.Router();
 
