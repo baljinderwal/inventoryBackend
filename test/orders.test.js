@@ -5,17 +5,26 @@ import * as orderService from '../src/services/orderService.js';
 import * as supplierService from '../src/services/supplierService.js';
 import * as productService from '../src/services/productService.js';
 import * as stockService from '../src/services/stockService.js';
+import * as userService from '../src/services/userService.js';
+import redisClient from '../src/config/redisClient.js';
 
 describe('Order APIs Enhancements', () => {
     let token;
     let supplierId = 1;
     let productId;
     let orderId;
+    let emailCounter = 0;
+    let email;
+    let password = 'password123';
 
+    let userId;
     beforeEach(async () => {
+        email = `order${emailCounter}@example.com`;
+        emailCounter++;
         // Auth
-        await authService.register({ name: 'Test User', email: 'test@example.com', password: 'password123' });
-        token = await authService.login('test@example.com', 'password123');
+        const user = await authService.register({ name: 'Test User', email, password });
+        userId = user.id;
+        token = await authService.login(email, password);
 
         // Create a product
         const product = await productService.createProduct({ sku: 'ORDER-TEST-001', name: 'Order Test Product' });
@@ -37,10 +46,7 @@ describe('Order APIs Enhancements', () => {
     });
 
     afterEach(async () => {
-        await orderService.deleteOrder(orderId);
-        await supplierService.deleteSupplier(supplierId);
-        await productService.deleteProduct(productId);
-        await stockService.deleteStock(productId);
+        await redisClient.flushall();
     });
 
     it('should create a new order', async () => {
@@ -93,11 +99,18 @@ describe('Order APIs Enhancements', () => {
 describe('Order Stock Validation', () => {
     let token;
     let productId;
+    let emailCounter = 0;
+    let email;
+    let password = 'password123';
 
+    let userId;
     beforeEach(async () => {
+        email = `orderstock${emailCounter}@example.com`;
+        emailCounter++;
         // Auth
-        await authService.register({ name: 'Test User 2', email: 'test2@example.com', password: 'password123' });
-        token = await authService.login('test2@example.com', 'password123');
+        const user = await authService.register({ name: 'Test User 2', email, password });
+        userId = user.id;
+        token = await authService.login(email, password);
 
         // Create a product
         const product = await productService.createProduct({ sku: 'STOCK-TEST-001', name: 'Stock Test Product' });
@@ -108,8 +121,7 @@ describe('Order Stock Validation', () => {
     });
 
     afterEach(async () => {
-        await productService.deleteProduct(productId);
-        await stockService.deleteStock(productId);
+        await redisClient.flushall();
     });
 
     it('should create an order successfully when stock is sufficient', async () => {

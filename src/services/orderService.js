@@ -44,73 +44,54 @@ export const createOrder = async (orderData) => {
   const stockKeys = orderData.items.map(item => `${STOCK_KEY_PREFIX}${item.productId}`);
 
   // Use a dedicated client for transactions to avoid issues with shared state
-  const transactionClient = redisClient.duplicate();
+  const stockLevels = await Promise.all(
+      orderData.items.map(item => getStockByProductId(item.productId))
+  );
 
-  try {
-    await transactionClient.watch(stockKeys);
+  // Validate stock and product existence
+  for (let i = 0; i < orderData.items.length; i++) {
+      const item = orderData.items[i];
+      const stock = stockLevels[i];
+      const product = await getProductByNumericId(item.productId); // Assuming this is fast
 
-    const stockLevels = await Promise.all(
-        orderData.items.map(item => getStockByProductId(item.productId))
-    );
-
-    // Validate stock and product existence
-    for (let i = 0; i < orderData.items.length; i++) {
-        const item = orderData.items[i];
-        const stock = stockLevels[i];
-        const product = await getProductByNumericId(item.productId); // Assuming this is fast
-
-        if (!product) {
-            throw new Error(`Product with ID ${item.productId} not found.`);
-        }
-        if (!stock || stock.quantity < item.quantity) {
-            throw new Error(`Insufficient stock for product ${product.name}. Available: ${stock ? stock.quantity : 0}, Required: ${item.quantity}`);
-        }
-    }
-
-    // Apply promotions
-    const { order, originalTotal } = await applyPromotions(orderData);
-
-    // All checks passed, prepare the transaction
-    const orderId = uuidv4();
-    const status = order.status || 'pending';
-    const newOrder = { ...order, id: orderId, status, createdAt: new Date().toISOString(), originalTotal, userId: orderData.userId };
-
-    const multi = transactionClient.multi();
-
-    // 1. Create the order
-    multi.set(`${ORDER_KEY_PREFIX}${orderId}`, JSON.stringify(newOrder));
-    multi.sadd(`orders:status:${status}`, orderId);
-    if (newOrder.supplier && newOrder.supplier.id) {
-        multi.sadd(`orders:supplier:${newOrder.supplier.id}`, orderId);
-    }
-
-    // 2. Decrement stock for each item
-    for (let i = 0; i < orderData.items.length; i++) {
-        const item = orderData.items[i];
-        const stock = stockLevels[i];
-        const newQuantity = stock.quantity - item.quantity;
-        const updatedStock = { ...stock, quantity: newQuantity };
-        multi.set(`${STOCK_KEY_PREFIX}${item.productId}`, JSON.stringify(updatedStock));
-    }
-
-    // Execute the transaction
-    const results = await multi.exec();
-
-    // Check if the transaction was successful
-    if (results === null) {
-        // The transaction failed because a watched key was modified.
-        throw new Error('Order creation failed due to a stock conflict. Please try again.');
-    }
-
-    return newOrder;
-  } catch (error) {
-    // Rethrow the error to be caught by the controller
-    throw error;
-  } finally {
-    // Always unwatch and quit the dedicated client
-    await transactionClient.unwatch();
-    transactionClient.quit();
+      if (!product) {
+          throw new Error(`Product with ID ${item.productId} not found.`);
+      }
+      if (!stock || stock.quantity < item.quantity) {
+          throw new Error(`Insufficient stock for product ${product.name}. Available: ${stock ? stock.quantity : 0}, Required: ${item.quantity}`);
+      }
   }
+
+  // Apply promotions
+  const { order, originalTotal } = await applyPromotions(orderData);
+
+  // All checks passed, prepare the transaction
+  const orderId = uuidv4();
+  const status = order.status || 'pending';
+  const newOrder = { ...order, id: orderId, status, createdAt: new Date().toISOString(), originalTotal, userId: orderData.userId };
+
+  const multi = redisClient.multi();
+
+  // 1. Create the order
+  multi.set(`${ORDER_KEY_PREFIX}${orderId}`, JSON.stringify(newOrder));
+  multi.sadd(`orders:status:${status}`, orderId);
+  if (newOrder.supplier && newOrder.supplier.id) {
+      multi.sadd(`orders:supplier:${newOrder.supplier.id}`, orderId);
+  }
+
+  // 2. Decrement stock for each item
+  for (let i = 0; i < orderData.items.length; i++) {
+      const item = orderData.items[i];
+      const stock = stockLevels[i];
+      const newQuantity = stock.quantity - item.quantity;
+      const updatedStock = { ...stock, quantity: newQuantity };
+      multi.set(`${STOCK_KEY_PREFIX}${item.productId}`, JSON.stringify(updatedStock));
+  }
+
+  // Execute the transaction
+  await multi.exec();
+
+  return newOrder;
 };
 
 
