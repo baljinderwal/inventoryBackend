@@ -8,6 +8,7 @@ import {
 } from '../controllers/productController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import authorize from '../middleware/authorize.js';
+import reviewRoutes from './reviewRoutes.js';
 
 const router = Router();
 
@@ -186,5 +187,7 @@ router.put('/:id', protect, updateProduct);
  *         description: The product was not found
  */
 router.delete('/:id', protect, authorize('admin'), deleteProduct);
+
+router.use('/:productId/reviews', reviewRoutes);
 
 export default router;

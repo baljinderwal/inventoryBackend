@@ -1,4 +1,5 @@
 import * as stockService from '../services/stockService.js';
+import { logAction } from '../services/auditService.js';
 
 export const getAllStock = async (req, res) => {
   try {
@@ -34,6 +35,7 @@ export const createStock = async (req, res) => {
 
     const newStock = { productId, quantity, warehouse, batches };
     await stockService.createStock(newStock);
+    await logAction(req.user.id, 'CREATE_STOCK', { productId, details: newStock });
     res.status(201).json({ message: 'Stock created successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error creating stock', error: error.message });
@@ -51,6 +53,7 @@ export const updateStock = async (req, res) => {
       return res.status(404).json({ message: 'Stock not found for this product' });
     }
 
+    await logAction(req.user.id, 'UPDATE_STOCK', { productId, changes: updates });
     res.status(200).json({ message: 'Stock updated successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error updating stock', error: error.message });
@@ -66,6 +69,7 @@ export const deleteStock = async (req, res) => {
       return res.status(404).json({ message: 'Stock not found for this product' });
     }
 
+    await logAction(req.user.id, 'DELETE_STOCK', { productId });
     res.status(200).json({ message: 'Stock deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting stock', error: error.message });

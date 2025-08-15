@@ -1,4 +1,5 @@
 import * as orderService from '../services/orderService.js';
+import { logAction } from '../services/auditService.js';
 
 export const getAllOrders = async (req, res) => {
   try {
@@ -28,6 +29,7 @@ export const getOrder = async (req, res) => {
 export const createOrder = async (req, res) => {
   try {
     const newOrder = await orderService.createOrder(req.body);
+    await logAction(req.user.id, 'CREATE_ORDER', { orderId: newOrder.id, details: newOrder });
     res.status(201).json(newOrder);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -45,6 +47,7 @@ export const updateOrder = async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
+    await logAction(req.user.id, 'UPDATE_ORDER', { orderId: id, changes: updates });
     res.status(200).json(updatedOrder);
   } catch (error) {
     res.status(500).json({ message: 'Error updating order', error: error.message });
@@ -60,6 +63,7 @@ export const deleteOrder = async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
+    await logAction(req.user.id, 'DELETE_ORDER', { orderId: id });
     res.status(200).json({ message: 'Order deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting order', error: error.message });

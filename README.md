@@ -29,6 +29,21 @@ The order creation process is now fully transactional, guaranteeing data integri
 - **Atomic Operations**: When an order is created, the system checks for product availability and decrements stock in a single, atomic transaction using Redis's `WATCH`/`MULTI`/`EXEC` commands.
 - **Conflict Resolution**: If stock levels change while an order is being placed (e.g., due to a concurrent purchase), the transaction will safely fail, and the API will return an error message prompting the user to try again. This prevents overselling and ensures the database remains in a consistent state.
 
+### Promotions and Discounts
+The API now supports creating and managing promotions that can be applied to orders.
+- **Admin-Managed**: Users with the `admin` role can create and delete promotions.
+- **Automatic Application**: Promotions are automatically applied to orders at checkout. For example, a percentage discount can be applied to all products in a specific category.
+
+### Product Reviews and Ratings
+Authenticated users can now submit reviews and ratings for products.
+- **User Reviews**: Any authenticated user can add a review to a product.
+- **Average Rating**: The system automatically calculates and updates the average rating for each product based on the submitted reviews.
+
+### Audit Trail
+The API now logs critical actions performed by users, providing a clear record of important events.
+- **Logged Actions**: The system logs actions such as creating an order, updating stock, and deleting a product.
+- **Admin Access**: Users with the `admin` role can retrieve the audit logs.
+
 ## Prerequisites
 
 - Node.js
@@ -146,6 +161,9 @@ You can use the "Authorize" button in the Swagger UI to add your JWT token and t
 - **`src/controllers/stockController.js`**: This file contains the controller functions for the `stock` resource. These functions handle the incoming HTTP requests, call the appropriate service functions to interact with the database, and then send the HTTP responses. It includes functions for all the CRUD operations (`getAllStock`, `getStock`, `createStock`, `updateStock`, `deleteStock`).
 - **`src/controllers/supplierController.js`**: This file contains the controller functions for the `suppliers` resource. These functions handle the incoming HTTP requests, call the appropriate service functions to interact with the database, and then send the HTTP responses. It includes functions for all the CRUD operations (`getAllSuppliers`, `getSupplier`, `createSupplier`, `updateSupplier`, `deleteSupplier`) as well as the enhanced query endpoint (`getProductsBySupplier`).
 - **`src/controllers/userController.js`**: This file contains the controller functions for the `users` resource. These functions handle the incoming HTTP requests, call the appropriate service functions to interact with the database, and then send the HTTP responses. It includes functions for all the CRUD operations (`getAllUsers`, `getUser`, `createUser`, `updateUser`, `deleteUser`).
+- **`src/controllers/promotionController.js`**: This file contains the controller functions for the `promotions` resource.
+- **`src/controllers/reviewController.js`**: This file contains the controller functions for product reviews.
+- **`src/controllers/auditController.js`**: This file contains the controller functions for retrieving audit logs.
 
 #### `src/middleware`
 
@@ -160,6 +178,9 @@ You can use the "Authorize" button in the Swagger UI to add your JWT token and t
 - **`src/routes/stockRoutes.js`**: This file defines the API routes for the `stock` resource. It uses an Express Router to create the routes and associates them with the corresponding controller functions from `stockController.js`. This file also contains the Swagger JSDoc annotations that define the `Stock` and `Batch` schemas and the API endpoints for the Swagger documentation.
 - **`src/routes/supplierRoutes.js`**: This file defines the API routes for the `suppliers` resource. It uses an Express Router to create the routes and associates them with the corresponding controller functions from `supplierController.js`. This file also contains the Swagger JSDoc annotations that define the `Supplier` schema and the API endpoints for the Swagger documentation.
 - **`src/routes/userRoutes.js`**: This file defines the API routes for the `users` resource. It uses an Express Router to create the routes and associates them with the corresponding controller functions from `userController.js`. This file also contains the Swagger JSDoc annotations that define the `User` schema and the API endpoints for the Swagger documentation.
+- **`src/routes/promotionRoutes.js`**: This file defines the API routes for the `promotions` resource.
+- **`src/routes/reviewRoutes.js`**: This file defines the API routes for product reviews.
+- **`src/routes/auditRoutes.js`**: This file defines the API routes for retrieving audit logs.
 
 #### `src/services`
 
@@ -170,6 +191,9 @@ You can use the "Authorize" button in the Swagger UI to add your JWT token and t
 - **`src/services/stockService.js`**: This file contains the service functions for the `stock` resource. These functions encapsulate the business logic and interact with the Redis database to perform CRUD operations and other data-related tasks. It uses the `redisClient` to store and retrieve stock data, which is prefixed with `stock:`.
 - **`src/services/supplierService.js`**: This file contains the service functions for the `suppliers` resource. These functions encapsulate the business logic and interact with the Redis database to perform CRUD operations and other data-related tasks. It uses the `redisClient` to store and retrieve supplier data, which is prefixed with `supplier:`. It also includes a function to get all products for a specific supplier.
 - **`src/services/userService.js`**: This file contains the service functions for the `users` resource. These functions encapsulate the business logic and interact with the Redis database. **It now auto-generates user IDs and maintains an index for user emails.**
+- **`src/services/promotionService.js`**: This file contains the service functions for the `promotions` resource.
+- **`src/services/reviewService.js`**: This file contains the service functions for product reviews.
+- **`src/services/auditService.js`**: This file contains the service functions for logging critical actions.
 
 ### `test` Directory
 
