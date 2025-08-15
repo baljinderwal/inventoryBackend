@@ -6,7 +6,7 @@ import {
   updateUser,
   deleteUser,
   getMe,
-  updateUserProfile,
+  updateMe,
 } from '../controllers/userController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -30,7 +30,7 @@ const router = Router();
  *       404:
  *         description: User not found
  */
-router.get('/me', getMe);
+router.get('/me', protect, getMe);
 
 /**
  * @swagger
@@ -61,7 +61,7 @@ router.get('/me', getMe);
  *       404:
  *         description: User not found
  */
-router.put('/me', updateUserProfile);
+router.put('/me', protect, updateMe);
 
 /**
  * @swagger
@@ -124,7 +124,7 @@ router.put('/me', updateUserProfile);
  *               items:
  *                 $ref: '#/components/schemas/User'
  */
-router.get('/', getAllUsers);
+router.get('/', protect, getAllUsers);
 
 /**
  * @swagger
@@ -151,7 +151,7 @@ router.get('/', getAllUsers);
  *       404:
  *         description: The user was not found
  */
-router.get('/:id', getUser);
+router.get('/:id', protect, getUser);
 
 /**
  * @swagger
@@ -173,7 +173,7 @@ router.get('/:id', getUser);
  *       500:
  *         description: Some server error
  */
-router.post('/', createUser);
+router.post('/', protect, createUser);
 
 /**
  * @swagger
@@ -204,7 +204,7 @@ router.post('/', createUser);
  *       500:
  *         description: Some server error
  */
-router.put('/:id', updateUser);
+router.put('/:id', protect, updateUser);
 
 /**
  * @swagger
@@ -227,6 +227,6 @@ router.put('/:id', updateUser);
  *       404:
  *         description: The user was not found
  */
-router.delete('/:id', deleteUser);
+router.delete('/:id', protect, deleteUser);
 
 export default router;

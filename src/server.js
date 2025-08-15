@@ -23,14 +23,13 @@ const seedUsers = async () => {
 
 const PORT = process.env.PORT || 4000;
 
-let server;
-
-if (process.env.NODE_ENV !== 'test') {
-  server = app.listen(PORT, () => {
-    console.log(`🚀 Server is running on port ${PORT}`);
+const server = app.listen(PORT, () => {
+  console.log(`🚀 Server is running on port ${PORT}`);
+  if (process.env.NODE_ENV !== 'test') {
     seedUsers();
-  });
-  initWebSocketServer(server);
-}
+  }
+});
+
+initWebSocketServer(server);
 
 export default server;

@@ -1,37 +1,30 @@
-import 'dotenv/config';
 import request from 'supertest';
 import app from '../src/app.js';
-import redisClient from '../src/config/redisClient.js';
-import server from '../src/server.js';
+import * as userService from '../src/services/userService.js';
+import * as authService from '../src/services/authService.js';
 
 describe('User APIs', () => {
     let token;
     let userId;
+    let emailCounter = 0;
+    let email;
+    let password = 'password123';
 
-    beforeAll(async () => {
-        await redisClient.flushall();
+    beforeEach(async () => {
+        email = `user${emailCounter}@example.com`;
+        emailCounter++;
         // Register and login a user to get a token
-        const registerRes = await request(app)
-            .post('/auth/register')
-            .send({
-                name: 'Test User',
-                email: 'test@example.com',
-                password: 'password123',
-            });
-        userId = registerRes.body.userId;
-
-        const loginRes = await request(app)
-            .post('/auth/login')
-            .send({
-                email: 'test@example.com',
-                password: 'password123',
-            });
-        token = loginRes.body.token;
+        const user = await authService.register({
+            name: 'Test User',
+            email,
+            password,
+        });
+        userId = user.id;
+        token = await authService.login(email, password);
     });
 
-    afterAll(async () => {
-        await redisClient.quit();
-        server.close();
+    afterEach(async () => {
+        await userService.deleteUser(userId);
     });
 
     it('should get all users', async () => {
@@ -62,6 +55,12 @@ describe('User APIs', () => {
     });
 
     it('should get the updated user', async () => {
+        await request(app)
+            .put(`/users/${userId}`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                name: 'Updated Test User',
+            });
         const res = await request(app)
             .get(`/users/${userId}`)
             .set('Authorization', `Bearer ${token}`);
@@ -77,6 +76,9 @@ describe('User APIs', () => {
     });
 
     it('should not find the deleted user', async () => {
+        await request(app)
+            .delete(`/users/${userId}`)
+            .set('Authorization', `Bearer ${token}`);
         const res = await request(app)
             .get(`/users/${userId}`)
             .set('Authorization', `Bearer ${token}`);

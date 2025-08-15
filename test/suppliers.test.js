@@ -1,45 +1,42 @@
-import 'dotenv/config';
 import request from 'supertest';
 import app from '../src/app.js';
-import redisClient from '../src/config/redisClient.js';
-import server from '../src/server.js';
+import * as authService from '../src/services/authService.js';
+import * as supplierService from '../src/services/supplierService.js';
+import * as productService from '../src/services/productService.js';
 
 describe('Supplier APIs Enhancements', () => {
     let token;
     let productId;
     const supplierId = 1;
+    let emailCounter = 0;
+    let email;
+    let password = 'password123';
 
-    beforeAll(async () => {
-        await redisClient.flushall();
+    beforeEach(async () => {
+        email = `supplier${emailCounter}@example.com`;
+        emailCounter++;
         // Auth
-        await request(app).post('/auth/register').send({ name: 'Test User', email: 'test@example.com', password: 'password123' });
-        const loginRes = await request(app).post('/auth/login').send({ email: 'test@example.com', password: 'password123' });
-        token = loginRes.body.token;
+        await authService.register({ name: 'Test User', email, password });
+        token = await authService.login(email, password);
 
         // Create a product
-        const productRes = await request(app)
-            .post('/products')
-            .set('Authorization', `Bearer ${token}`)
-            .send({
-                sku: 'TEST-001',
-                name: 'Test Product',
-            });
-        productId = productRes.body.id;
+        const product = await productService.createProduct({
+            sku: 'TEST-001',
+            name: 'Test Product',
+        });
+        productId = product.id;
 
         // Create a supplier and associate the product
-        await request(app)
-            .post('/suppliers')
-            .set('Authorization', `Bearer ${token}`)
-            .send({
-                id: supplierId,
-                name: 'Test Supplier',
-                products: [productId], // product id
-            });
+        await supplierService.createSupplier({
+            id: supplierId,
+            name: 'Test Supplier',
+            products: [productId], // product id
+        });
     });
 
-    afterAll(async () => {
-        await redisClient.quit();
-        server.close();
+    afterEach(async () => {
+        await supplierService.deleteSupplier(supplierId);
+        await productService.deleteProduct(productId);
     });
 
     it('should get all products for a specific supplier', async () => {
@@ -55,20 +52,19 @@ describe('Supplier APIs Enhancements', () => {
     it('should return an empty array for a supplier with no products', async () => {
         // Create a supplier with no products
         const newSupplierId = 2;
-        await request(app)
-            .post('/suppliers')
-            .set('Authorization', `Bearer ${token}`)
-            .send({
-                id: newSupplierId,
-                name: 'Another Supplier',
-                products: [],
-            });
+        await supplierService.createSupplier({
+            id: newSupplierId,
+            name: 'Another Supplier',
+            products: [],
+        });
 
         const res = await request(app)
             .get(`/suppliers/${newSupplierId}/products`)
             .set('Authorization', `Bearer ${token}`);
         expect(res.statusCode).toEqual(200);
         expect(res.body.length).toBe(0);
+
+        await supplierService.deleteSupplier(newSupplierId);
     });
 
     it('should return an empty array for a non-existent supplier', async () => {

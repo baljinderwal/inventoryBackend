@@ -1,34 +1,28 @@
-import 'dotenv/config';
 import request from 'supertest';
 import app from '../src/app.js';
-import redisClient from '../src/config/redisClient.js';
-import server from '../src/server.js';
+import * as authService from '../src/services/authService.js';
+import * as stockService from '../src/services/stockService.js';
 
 describe('Stock APIs', () => {
     let token;
+    let emailCounter = 0;
+    let email;
+    let password = 'password123';
 
-    beforeAll(async () => {
-        await redisClient.flushall();
+    beforeEach(async () => {
+        email = `stock${emailCounter}@example.com`;
+        emailCounter++;
         // Register and login a user to get a token
-        await request(app)
-            .post('/auth/register')
-            .send({
-                name: 'Test User',
-                email: 'test@example.com',
-                password: 'password123',
-            });
-        const loginRes = await request(app)
-            .post('/auth/login')
-            .send({
-                email: 'test@example.com',
-                password: 'password123',
-            });
-        token = loginRes.body.token;
+        await authService.register({
+            name: 'Test User',
+            email,
+            password,
+        });
+        token = await authService.login(email, password);
     });
 
-    afterAll(async () => {
-        await redisClient.quit();
-        server.close();
+    afterEach(async () => {
+        await stockService.deleteStock(1);
     });
 
     it('should create a new stock entry', async () => {
@@ -45,6 +39,12 @@ describe('Stock APIs', () => {
     });
 
     it('should get all stock entries', async () => {
+        await stockService.createStock({
+            productId: 1,
+            quantity: 100,
+            warehouse: 'A',
+            batches: [{ batchNumber: 'B001', expiryDate: '2025-12-31T23:59:59Z', quantity: 100 }],
+        });
         const res = await request(app)
             .get('/stock')
             .set('Authorization', `Bearer ${token}`);
@@ -53,6 +53,12 @@ describe('Stock APIs', () => {
     });
 
     it('should get a stock entry by product id', async () => {
+        await stockService.createStock({
+            productId: 1,
+            quantity: 100,
+            warehouse: 'A',
+            batches: [{ batchNumber: 'B001', expiryDate: '2025-12-31T23:59:59Z', quantity: 100 }],
+        });
         const res = await request(app)
             .get('/stock/1')
             .set('Authorization', `Bearer ${token}`);
@@ -62,6 +68,12 @@ describe('Stock APIs', () => {
     });
 
     it('should update a stock entry', async () => {
+        await stockService.createStock({
+            productId: 1,
+            quantity: 100,
+            warehouse: 'A',
+            batches: [{ batchNumber: 'B001', expiryDate: '2025-12-31T23:59:59Z', quantity: 100 }],
+        });
         const res = await request(app)
             .put('/stock/1')
             .set('Authorization', `Bearer ${token}`)
@@ -72,6 +84,13 @@ describe('Stock APIs', () => {
     });
 
     it('should get the updated stock entry', async () => {
+        await stockService.createStock({
+            productId: 1,
+            quantity: 100,
+            warehouse: 'A',
+            batches: [{ batchNumber: 'B001', expiryDate: '2025-12-31T23:59:59Z', quantity: 100 }],
+        });
+        await stockService.updateStock(1, { quantity: 150 });
         const res = await request(app)
             .get('/stock/1')
             .set('Authorization', `Bearer ${token}`);
@@ -80,6 +99,12 @@ describe('Stock APIs', () => {
     });
 
     it('should delete a stock entry', async () => {
+        await stockService.createStock({
+            productId: 1,
+            quantity: 100,
+            warehouse: 'A',
+            batches: [{ batchNumber: 'B001', expiryDate: '2025-12-31T23:59:59Z', quantity: 100 }],
+        });
         const res = await request(app)
             .delete('/stock/1')
             .set('Authorization', `Bearer ${token}`);

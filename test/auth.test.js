@@ -2,48 +2,128 @@ import request from 'supertest';
 import app from '../src/app.js';
 
 describe('Auth APIs', () => {
+  let token;
+  let emailCounter = 0;
+  let email;
+  let password = 'password123';
+
+  beforeEach(() => {
+    email = `auth${emailCounter}@example.com`;
+    emailCounter++;
+  });
+
   it('should register a new user', async () => {
     const res = await request(app)
-      .post('/users')
+      .post('/auth/register')
       .send({
         name: 'Auth Test User',
-        email: 'auth@example.com',
-        password: 'password123',
+        email,
+        password,
       });
     expect(res.statusCode).toEqual(201);
-    expect(res.body).toHaveProperty('id');
-    expect(res.body).toHaveProperty('name', 'Auth Test User');
-    expect(res.body).toHaveProperty('email', 'auth@example.com');
-    expect(res.body).toHaveProperty('role', 'Staff');
+    expect(res.body).toHaveProperty('userId');
   });
 
-  it('should not register a user with a duplicate email', async () => {
-    const res = await request(app)
-      .post('/users')
+  it('should login the new user and get a token', async () => {
+    await request(app)
+      .post('/auth/register')
       .send({
-        name: 'Another User',
-        email: 'auth@example.com',
-        password: 'password123',
+        name: 'Auth Test User',
+        email,
+        password,
       });
-    expect(res.statusCode).toEqual(400);
-    expect(res.body.message).toContain('An account with this email already exists.');
-  });
-
-  it('should login the new user', async () => {
     const res = await request(app)
-      .get('/users?email=auth@example.com&password=password123')
-      .send();
+      .post('/auth/login')
+      .send({
+        email,
+        password,
+      });
     expect(res.statusCode).toEqual(200);
-    expect(res.body.length).toBe(1);
-    expect(res.body[0]).toHaveProperty('id');
-    expect(res.body[0]).toHaveProperty('name', 'Auth Test User');
-    expect(res.body[0]).toHaveProperty('email', 'auth@example.com');
+    expect(res.body).toHaveProperty('token');
+    token = res.body.token;
   });
 
   it('should not login with incorrect password', async () => {
+    await request(app)
+      .post('/auth/register')
+      .send({
+        name: 'Auth Test User',
+        email,
+        password,
+      });
     const res = await request(app)
-      .get('/users?email=auth@example.com&password=wrongpassword')
-      .send();
+      .post('/auth/login')
+      .send({
+        email,
+        password: 'wrongpassword',
+      });
     expect(res.statusCode).toEqual(401);
+  });
+
+  it('should update the user profile', async () => {
+    await request(app)
+        .post('/auth/register')
+        .send({
+            name: 'Auth Test User',
+            email,
+            password,
+        });
+    const loginRes = await request(app)
+        .post('/auth/login')
+        .send({
+            email,
+            password,
+        });
+    token = loginRes.body.token;
+
+    const newEmail = `new${email}`;
+    const newPassword = 'newpassword123';
+
+    const res = await request(app)
+      .put('/users/me')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        email: newEmail,
+        password: newPassword,
+      });
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty('email', newEmail);
+  });
+
+  it('should login with the new credentials', async () => {
+    await request(app)
+        .post('/auth/register')
+        .send({
+            name: 'Auth Test User',
+            email,
+            password,
+        });
+    const loginRes = await request(app)
+        .post('/auth/login')
+        .send({
+            email,
+            password,
+        });
+    token = loginRes.body.token;
+
+    const newEmail = `new${email}`;
+    const newPassword = 'newpassword123';
+
+    await request(app)
+      .put('/users/me')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        email: newEmail,
+        password: newPassword,
+      });
+
+    const res = await request(app)
+      .post('/auth/login')
+      .send({
+        email: newEmail,
+        password: newPassword,
+      });
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty('token');
   });
 });

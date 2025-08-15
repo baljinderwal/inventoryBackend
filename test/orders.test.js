@@ -1,35 +1,46 @@
-import 'dotenv/config';
 import request from 'supertest';
 import app from '../src/app.js';
-import redisClient from '../src/config/redisClient.js';
-import server from '../src/server.js';
+import * as authService from '../src/services/authService.js';
+import * as orderService from '../src/services/orderService.js';
+import * as supplierService from '../src/services/supplierService.js';
+import * as productService from '../src/services/productService.js';
+import * as stockService from '../src/services/stockService.js';
 
 describe('Order APIs Enhancements', () => {
     let token;
     let supplierId = 1;
     let productId;
+    let orderId;
 
-    beforeAll(async () => {
-        await redisClient.flushall();
+    beforeEach(async () => {
         // Auth
-        await request(app).post('/auth/register').send({ name: 'Test User', email: 'test@example.com', password: 'password123' });
-        const loginRes = await request(app).post('/auth/login').send({ email: 'test@example.com', password: 'password123' });
-        token = loginRes.body.token;
+        await authService.register({ name: 'Test User', email: 'test@example.com', password: 'password123' });
+        token = await authService.login('test@example.com', 'password123');
 
         // Create a product
-        const productRes = await request(app).post('/products').set('Authorization', `Bearer ${token}`).send({ sku: 'ORDER-TEST-001', name: 'Order Test Product' });
-        productId = productRes.body.id;
+        const product = await productService.createProduct({ sku: 'ORDER-TEST-001', name: 'Order Test Product' });
+        productId = product.id;
 
         // Create stock for the product
-        await request(app).post('/stock').set('Authorization', `Bearer ${token}`).send({ productId: productId, quantity: 50 });
+        await stockService.createStock({ productId: productId, quantity: 50 });
 
         // Create a supplier
-        await request(app).post('/suppliers').set('Authorization', `Bearer ${token}`).send({ id: supplierId, name: 'Test Supplier', products: [productId] });
+        await supplierService.createSupplier({ id: supplierId, name: 'Test Supplier', products: [productId] });
+
+        // Create an order
+        const order = await orderService.createOrder({
+            supplier: { id: supplierId, name: 'Test Supplier' },
+            status: 'Pending',
+            items: [{ productId: productId, quantity: 10 }],
+        });
+        orderId = order.id;
     });
 
-    afterAll(async () => {
-        await redisClient.quit();
-        server.close();
+    afterEach(async () => {
+        await orderService.deleteOrder(orderId);
+        await supplierService.deleteSupplier(supplierId);
+        await productService.deleteProduct(productId);
+        await stockService.deleteStock(productId);
     });
 
     it('should create a new order', async () => {
@@ -83,19 +94,22 @@ describe('Order Stock Validation', () => {
     let token;
     let productId;
 
-    beforeAll(async () => {
-        await redisClient.flushall();
+    beforeEach(async () => {
         // Auth
-        await request(app).post('/auth/register').send({ name: 'Test User 2', email: 'test2@example.com', password: 'password123' });
-        const loginRes = await request(app).post('/auth/login').send({ email: 'test2@example.com', password: 'password123' });
-        token = loginRes.body.token;
+        await authService.register({ name: 'Test User 2', email: 'test2@example.com', password: 'password123' });
+        token = await authService.login('test2@example.com', 'password123');
 
         // Create a product
-        const productRes = await request(app).post('/products').set('Authorization', `Bearer ${token}`).send({ sku: 'STOCK-TEST-001', name: 'Stock Test Product' });
-        productId = productRes.body.id;
+        const product = await productService.createProduct({ sku: 'STOCK-TEST-001', name: 'Stock Test Product' });
+        productId = product.id;
 
         // Create stock for the product
-        await request(app).post('/stock').set('Authorization', `Bearer ${token}`).send({ productId: productId, quantity: 100 });
+        await stockService.createStock({ productId: productId, quantity: 100 });
+    });
+
+    afterEach(async () => {
+        await productService.deleteProduct(productId);
+        await stockService.deleteStock(productId);
     });
 
     it('should create an order successfully when stock is sufficient', async () => {

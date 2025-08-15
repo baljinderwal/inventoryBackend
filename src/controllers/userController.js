@@ -12,10 +12,10 @@ export const getMe = async (req, res) => {
   }
 };
 
-export const updateUserProfile = async (req, res) => {
+export const updateMe = async (req, res) => {
   try {
-    const { address, phone } = req.body;
-    const updatedUser = await userService.updateUserProfile(req.user.id, { address, phone });
+    const { email, password } = req.body;
+    const updatedUser = await userService.updateUserCredentials(req.user.id, { email, password });
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -26,26 +26,7 @@ export const updateUserProfile = async (req, res) => {
 };
 
 export const getAllUsers = async (req, res) => {
-  const { email, password } = req.query;
-
   try {
-    // Handle login
-    if (email && password) {
-      const user = await userService.getUserByEmail(email);
-      if (user && user.password === password) { // In a real app, use bcrypt to compare passwords
-        return res.status(200).json([user]);
-      } else {
-        return res.status(401).json({ message: 'Invalid credentials' });
-      }
-    }
-
-    // Handle user existence check for signup
-    if (email) {
-      const user = await userService.getUserByEmail(email);
-      return res.status(200).json(user ? [user] : []);
-    }
-
-    // Original functionality: get all users
     const users = await userService.getAllUsers();
     res.status(200).json(users);
   } catch (error) {
@@ -70,15 +51,15 @@ export const getUser = async (req, res) => {
 
 export const createUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { id, name, email, password, role } = req.body;
 
-    const existingUser = await userService.getUserByEmail(email);
-    if (existingUser) {
-      return res.status(400).json({ message: 'An account with this email already exists.' });
+    if (!id) {
+      return res.status(400).json({ message: 'User ID is required' });
     }
 
-    const newUser = await userService.createUser({ name, email, password, role: 'Staff' });
-    res.status(201).json(newUser);
+    const newUser = { id, name, email, password, role };
+    await userService.createUser(newUser);
+    res.status(201).json({ message: 'User created successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error creating user', error: error.message });
   }
