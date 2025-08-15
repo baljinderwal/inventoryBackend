@@ -1,8 +1,6 @@
-import 'dotenv/config';
-import app from './app.js';
-import './config/redisClient.js';
-import * as userService from './services/userService.js';
-import { initWebSocketServer } from './services/notificationService.js';
+import app from '../src/app.js';
+import redisClient from '../src/config/redisClient.js';
+import * as userService from '../src/services/userService.js';
 
 const users = [
   { id: 1, name: 'Admin User', email: 'admin@example.com', password: 'password', role: 'Admin' },
@@ -21,16 +19,14 @@ const seedUsers = async () => {
   }
 };
 
-const PORT = process.env.PORT || 4000;
+export default async () => {
+  await redisClient.flushall();
+  await seedUsers();
 
-let server;
-
-if (process.env.NODE_ENV !== 'test') {
-  server = app.listen(PORT, () => {
-    console.log(`🚀 Server is running on port ${PORT}`);
-    seedUsers();
+  await new Promise((resolve) => {
+    global.server = app.listen(4000, () => {
+      console.log('Test server running on port 4000');
+      resolve();
+    });
   });
-  initWebSocketServer(server);
-}
-
-export default server;
+};

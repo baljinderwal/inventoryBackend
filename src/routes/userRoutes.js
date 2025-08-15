@@ -30,7 +30,7 @@ const router = Router();
  *       404:
  *         description: User not found
  */
-router.get('/me', protect, getMe);
+router.get('/me', getMe);
 
 /**
  * @swagger
@@ -61,7 +61,7 @@ router.get('/me', protect, getMe);
  *       404:
  *         description: User not found
  */
-router.put('/me', protect, updateUserProfile);
+router.put('/me', updateUserProfile);
 
 /**
  * @swagger
@@ -124,7 +124,7 @@ router.put('/me', protect, updateUserProfile);
  *               items:
  *                 $ref: '#/components/schemas/User'
  */
-router.get('/', protect, getAllUsers);
+router.get('/', getAllUsers);
 
 /**
  * @swagger
@@ -151,7 +151,7 @@ router.get('/', protect, getAllUsers);
  *       404:
  *         description: The user was not found
  */
-router.get('/:id', protect, getUser);
+router.get('/:id', getUser);
 
 /**
  * @swagger
@@ -173,7 +173,7 @@ router.get('/:id', protect, getUser);
  *       500:
  *         description: Some server error
  */
-router.post('/', protect, createUser);
+router.post('/', createUser);
 
 /**
  * @swagger
@@ -204,7 +204,7 @@ router.post('/', protect, createUser);
  *       500:
  *         description: Some server error
  */
-router.put('/:id', protect, updateUser);
+router.put('/:id', updateUser);
 
 /**
  * @swagger
@@ -227,6 +227,6 @@ router.put('/:id', protect, updateUser);
  *       404:
  *         description: The user was not found
  */
-router.delete('/:id', protect, deleteUser);
+router.delete('/:id', deleteUser);
 
 export default router;

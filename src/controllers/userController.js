@@ -26,7 +26,26 @@ export const updateUserProfile = async (req, res) => {
 };
 
 export const getAllUsers = async (req, res) => {
+  const { email, password } = req.query;
+
   try {
+    // Handle login
+    if (email && password) {
+      const user = await userService.getUserByEmail(email);
+      if (user && user.password === password) { // In a real app, use bcrypt to compare passwords
+        return res.status(200).json([user]);
+      } else {
+        return res.status(401).json({ message: 'Invalid credentials' });
+      }
+    }
+
+    // Handle user existence check for signup
+    if (email) {
+      const user = await userService.getUserByEmail(email);
+      return res.status(200).json(user ? [user] : []);
+    }
+
+    // Original functionality: get all users
     const users = await userService.getAllUsers();
     res.status(200).json(users);
   } catch (error) {
@@ -51,15 +70,15 @@ export const getUser = async (req, res) => {
 
 export const createUser = async (req, res) => {
   try {
-    const { id, name, email, password, role } = req.body;
+    const { name, email, password } = req.body;
 
-    if (!id) {
-      return res.status(400).json({ message: 'User ID is required' });
+    const existingUser = await userService.getUserByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ message: 'An account with this email already exists.' });
     }
 
-    const newUser = { id, name, email, password, role };
-    await userService.createUser(newUser);
-    res.status(201).json({ message: 'User created successfully' });
+    const newUser = await userService.createUser({ name, email, password, role: 'Staff' });
+    res.status(201).json(newUser);
   } catch (error) {
     res.status(500).json({ message: 'Error creating user', error: error.message });
   }
