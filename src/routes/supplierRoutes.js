@@ -8,6 +8,7 @@ import {
   getProductsBySupplier,
 } from '../controllers/supplierController.js';
 import { protect } from '../middleware/authMiddleware.js';
+import authorize from '../middleware/authorize.js';
 
 const router = Router();
 
@@ -203,6 +204,6 @@ router.put('/:id', protect, updateSupplier);
  *       404:
  *         description: The supplier was not found
  */
-router.delete('/:id', protect, deleteSupplier);
+router.delete('/:id', protect, authorize('admin'), deleteSupplier);
 
 export default router;
