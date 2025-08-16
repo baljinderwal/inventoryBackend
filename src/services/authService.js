@@ -46,9 +46,18 @@ export const login = async (email, password) => {
     role: user.role,
   };
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET, {
+  console.log('User authenticated successfully:', payload);
+
+  var jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    console.error('❌ JWT_SECRET is not set in environment variables.');
+    jwtSecret = 'default_secret'; // Fallback for development
+  }
+
+  const token = jwt.sign(payload, jwtSecret, {
     expiresIn: '1h', // Token expires in 1 hour
   });
 
+  console.log('User authenticated successfully:', token);
   return token;
 };
