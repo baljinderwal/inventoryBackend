@@ -82,7 +82,7 @@ const router = Router();
 
 /**
  * @swagger
- * /sales-orders:
+ * /salesOrders:
  *   get:
  *     summary: Returns the list of all the sales orders
  *     tags: [SalesOrders]
@@ -102,7 +102,7 @@ router.get('/', protect, getAllSalesOrders);
 
 /**
  * @swagger
- * /sales-orders/{id}:
+ * /salesOrders/{id}:
  *   get:
  *     summary: Get a sales order by ID
  *     tags: [SalesOrders]
@@ -129,7 +129,7 @@ router.get('/:id', protect, getSalesOrder);
 
 /**
  * @swagger
- * /sales-orders:
+ * /salesOrders:
  *   post:
  *     summary: Create a new sales order
  *     tags: [SalesOrders]
@@ -151,7 +151,7 @@ router.post('/', protect, createSalesOrder);
 
 /**
  * @swagger
- * /sales-orders/bulk:
+ * /salesOrders/bulk:
  *   post:
  *     summary: Create multiple new sales orders
  *     tags: [SalesOrders]
@@ -175,7 +175,7 @@ router.post('/bulk', protect, createMultipleSalesOrders);
 
 /**
  * @swagger
- * /sales-orders/{id}:
+ * /salesOrders/{id}:
  *   put:
  *     summary: Update a sales order by ID
  *     tags: [SalesOrders]
@@ -206,7 +206,7 @@ router.put('/:id', protect, updateSalesOrder);
 
 /**
  * @swagger
- * /sales-orders/{id}:
+ * /salesOrders/{id}:
  *   delete:
  *     summary: Delete a sales order by ID
  *     tags: [SalesOrders]
