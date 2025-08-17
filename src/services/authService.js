@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import * as userService from './userService.js';
 
 export const register = async (userData) => {
-  const { name, email, password } = userData;
+  const { name, email, password, role } = userData;
 
   // Check if user already exists
   const existingUser = await userService.getUserByEmail(email);
@@ -20,6 +20,7 @@ export const register = async (userData) => {
     name,
     email,
     password: hashedPassword,
+    role,
   });
 
   return newUser;

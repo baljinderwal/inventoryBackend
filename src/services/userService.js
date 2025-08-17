@@ -19,7 +19,7 @@ export const getUserById = async (id) => {
 
 export const createUser = async (userData) => {
     const newId = await redisClient.incr('user:id_counter');
-    const newUser = { ...userData, id: newId, role: 'user' };
+    const newUser = { ...userData, id: newId, role: userData.role || 'user' };
 
     const pipeline = redisClient.pipeline();
     pipeline.set(`${USER_KEY_PREFIX}${newUser.id}`, JSON.stringify(newUser));
