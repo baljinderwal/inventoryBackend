@@ -1,70 +1,72 @@
-let invoices = [
-    {
-      "id": 1001,
-      "salesOrderId": 1,
-      "customerId": 1,
-      "customerName": "John Smith",
-      "invoiceDate": "2025-08-15T10:00:00Z",
-      "dueDate": "2025-09-14T10:00:00Z",
-      "status": "Paid",
-      "items": [
-        {
-          "productId": 1,
-          "productName": "Wireless Mouse",
-          "quantity": 1,
-          "price": 25.99
-        },
-        {
-          "productId": 2,
-          "productName": "Mechanical Keyboard",
-          "quantity": 1,
-          "price": 120
-        }
-      ],
-      "total": 145.99
-    }
-  ];
+import redisClient from '../config/redisClient.js';
+
+const INVOICE_KEY_PREFIX = 'invoice:';
+const ALL_INVOICES_KEY = 'invoices:all';
 
 export const getAllInvoices = async () => {
-    return invoices;
+    const invoiceIds = await redisClient.smembers(ALL_INVOICES_KEY);
+    if (!invoiceIds || invoiceIds.length === 0) {
+        return [];
     }
+    const invoiceKeys = invoiceIds.map(id => `${INVOICE_KEY_PREFIX}${id}`);
+    const invoices = await redisClient.mget(invoiceKeys);
+    return invoices.map(invoice => JSON.parse(invoice));
+};
 
 export const getInvoiceById = async (id) => {
-    return invoices.find(invoice => invoice.id === parseInt(id));
-    }
+    const invoice = await redisClient.get(`${INVOICE_KEY_PREFIX}${id}`);
+    return invoice ? JSON.parse(invoice) : null;
+};
 
-export const createInvoice = async (invoice) => {
-    const newInvoice = { id: invoices.length + 1001, ...invoice };
-    invoices.push(newInvoice);
+export const createInvoice = async (invoiceData) => {
+    const newId = await redisClient.incr('invoice:id_counter');
+    const newInvoice = { ...invoiceData, id: newId };
+
+    const pipeline = redisClient.pipeline();
+    pipeline.set(`${INVOICE_KEY_PREFIX}${newInvoice.id}`, JSON.stringify(newInvoice));
+    pipeline.sadd(ALL_INVOICES_KEY, newInvoice.id);
+    await pipeline.exec();
+
     return newInvoice;
+};
+
+export const createMultipleInvoices = async (invoicesData) => {
+    const pipeline = redisClient.pipeline();
+    const newInvoices = [];
+
+    for (const invoiceData of invoicesData) {
+        const newId = await redisClient.incr('invoice:id_counter');
+        const newInvoice = { ...invoiceData, id: newId };
+        newInvoices.push(newInvoice);
+
+        pipeline.set(`${INVOICE_KEY_PREFIX}${newInvoice.id}`, JSON.stringify(newInvoice));
+        pipeline.sadd(ALL_INVOICES_KEY, newInvoice.id);
     }
 
-export const createMultipleInvoices = async (newInvoices) => {
-    const createdInvoices = [];
-    let currentId = invoices.length + 1000;
-    newInvoices.forEach(invoice => {
-        currentId++;
-        const newInvoice = { id: currentId, ...invoice };
-        invoices.push(newInvoice);
-        createdInvoices.push(newInvoice);
-    });
-    return createdInvoices;
-    }
+    await pipeline.exec();
+    return newInvoices;
+};
 
-export const updateInvoice = async (id, invoice) => {
-    const index = invoices.findIndex(i => i.id === parseInt(id));
-    if (index === -1) {
+export const updateInvoice = async (id, updates) => {
+    const key = `${INVOICE_KEY_PREFIX}${id}`;
+    const existingInvoiceJSON = await redisClient.get(key);
+
+    if (!existingInvoiceJSON) {
         return null;
     }
-    invoices[index] = { ...invoices[index], ...invoice };
-    return invoices[index];
-    }
+
+    const existingInvoice = JSON.parse(existingInvoiceJSON);
+    const updatedInvoice = { ...existingInvoice, ...updates };
+
+    await redisClient.set(key, JSON.stringify(updatedInvoice));
+    return updatedInvoice;
+};
 
 export const deleteInvoice = async (id) => {
-    const index = invoices.findIndex(i => i.id === parseInt(id));
-    if (index === -1) {
-        return 0;
-    }
-    invoices.splice(index, 1);
-    return 1;
-    }
+    const key = `${INVOICE_KEY_PREFIX}${id}`;
+    const pipeline = redisClient.pipeline();
+    pipeline.del(key);
+    pipeline.srem(ALL_INVOICES_KEY, id);
+    const results = await pipeline.exec();
+    return results[0][1]; // Result of the first del command
+};
