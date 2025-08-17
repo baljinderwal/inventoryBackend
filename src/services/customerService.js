@@ -17,6 +17,18 @@ export const createCustomer = async (customer) => {
     return newCustomer;
     }
 
+export const createMultipleCustomers = async (newCustomers) => {
+    const createdCustomers = [];
+    let currentId = customers.length;
+    newCustomers.forEach(customer => {
+        currentId++;
+        const newCustomer = { id: currentId, ...customer };
+        customers.push(newCustomer);
+        createdCustomers.push(newCustomer);
+    });
+    return createdCustomers;
+    }
+
 export const updateCustomer = async (id, customer) => {
     const index = customers.findIndex(c => c.id === parseInt(id));
     if (index === -1) {

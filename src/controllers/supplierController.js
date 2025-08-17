@@ -40,6 +40,19 @@ export const createSupplier = async (req, res) => {
   }
 };
 
+export const createMultipleSuppliers = async (req, res) => {
+  try {
+    const suppliers = req.body;
+    if (suppliers.some(s => !s.id)) {
+      return res.status(400).json({ message: 'Supplier ID is required for all suppliers' });
+    }
+    await supplierService.createMultipleSuppliers(suppliers);
+    res.status(201).json({ message: 'Suppliers created successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating suppliers', error: error.message });
+  }
+};
+
 export const updateSupplier = async (req, res) => {
   try {
     const { id } = req.params;

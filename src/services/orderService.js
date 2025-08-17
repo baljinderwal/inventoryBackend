@@ -94,6 +94,15 @@ export const createOrder = async (orderData) => {
   return newOrder;
 };
 
+export const createMultipleOrders = async (ordersData) => {
+  const createdOrders = [];
+  for (const orderData of ordersData) {
+    const newOrder = await createOrder(orderData);
+    createdOrders.push(newOrder);
+  }
+  return createdOrders;
+};
+
 
 export const updateOrder = async (id, updates) => {
   const key = `${ORDER_KEY_PREFIX}${id}`;

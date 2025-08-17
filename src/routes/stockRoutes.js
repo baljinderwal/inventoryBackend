@@ -3,6 +3,7 @@ import {
   getAllStock,
   getStock,
   createStock,
+  createMultipleStocks,
   updateStock,
   deleteStock,
 } from '../controllers/stockController.js';
@@ -132,6 +133,30 @@ router.get('/:productId', protect, getStock);
  *         description: Some server error
  */
 router.post('/', protect, createStock);
+
+/**
+ * @swagger
+ * /stock/bulk:
+ *   post:
+ *     summary: Create multiple new stock entries
+ *     tags: [Stock]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/Stock'
+ *     responses:
+ *       201:
+ *         description: The stock entries were successfully created
+ *       500:
+ *         description: Some server error
+ */
+router.post('/bulk', protect, createMultipleStocks);
 
 /**
  * @swagger

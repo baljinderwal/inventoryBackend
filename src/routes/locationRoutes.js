@@ -3,6 +3,7 @@ import {
   getAllLocations,
   getLocation,
   createLocation,
+  createMultipleLocations,
   updateLocation,
   deleteLocation,
 } from '../controllers/locationController.js';
@@ -110,6 +111,30 @@ router.get('/:id', protect, getLocation);
  *         description: Some server error
  */
 router.post('/', protect, createLocation);
+
+/**
+ * @swagger
+ * /locations/bulk:
+ *   post:
+ *     summary: Create multiple new locations
+ *     tags: [Locations]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/Location'
+ *     responses:
+ *       201:
+ *         description: The locations were successfully created
+ *       500:
+ *         description: Some server error
+ */
+router.post('/bulk', protect, createMultipleLocations);
 
 /**
  * @swagger

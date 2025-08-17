@@ -3,6 +3,7 @@ import {
   getAllCustomers,
   getCustomer,
   createCustomer,
+  createMultipleCustomers,
   updateCustomer,
   deleteCustomer,
 } from '../controllers/customerController.js';
@@ -118,6 +119,30 @@ router.get('/:id', protect, getCustomer);
  *         description: Some server error
  */
 router.post('/', protect, createCustomer);
+
+/**
+ * @swagger
+ * /customers/bulk:
+ *   post:
+ *     summary: Create multiple new customers
+ *     tags: [Customers]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/Customer'
+ *     responses:
+ *       201:
+ *         description: The customers were successfully created
+ *       500:
+ *         description: Some server error
+ */
+router.post('/bulk', protect, createMultipleCustomers);
 
 /**
  * @swagger

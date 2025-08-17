@@ -38,6 +38,18 @@ export const createSalesOrder = async (order) => {
     return newOrder;
     }
 
+export const createMultipleSalesOrders = async (orders) => {
+    const newOrders = [];
+    let currentId = salesOrders.length;
+    orders.forEach(order => {
+        currentId++;
+        const newOrder = { id: currentId, ...order };
+        salesOrders.push(newOrder);
+        newOrders.push(newOrder);
+    });
+    return newOrders;
+    }
+
 export const updateSalesOrder = async (id, order) => {
     const index = salesOrders.findIndex(o => o.id === parseInt(id));
     if (index === -1) {

@@ -12,6 +12,14 @@ export const createSupplier = async (supplier) => {
   await redisClient.set(`${SUPPLIER_KEY_PREFIX}${supplier.id}`, JSON.stringify(supplier));
 };
 
+export const createMultipleSuppliers = async (suppliers) => {
+  const pipeline = redisClient.pipeline();
+  suppliers.forEach(supplier => {
+    pipeline.set(`${SUPPLIER_KEY_PREFIX}${supplier.id}`, JSON.stringify(supplier));
+  });
+  await pipeline.exec();
+};
+
 export const updateSupplier = async (id, updates) => {
   const key = `${SUPPLIER_KEY_PREFIX}${id}`;
   const existingSupplier = await redisClient.get(key);

@@ -3,6 +3,7 @@ import {
   getAllSalesOrders,
   getSalesOrder,
   createSalesOrder,
+  createMultipleSalesOrders,
   updateSalesOrder,
   deleteSalesOrder,
 } from '../controllers/salesOrderController.js';
@@ -147,6 +148,30 @@ router.get('/:id', protect, getSalesOrder);
  *         description: Some server error
  */
 router.post('/', protect, createSalesOrder);
+
+/**
+ * @swagger
+ * /sales-orders/bulk:
+ *   post:
+ *     summary: Create multiple new sales orders
+ *     tags: [SalesOrders]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/SalesOrder'
+ *     responses:
+ *       201:
+ *         description: The sales orders were successfully created
+ *       500:
+ *         description: Some server error
+ */
+router.post('/bulk', protect, createMultipleSalesOrders);
 
 /**
  * @swagger

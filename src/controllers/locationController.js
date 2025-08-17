@@ -33,6 +33,15 @@ export const createLocation = async (req, res) => {
   }
 };
 
+export const createMultipleLocations = async (req, res) => {
+  try {
+    const newLocations = await locationService.createMultipleLocations(req.body);
+    res.status(201).json(newLocations);
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating locations', error: error.message });
+  }
+};
+
 export const updateLocation = async (req, res) => {
   try {
     const { id } = req.params;

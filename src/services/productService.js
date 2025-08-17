@@ -31,6 +31,30 @@ export const createProduct = async (productData) => {
   return newProduct;
 };
 
+export const createMultipleProducts = async (productsData) => {
+  const pipeline = redisClient.pipeline();
+  const newProducts = [];
+
+  for (const productData of productsData) {
+    const newId = await redisClient.incr('product:id_counter');
+    const newProduct = { ...productData, id: newId };
+    newProducts.push(newProduct);
+
+    pipeline.set(`${PRODUCT_KEY_PREFIX}${newProduct.sku}`, JSON.stringify(newProduct));
+    pipeline.set(`product:id:${newProduct.id}`, newProduct.sku);
+    pipeline.sadd(ALL_PRODUCTS_SKU_KEY, newProduct.sku);
+    if (newProduct.price) {
+      pipeline.zadd(PRODUCT_PRICE_SORTED_SET_KEY, newProduct.price, newProduct.sku);
+    }
+    if (newProduct.category) {
+      pipeline.sadd(`${PRODUCT_CATEGORY_SET_PREFIX}${newProduct.category}`, newProduct.sku);
+    }
+  }
+
+  await pipeline.exec();
+  return newProducts;
+};
+
 export const updateProduct = async (sku, updates) => {
   const key = `${PRODUCT_KEY_PREFIX}${sku}`;
   const existingProductJSON = await redisClient.get(key);

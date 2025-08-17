@@ -20,6 +20,14 @@ export const createStock = async (stock) => {
   await redisClient.set(`${STOCK_KEY_PREFIX}${stock.productId}`, JSON.stringify(stock));
 };
 
+export const createMultipleStocks = async (stocks) => {
+  const pipeline = redisClient.pipeline();
+  stocks.forEach(stock => {
+    pipeline.set(`${STOCK_KEY_PREFIX}${stock.productId}`, JSON.stringify(stock));
+  });
+  await pipeline.exec();
+};
+
 export const updateStock = async (productId, updates) => {
   const key = `${STOCK_KEY_PREFIX}${productId}`;
   const existingStock = await redisClient.get(key);

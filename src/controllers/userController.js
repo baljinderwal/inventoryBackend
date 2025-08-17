@@ -49,6 +49,8 @@ export const getUser = async (req, res) => {
   }
 };
 
+import bcrypt from 'bcryptjs';
+
 export const createUser = async (req, res) => {
   try {
     const { id, name, email, password, role } = req.body;
@@ -57,11 +59,34 @@ export const createUser = async (req, res) => {
       return res.status(400).json({ message: 'User ID is required' });
     }
 
-    const newUser = { id, name, email, password, role };
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const newUser = { id, name, email, password: hashedPassword, role };
     await userService.createUser(newUser);
     res.status(201).json({ message: 'User created successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error creating user', error: error.message });
+  }
+};
+
+export const createMultipleUsers = async (req, res) => {
+  try {
+    const usersData = req.body;
+    if (usersData.some(u => !u.id)) {
+      return res.status(400).json({ message: 'User ID is required for all users' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const newUsers = await Promise.all(usersData.map(async (user) => {
+      const hashedPassword = await bcrypt.hash(user.password, salt);
+      return { ...user, password: hashedPassword };
+    }));
+
+    await userService.createMultipleUsers(newUsers);
+    res.status(201).json({ message: 'Users created successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating users', error: error.message });
   }
 };
 

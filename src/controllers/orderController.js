@@ -37,6 +37,19 @@ export const createOrder = async (req, res) => {
   }
 };
 
+export const createMultipleOrders = async (req, res) => {
+  try {
+    const ordersData = req.body.map(order => ({ ...order, userId: req.user.id }));
+    const newOrders = await orderService.createMultipleOrders(ordersData);
+    for (const newOrder of newOrders) {
+      await logAction(req.user.id, 'CREATE_ORDER', { orderId: newOrder.id, details: newOrder });
+    }
+    res.status(201).json(newOrders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const updateOrder = async (req, res) => {
   try {
     const { id } = req.params;
