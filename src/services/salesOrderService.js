@@ -1,69 +1,72 @@
-let salesOrders = [
-    {
-      "id": 1,
-      "customerId": 1,
-      "customerName": "John Smith",
-      "createdAt": "2025-08-14T10:00:00Z",
-      "status": "Completed",
-      "items": [
-        { "productId": 1, "productName": "Wireless Mouse", "quantity": 1, "price": 25.99 },
-        { "productId": 2, "productName": "Mechanical Keyboard", "quantity": 1, "price": 120.00 }
-      ],
-      "total": 145.99
-    },
-    {
-      "id": 2,
-      "customerId": 2,
-      "customerName": "Jane Doe",
-      "createdAt": "2025-08-15T11:30:00Z",
-      "status": "Pending",
-      "items": [
-        { "productId": 3, "productName": "USB-C Hub", "quantity": 2, "price": 45.50 }
-      ],
-      "total": 91.00
-    }
-  ];
+import redisClient from '../config/redisClient.js';
+
+const SALES_ORDER_KEY_PREFIX = 'sales_order:';
+const ALL_SALES_ORDERS_KEY = 'sales_orders:all';
 
 export const getAllSalesOrders = async () => {
-    return salesOrders;
+    const salesOrderIds = await redisClient.smembers(ALL_SALES_ORDERS_KEY);
+    if (!salesOrderIds || salesOrderIds.length === 0) {
+        return [];
     }
+    const salesOrderKeys = salesOrderIds.map(id => `${SALES_ORDER_KEY_PREFIX}${id}`);
+    const salesOrders = await redisClient.mget(salesOrderKeys);
+    return salesOrders.map(order => JSON.parse(order));
+};
 
 export const getSalesOrderById = async (id) => {
-    return salesOrders.find(order => order.id === parseInt(id));
-    }
+    const salesOrder = await redisClient.get(`${SALES_ORDER_KEY_PREFIX}${id}`);
+    return salesOrder ? JSON.parse(salesOrder) : null;
+};
 
-export const createSalesOrder = async (order) => {
-    const newOrder = { id: salesOrders.length + 1, ...order };
-    salesOrders.push(newOrder);
+export const createSalesOrder = async (orderData) => {
+    const newId = await redisClient.incr('sales_order:id_counter');
+    const newOrder = { ...orderData, id: newId };
+
+    const pipeline = redisClient.pipeline();
+    pipeline.set(`${SALES_ORDER_KEY_PREFIX}${newOrder.id}`, JSON.stringify(newOrder));
+    pipeline.sadd(ALL_SALES_ORDERS_KEY, newOrder.id);
+    await pipeline.exec();
+
     return newOrder;
-    }
+};
 
-export const createMultipleSalesOrders = async (orders) => {
+export const createMultipleSalesOrders = async (ordersData) => {
+    const pipeline = redisClient.pipeline();
     const newOrders = [];
-    let currentId = salesOrders.length;
-    orders.forEach(order => {
-        currentId++;
-        const newOrder = { id: currentId, ...order };
-        salesOrders.push(newOrder);
+
+    for (const orderData of ordersData) {
+        const newId = await redisClient.incr('sales_order:id_counter');
+        const newOrder = { ...orderData, id: newId };
         newOrders.push(newOrder);
-    });
-    return newOrders;
+
+        pipeline.set(`${SALES_ORDER_KEY_PREFIX}${newOrder.id}`, JSON.stringify(newOrder));
+        pipeline.sadd(ALL_SALES_ORDERS_KEY, newOrder.id);
     }
 
-export const updateSalesOrder = async (id, order) => {
-    const index = salesOrders.findIndex(o => o.id === parseInt(id));
-    if (index === -1) {
+    await pipeline.exec();
+    return newOrders;
+};
+
+export const updateSalesOrder = async (id, updates) => {
+    const key = `${SALES_ORDER_KEY_PREFIX}${id}`;
+    const existingOrderJSON = await redisClient.get(key);
+
+    if (!existingOrderJSON) {
         return null;
     }
-    salesOrders[index] = { ...salesOrders[index], ...order };
-    return salesOrders[index];
-    }
+
+    const existingOrder = JSON.parse(existingOrderJSON);
+    const updatedOrder = { ...existingOrder, ...updates };
+
+    await redisClient.set(key, JSON.stringify(updatedOrder));
+    return updatedOrder;
+};
 
 export const deleteSalesOrder = async (id) => {
-    const index = salesOrders.findIndex(o => o.id === parseInt(id));
-    if (index === -1) {
-        return 0;
-    }
-    salesOrders.splice(index, 1);
-    return 1;
-    }
+    const key = `${SALES_ORDER_KEY_PREFIX}${id}`;
+    const pipeline = redisClient.pipeline();
+    pipeline.del(key);
+    pipeline.srem(ALL_SALES_ORDERS_KEY, id);
+    const results = await pipeline.exec();
+    return results[0][1]; // Result of the first del command
+};
