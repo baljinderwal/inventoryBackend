@@ -45,17 +45,26 @@ const router = Router();
  *         costPrice:
  *           type: number
  *           description: The cost price of the product
- *         stock:
+ *         lowStockThreshold:
  *           type: number
- *           description: The number of items in stock
+ *           description: The low stock threshold for the product
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: The date and time the product was created
+ *         barcode:
+ *           type: string
+ *           description: The barcode of the product
  *       example:
  *         id: 1
- *         name: "Gaming Laptop"
- *         sku: "GL-XYZ-001"
+ *         name: "Wireless Mouse"
+ *         sku: "WM-001"
  *         category: "Electronics"
- *         price: 1200
- *         costPrice: 950
- *         stock: 50
+ *         price: 25.99
+ *         costPrice: 15.50
+ *         lowStockThreshold: 20
+ *         createdAt: "2024-11-10T10:00:00Z"
+ *         barcode: "8901234567890"
  */
 
 /**
