@@ -41,16 +41,16 @@ export const getOrderById = async (id) => {
 };
 
 export const createOrder = async (orderData) => {
-  const stockKeys = orderData.items.map(item => `${STOCK_KEY_PREFIX}${item.productId}`);
+  const stockKeys = orderData.products.map(item => `${STOCK_KEY_PREFIX}${item.productId}`);
 
   // Use a dedicated client for transactions to avoid issues with shared state
   const stockLevels = await Promise.all(
-      orderData.items.map(item => getStockByProductId(item.productId))
+      orderData.products.map(item => getStockByProductId(item.productId))
   );
 
   // Validate stock and product existence
-  for (let i = 0; i < orderData.items.length; i++) {
-      const item = orderData.items[i];
+  for (let i = 0; i < orderData.products.length; i++) {
+      const item = orderData.products[i];
       const stock = stockLevels[i];
       const product = await getProductByNumericId(item.productId); // Assuming this is fast
 
@@ -68,7 +68,7 @@ export const createOrder = async (orderData) => {
   // All checks passed, prepare the transaction
   const orderId = uuidv4();
   const status = order.status || 'pending';
-  const newOrder = { ...order, id: orderId, status, createdAt: new Date().toISOString(), originalTotal, userId: orderData.userId };
+  const newOrder = { ...order, id: orderId, status, createdAt: new Date().toISOString(), originalTotal, completedAt: order.completedAt, userId: orderData.userId };
 
   const multi = redisClient.multi();
 
@@ -80,8 +80,8 @@ export const createOrder = async (orderData) => {
   }
 
   // 2. Decrement stock for each item
-  for (let i = 0; i < orderData.items.length; i++) {
-      const item = orderData.items[i];
+  for (let i = 0; i < orderData.products.length; i++) {
+      const item = orderData.products[i];
       const stock = stockLevels[i];
       const newQuantity = stock.quantity - item.quantity;
       const updatedStock = { ...stock, quantity: newQuantity };
@@ -192,7 +192,7 @@ export const getOrdersBySupplier = async (supplierId) => {
 
 const applyPromotions = async (orderData) => {
     let total = 0;
-    for (const item of orderData.items) {
+    for (const item of orderData.products) {
         const product = await getProductByNumericId(item.productId);
         total += product.price * item.quantity;
     }
@@ -206,7 +206,7 @@ const applyPromotions = async (orderData) => {
     for (const promo of allPromotions) {
         // Simple promotion logic: category-wide discount
         if (promo.type === 'percentage' && promo.category) {
-            for (const item of orderData.items) {
+            for (const item of orderData.products) {
                 const product = await getProductByNumericId(item.productId);
                 if (product.category === promo.category) {
                     const itemTotal = product.price * item.quantity;
