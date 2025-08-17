@@ -14,6 +14,7 @@ import auditRoutes from './routes/auditRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
 import customerRoutes from './routes/customerRoutes.js';
 import salesOrderRoutes from './routes/salesOrderRoutes.js';
+import invoiceRoutes from './routes/invoiceRoutes.js';
 
 const app = express();
 
@@ -35,5 +36,6 @@ app.use('/audit', auditRoutes);
 app.use('/wishlist', wishlistRoutes);
 app.use('/customers', customerRoutes);
 app.use('/sales-orders', salesOrderRoutes);
+app.use('/invoices', invoiceRoutes);
 
 export default app;
