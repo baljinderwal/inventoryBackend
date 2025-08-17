@@ -29,6 +29,23 @@ export const createUser = async (userData) => {
     return newUser;
 };
 
+export const createMultipleUsers = async (usersData) => {
+    const pipeline = redisClient.pipeline();
+    const newUsers = [];
+
+    for (const userData of usersData) {
+        const newId = await redisClient.incr('user:id_counter');
+        const newUser = { ...userData, id: newId, role: userData.role || 'user' };
+        newUsers.push(newUser);
+
+        pipeline.set(`${USER_KEY_PREFIX}${newUser.id}`, JSON.stringify(newUser));
+        pipeline.set(`user:email:${newUser.email}`, newUser.id);
+    }
+
+    await pipeline.exec();
+    return newUsers;
+};
+
 export const updateUser = async (id, updates) => {
   const key = `${USER_KEY_PREFIX}${id}`;
   const existingUser = await redisClient.get(key);

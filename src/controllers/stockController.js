@@ -42,6 +42,22 @@ export const createStock = async (req, res) => {
   }
 };
 
+export const createMultipleStocks = async (req, res) => {
+  try {
+    const stocks = req.body;
+    if (stocks.some(s => !s.productId)) {
+      return res.status(400).json({ message: 'Product ID is required for all stock entries' });
+    }
+    await stockService.createMultipleStocks(stocks);
+    for (const stock of stocks) {
+      await logAction(req.user.id, 'CREATE_STOCK', { productId: stock.productId, details: stock });
+    }
+    res.status(201).json({ message: 'Stocks created successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating stocks', error: error.message });
+  }
+};
+
 export const updateStock = async (req, res) => {
   try {
     const { productId } = req.params;

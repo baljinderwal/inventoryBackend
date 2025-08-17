@@ -25,6 +25,17 @@ export const createLocation = async (location) => {
   return newLocation;
 };
 
+export const createMultipleLocations = async (locations) => {
+  const newLocations = [];
+  for (const location of locations) {
+    const id = await redisClient.incr(LOCATION_ID_COUNTER_KEY);
+    const newLocation = { id, ...location };
+    await redisClient.set(`${LOCATION_KEY_PREFIX}${id}`, JSON.stringify(newLocation));
+    newLocations.push(newLocation);
+  }
+  return newLocations;
+};
+
 export const updateLocation = async (id, updates) => {
   const key = `${LOCATION_KEY_PREFIX}${id}`;
   const existingLocation = await redisClient.get(key);

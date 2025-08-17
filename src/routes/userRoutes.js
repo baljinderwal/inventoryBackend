@@ -3,6 +3,7 @@ import {
   getAllUsers,
   getUser,
   createUser,
+  createMultipleUsers,
   updateUser,
   deleteUser,
   getMe,
@@ -174,6 +175,30 @@ router.get('/:id', protect, getUser);
  *         description: Some server error
  */
 router.post('/', protect, createUser);
+
+/**
+ * @swagger
+ * /users/bulk:
+ *   post:
+ *     summary: Create multiple new users (Admin)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/User'
+ *     responses:
+ *       201:
+ *         description: The users were successfully created
+ *       500:
+ *         description: Some server error
+ */
+router.post('/bulk', protect, createMultipleUsers);
 
 /**
  * @swagger

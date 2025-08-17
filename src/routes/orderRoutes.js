@@ -3,6 +3,7 @@ import {
   getAllOrders,
   getOrder,
   createOrder,
+  createMultipleOrders,
   updateOrder,
   deleteOrder,
   getOrdersBySupplier,
@@ -212,6 +213,30 @@ router.get('/:id', protect, getOrder);
  *         description: Some server error
  */
 router.post('/', protect, createOrder);
+
+/**
+ * @swagger
+ * /orders/bulk:
+ *   post:
+ *     summary: Create multiple new orders
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/Order'
+ *     responses:
+ *       201:
+ *         description: The orders were successfully created
+ *       500:
+ *         description: Some server error
+ */
+router.post('/bulk', protect, createMultipleOrders);
 
 /**
  * @swagger

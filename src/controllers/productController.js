@@ -46,6 +46,22 @@ export const createProduct = async (req, res) => {
   }
 };
 
+export const createMultipleProducts = async (req, res) => {
+  try {
+    const productsData = req.body;
+    if (productsData.some(p => !p.sku)) {
+      return res.status(400).json({ message: 'Product SKU is required for all products' });
+    }
+    const newProducts = await productService.createMultipleProducts(productsData);
+    for (const newProduct of newProducts) {
+      await logAction(req.user.id, 'CREATE_PRODUCT', { productId: newProduct.id, details: newProduct });
+    }
+    res.status(201).json(newProducts);
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating products', error: error.message });
+  }
+};
+
 export const updateProduct = async (req, res) => {
   try {
     const { id: sku } = req.params;

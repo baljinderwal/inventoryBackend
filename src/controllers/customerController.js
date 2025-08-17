@@ -33,6 +33,15 @@ export const createCustomer = async (req, res) => {
   }
 };
 
+export const createMultipleCustomers = async (req, res) => {
+  try {
+    const newCustomers = await customerService.createMultipleCustomers(req.body);
+    res.status(201).json(newCustomers);
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating customers', error: error.message });
+  }
+};
+
 export const updateCustomer = async (req, res) => {
   try {
     const { id } = req.params;

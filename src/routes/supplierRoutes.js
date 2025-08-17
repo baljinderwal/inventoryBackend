@@ -3,6 +3,7 @@ import {
   getAllSuppliers,
   getSupplier,
   createSupplier,
+  createMultipleSuppliers,
   updateSupplier,
   deleteSupplier,
   getProductsBySupplier,
@@ -151,6 +152,30 @@ router.get('/:id/products', protect, getProductsBySupplier);
  *         description: Some server error
  */
 router.post('/', protect, createSupplier);
+
+/**
+ * @swagger
+ * /suppliers/bulk:
+ *   post:
+ *     summary: Create multiple new suppliers
+ *     tags: [Suppliers]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/Supplier'
+ *     responses:
+ *       201:
+ *         description: The suppliers were successfully created
+ *       500:
+ *         description: Some server error
+ */
+router.post('/bulk', protect, createMultipleSuppliers);
 
 /**
  * @swagger

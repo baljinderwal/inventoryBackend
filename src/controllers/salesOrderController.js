@@ -33,6 +33,15 @@ export const createSalesOrder = async (req, res) => {
     }
 };
 
+export const createMultipleSalesOrders = async (req, res) => {
+    try {
+        const newSalesOrders = await salesOrderService.createMultipleSalesOrders(req.body);
+        res.status(201).json(newSalesOrders);
+    } catch (error) {
+        res.status(500).json({ message: 'Error creating sales orders', error: error.message });
+    }
+};
+
 export const updateSalesOrder = async (req, res) => {
     try {
         const { id } = req.params;

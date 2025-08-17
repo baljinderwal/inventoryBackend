@@ -3,6 +3,7 @@ import {
   getAllProducts,
   getProduct,
   createProduct,
+  createMultipleProducts,
   updateProduct,
   deleteProduct,
 } from '../controllers/productController.js';
@@ -142,6 +143,30 @@ router.get('/:id', protect, getProduct);
  *         description: Some server error
  */
 router.post('/', protect, createProduct);
+
+/**
+ * @swagger
+ * /products/bulk:
+ *   post:
+ *     summary: Create multiple new products
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/Product'
+ *     responses:
+ *       201:
+ *         description: The products were successfully created
+ *       500:
+ *         description: Some server error
+ */
+router.post('/bulk', protect, createMultipleProducts);
 
 /**
  * @swagger
