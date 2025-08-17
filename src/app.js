@@ -35,7 +35,7 @@ app.use('/promotions', promotionRoutes);
 app.use('/audit', auditRoutes);
 app.use('/wishlist', wishlistRoutes);
 app.use('/customers', customerRoutes);
-app.use('/sales-orders', salesOrderRoutes);
+app.use('/salesOrders', salesOrderRoutes);
 app.use('/invoices', invoiceRoutes);
 
 export default app;
