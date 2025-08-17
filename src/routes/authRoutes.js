@@ -33,6 +33,8 @@ const router = Router();
  *                 type: string
  *               password:
  *                 type: string
+ *               role:
+ *                 type: string
  *     responses:
  *       201:
  *         description: User registered successfully
