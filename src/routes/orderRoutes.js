@@ -20,30 +20,33 @@ const router = Router();
  *     Order:
  *       type: object
  *       required:
- *         - customerName
- *         - items
+ *         - supplier
+ *         - products
  *       properties:
  *         id:
  *           type: string
  *           description: The auto-generated id of the order
- *         customerName:
- *           type: string
- *           description: The name of the customer
- *         items:
+ *         supplier:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: number
+ *               description: The ID of the supplier
+ *             name:
+ *               type: string
+ *               description: The name of the supplier
+ *         products:
  *           type: array
  *           items:
  *             type: object
  *             properties:
  *               productId:
- *                 type: string
+ *                 type: number
  *                 description: The ID of the product
  *               quantity:
  *                 type: number
  *                 description: The quantity of the product
- *           description: The items in the order
- *         total:
- *           type: number
- *           description: The total amount of the order
+ *           description: The products in the order
  *         status:
  *           type: string
  *           description: The status of the order
@@ -53,15 +56,23 @@ const router = Router();
  *           type: string
  *           format: date-time
  *           description: The date and time the order was created
+ *         completedAt:
+ *           type: string
+ *           format: date-time
+ *           description: The date and time the order was completed
  *       example:
  *         id: "d290f1ee-6c54-4b01-90e6-d701748f0851"
- *         customerName: "John Doe"
- *         items:
- *           - productId: "GL-XYZ-001"
- *             quantity: 1
- *         total: 1200
- *         status: "pending"
- *         createdAt: "2023-01-01T12:00:00.000Z"
+ *         supplier:
+ *           id: 1
+ *           name: "ElectroSupply"
+ *         products:
+ *           - productId: 1
+ *             quantity: 50
+ *           - productId: 8
+ *             quantity: 20
+ *         status: "Completed"
+ *         createdAt: "2025-08-01T10:15:00Z"
+ *         completedAt: "2025-08-03T14:30:00Z"
  */
 
 /**
