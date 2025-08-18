@@ -1,5 +1,6 @@
 import * as productService from '../services/productService.js';
 import { logAction } from '../services/auditService.js';
+import redisClient from '../config/redisClient.js';
 
 export const getAllProducts = async (req, res) => {
   try {
@@ -11,7 +12,22 @@ export const getAllProducts = async (req, res) => {
         page: page ? parseInt(page, 10) : 1,
         limit: limit ? parseInt(limit, 10) : 10,
     };
+
+    const userDetails = req.userDetails;
+    const redisKey = `products:${userDetails.id}:${JSON.stringify(options)}`;
+
+    // Check cache first
+    const cachedProducts = await redisClient.get(redisKey);
+    if (cachedProducts) {
+      console.log('✅ Products retrieved from cache');
+      return res.status(200).json(JSON.parse(cachedProducts));
+    }
+
     const products = await productService.getAllProducts(options);
+
+    // Cache the result
+    await redisClient.set(redisKey, JSON.stringify(products), 'EX', 3600); // Cache for 1 hour
+
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving products', error: error.message });
