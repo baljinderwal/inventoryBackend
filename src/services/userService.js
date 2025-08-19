@@ -61,6 +61,43 @@ export const updateUser = async (id, updates) => {
   return updatedUser;
 };
 
+export const createOrUpdateUserProfile = async (userData) => {
+  const { email } = userData;
+  if (!email) {
+    throw new Error('Email is required to create or update a user profile.');
+  }
+
+  const user = await getUserByEmail(email);
+
+  if (user) {
+    // Update existing user, but don't update password this way.
+    // Password updates should be handled separately for security.
+    const { password, ...updateData } = userData;
+    const updatedUser = { ...user, ...updateData };
+    await redisClient.set(`${USER_KEY_PREFIX}${user.id}`, JSON.stringify(updatedUser));
+    return updatedUser;
+  } else {
+    // Create new user
+    if (!userData.password) {
+      throw new Error('Password is required for a new user.');
+    }
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(userData.password, salt);
+
+    const newId = await redisClient.incr('user:id_counter');
+    const newUser = { ...userData, password: hashedPassword, id: newId, role: userData.role || 'user' };
+
+    const pipeline = redisClient.pipeline();
+    pipeline.set(`${USER_KEY_PREFIX}${newUser.id}`, JSON.stringify(newUser));
+    pipeline.set(`user:email:${newUser.email}`, newUser.id);
+    await pipeline.exec();
+
+    // Return user object without password
+    const { password, ...userToReturn } = newUser;
+    return userToReturn;
+  }
+};
+
 export const updateUserProfile = async (id, profileData) => {
   const key = `${USER_KEY_PREFIX}${id}`;
   const existingUser = await redisClient.get(key);
