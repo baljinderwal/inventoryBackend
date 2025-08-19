@@ -2,7 +2,7 @@ import * as locationService from '../services/locationService.js';
 
 export const getAllLocations = async (req, res) => {
   try {
-    const locations = await locationService.getAllLocations();
+    const locations = await locationService.getAllLocations(req.user.id);
     res.status(200).json(locations);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving locations', error: error.message });
@@ -12,7 +12,7 @@ export const getAllLocations = async (req, res) => {
 export const getLocation = async (req, res) => {
   try {
     const { id } = req.params;
-    const location = await locationService.getLocationById(id);
+    const location = await locationService.getLocationById(req.user.id, id);
 
     if (!location) {
       return res.status(404).json({ message: 'Location not found' });
@@ -26,7 +26,7 @@ export const getLocation = async (req, res) => {
 
 export const createLocation = async (req, res) => {
   try {
-    const newLocation = await locationService.createLocation(req.body);
+    const newLocation = await locationService.createLocation(req.user.id, req.body);
     res.status(201).json(newLocation);
   } catch (error) {
     res.status(500).json({ message: 'Error creating location', error: error.message });
@@ -35,7 +35,7 @@ export const createLocation = async (req, res) => {
 
 export const createMultipleLocations = async (req, res) => {
   try {
-    const newLocations = await locationService.createMultipleLocations(req.body);
+    const newLocations = await locationService.createMultipleLocations(req.user.id, req.body);
     res.status(201).json(newLocations);
   } catch (error) {
     res.status(500).json({ message: 'Error creating locations', error: error.message });
@@ -47,7 +47,7 @@ export const updateLocation = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
-    const updatedLocation = await locationService.updateLocation(id, updates);
+    const updatedLocation = await locationService.updateLocation(req.user.id, id, updates);
 
     if (!updatedLocation) {
       return res.status(404).json({ message: 'Location not found' });
@@ -62,7 +62,7 @@ export const updateLocation = async (req, res) => {
 export const deleteLocation = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await locationService.deleteLocation(id);
+    const result = await locationService.deleteLocation(req.user.id, id);
 
     if (result === 0) {
       return res.status(404).json({ message: 'Location not found' });

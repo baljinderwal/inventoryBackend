@@ -25,13 +25,13 @@ const router = Router();
  *       properties:
  *         id:
  *           type: string
- *           description: The auto-generated id of the order
+ *           description: The auto-generated id of the order (UUID)
  *         supplier:
  *           type: object
  *           properties:
  *             id:
- *               type: number
- *               description: The ID of the supplier
+ *               type: string
+ *               description: The ID of the supplier (UUID)
  *             name:
  *               type: string
  *               description: The name of the supplier
@@ -41,8 +41,8 @@ const router = Router();
  *             type: object
  *             properties:
  *               productId:
- *                 type: number
- *                 description: The ID of the product
+ *                 type: string
+ *                 description: The ID of the product (UUID)
  *               quantity:
  *                 type: number
  *                 description: The quantity of the product
@@ -63,12 +63,12 @@ const router = Router();
  *       example:
  *         id: "d290f1ee-6c54-4b01-90e6-d701748f0851"
  *         supplier:
- *           id: 1
+ *           id: "c290f1ee-6c54-4b01-90e6-d701748f0852"
  *           name: "ElectroSupply"
  *         products:
- *           - productId: 1
+ *           - productId: "a290f1ee-6c54-4b01-90e6-d701748f0854"
  *             quantity: 50
- *           - productId: 8
+ *           - productId: "b290f1ee-6c54-4b01-90e6-d701748f0855"
  *             quantity: 20
  *         status: "Completed"
  *         createdAt: "2025-08-01T10:15:00Z"
@@ -86,7 +86,7 @@ const router = Router();
  * @swagger
  * /orders:
  *   get:
- *     summary: Returns the list of all the orders
+ *     summary: Returns the list of all the orders for the current user
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
@@ -118,7 +118,7 @@ router.get('/', protect, getAllOrders);
  * @swagger
  * /orders/supplier/{supplierId}:
  *   get:
- *     summary: Get all orders from a specific supplier
+ *     summary: Get all orders from a specific supplier for the current user
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
@@ -128,7 +128,7 @@ router.get('/', protect, getAllOrders);
  *         schema:
  *           type: string
  *         required: true
- *         description: The supplier ID
+ *         description: The supplier ID (UUID)
  *     responses:
  *       200:
  *         description: A list of orders from the specified supplier
@@ -147,7 +147,7 @@ router.get('/supplier/:supplierId', protect, getOrdersBySupplier);
  * @swagger
  * /orders/status/{status}:
  *   get:
- *     summary: Get all orders with a specific status
+ *     summary: Get all orders with a specific status for the current user
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
@@ -186,7 +186,7 @@ router.get('/status/:status', protect, getOrdersByStatus);
  *         schema:
  *           type: string
  *         required: true
- *         description: The order ID
+ *         description: The order ID (UUID)
  *     responses:
  *       200:
  *         description: The order description by ID
@@ -263,7 +263,7 @@ router.post('/bulk', protect, createMultipleOrders);
  *         schema:
  *           type: string
  *         required: true
- *         description: The order ID
+ *         description: The order ID (UUID)
  *     requestBody:
  *       required: true
  *       content:
@@ -298,7 +298,7 @@ router.put('/:id', protect, updateOrder);
  *         schema:
  *           type: string
  *         required: true
- *         description: The order ID
+ *         description: The order ID (UUID)
  *     responses:
  *       200:
  *         description: The order was deleted

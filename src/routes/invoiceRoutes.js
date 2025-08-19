@@ -25,14 +25,14 @@ const router = Router();
  *         - total
  *       properties:
  *         id:
- *           type: number
- *           description: The numeric ID of the invoice
+ *           type: string
+ *           description: The UUID of the invoice
  *         salesOrderId:
- *           type: number
- *           description: The ID of the sales order
+ *           type: string
+ *           description: The ID of the sales order (UUID)
  *         customerId:
- *           type: number
- *           description: The ID of the customer
+ *           type: string
+ *           description: The ID of the customer (UUID)
  *         customerName:
  *           type: string
  *           description: The name of the customer
@@ -53,7 +53,7 @@ const router = Router();
  *             type: object
  *             properties:
  *               productId:
- *                 type: number
+ *                 type: string
  *               productName:
  *                 type: string
  *               quantity:
@@ -64,19 +64,19 @@ const router = Router();
  *           type: number
  *           description: The total amount of the invoice
  *       example:
- *         id: 1001
- *         salesOrderId: 1
- *         customerId: 1
+ *         id: "d290f1ee-6c54-4b01-90e6-d701748f0851"
+ *         salesOrderId: "c290f1ee-6c54-4b01-90e6-d701748f0852"
+ *         customerId: "b290f1ee-6c54-4b01-90e6-d701748f0853"
  *         customerName: "John Smith"
  *         invoiceDate: "2025-08-15T10:00:00Z"
  *         dueDate: "2025-09-14T10:00:00Z"
  *         status: "Paid"
  *         items:
- *           - productId: 1
+ *           - productId: "a290f1ee-6c54-4b01-90e6-d701748f0854"
  *             productName: "Wireless Mouse"
  *             quantity: 1
  *             price: 25.99
- *           - productId: 2
+ *           - productId: "9d9e8050-0d7f-4e01-8c62-bce8bd67d4f8"
  *             productName: "Mechanical Keyboard"
  *             quantity: 1
  *             price: 120
@@ -94,7 +94,7 @@ const router = Router();
  * @swagger
  * /invoices:
  *   get:
- *     summary: Returns the list of all the invoices
+ *     summary: Returns the list of all the invoices for the current user
  *     tags: [Invoices]
  *     security:
  *       - bearerAuth: []
@@ -122,9 +122,9 @@ router.get('/', protect, getAllInvoices);
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
- *         description: The invoice ID
+ *         description: The invoice ID (UUID)
  *     responses:
  *       200:
  *         description: The invoice description by ID
@@ -195,9 +195,9 @@ router.post('/bulk', protect, createMultipleInvoices);
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
- *         description: The invoice ID
+ *         description: The invoice ID (UUID)
  *     requestBody:
  *       required: true
  *       content:
@@ -226,9 +226,9 @@ router.put('/:id', protect, updateInvoice);
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
- *         description: The invoice ID
+ *         description: The invoice ID (UUID)
  *     responses:
  *       200:
  *         description: The invoice was deleted

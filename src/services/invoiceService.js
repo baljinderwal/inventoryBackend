@@ -1,72 +1,72 @@
+import { v4 as uuidv4 } from 'uuid';
 import redisClient from '../config/redisClient.js';
 
-const INVOICE_KEY_PREFIX = 'invoice:';
-const ALL_INVOICES_KEY = 'invoices:all';
+const getInvoiceKey = (userId) => `s:user:${userId}:invoices`;
 
-export const getAllInvoices = async () => {
-    const invoiceIds = await redisClient.smembers(ALL_INVOICES_KEY);
-    if (!invoiceIds || invoiceIds.length === 0) {
+export const getAllInvoices = async (userId) => {
+    const invoices = await redisClient.hgetall(getInvoiceKey(userId));
+    if (!invoices || Object.keys(invoices).length === 0) {
         return [];
     }
-    const invoiceKeys = invoiceIds.map(id => `${INVOICE_KEY_PREFIX}${id}`);
-    const invoices = await redisClient.mget(invoiceKeys);
-    return invoices.map(invoice => JSON.parse(invoice));
+    return Object.values(invoices).map(invoice => JSON.parse(invoice));
 };
 
-export const getInvoiceById = async (id) => {
-    const invoice = await redisClient.get(`${INVOICE_KEY_PREFIX}${id}`);
+export const getInvoiceById = async (userId, invoiceId) => {
+    const invoice = await redisClient.hget(getInvoiceKey(userId), invoiceId);
     return invoice ? JSON.parse(invoice) : null;
 };
 
-export const createInvoice = async (invoiceData) => {
-    const newId = await redisClient.incr('invoice:id_counter');
-    const newInvoice = { ...invoiceData, id: newId };
+export const createInvoice = async (userId, invoiceData) => {
+    const { id, ...invoice } = invoiceData;
+    const invoiceId = uuidv4();
+    const newInvoice = { ...invoice, id: invoiceId };
 
-    const pipeline = redisClient.pipeline();
-    pipeline.set(`${INVOICE_KEY_PREFIX}${newInvoice.id}`, JSON.stringify(newInvoice));
-    pipeline.sadd(ALL_INVOICES_KEY, newInvoice.id);
-    await pipeline.exec();
+    await redisClient.hset(
+        getInvoiceKey(userId),
+        invoiceId,
+        JSON.stringify(newInvoice)
+    );
 
     return newInvoice;
 };
 
-export const createMultipleInvoices = async (invoicesData) => {
+export const createMultipleInvoices = async (userId, invoicesData) => {
     const pipeline = redisClient.pipeline();
     const newInvoices = [];
 
     for (const invoiceData of invoicesData) {
-        const newId = await redisClient.incr('invoice:id_counter');
-        const newInvoice = { ...invoiceData, id: newId };
+        const { id, ...invoice } = invoiceData;
+        const invoiceId = uuidv4();
+        const newInvoice = { ...invoice, id: invoiceId };
         newInvoices.push(newInvoice);
 
-        pipeline.set(`${INVOICE_KEY_PREFIX}${newInvoice.id}`, JSON.stringify(newInvoice));
-        pipeline.sadd(ALL_INVOICES_KEY, newInvoice.id);
+        pipeline.hset(
+            getInvoiceKey(userId),
+            invoiceId,
+            JSON.stringify(newInvoice)
+        );
     }
 
     await pipeline.exec();
     return newInvoices;
 };
 
-export const updateInvoice = async (id, updates) => {
-    const key = `${INVOICE_KEY_PREFIX}${id}`;
-    const existingInvoiceJSON = await redisClient.get(key);
+export const updateInvoice = async (userId, invoiceId, updates) => {
+    const key = getInvoiceKey(userId);
+    const existingInvoiceJSON = await redisClient.hget(key, invoiceId);
 
     if (!existingInvoiceJSON) {
         return null;
     }
 
     const existingInvoice = JSON.parse(existingInvoiceJSON);
-    const updatedInvoice = { ...existingInvoice, ...updates };
+    const updatedInvoice = { ...existingInvoice, ...updates, id: invoiceId };
 
-    await redisClient.set(key, JSON.stringify(updatedInvoice));
+    await redisClient.hset(key, invoiceId, JSON.stringify(updatedInvoice));
     return updatedInvoice;
 };
 
-export const deleteInvoice = async (id) => {
-    const key = `${INVOICE_KEY_PREFIX}${id}`;
-    const pipeline = redisClient.pipeline();
-    pipeline.del(key);
-    pipeline.srem(ALL_INVOICES_KEY, id);
-    const results = await pipeline.exec();
-    return results[0][1]; // Result of the first del command
+export const deleteInvoice = async (userId, invoiceId) => {
+    const key = getInvoiceKey(userId);
+    return await redisClient.hdel(key, invoiceId);
 };

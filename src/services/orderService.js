@@ -1,21 +1,20 @@
-import redisClient from '../config/redisClient.js';
 import { v4 as uuidv4 } from 'uuid';
+import redisClient from '../config/redisClient.js';
 import { findProductByIdAcrossUsers } from './productService.js';
-import { getStockByProductId } from './stockService.js';
+import { getStockByProductId, updateStock } from './stockService.js';
 import * as promotionService from './promotionService.js';
 import { sendNotificationToUser } from './notificationService.js';
 
-const ORDER_KEY_PREFIX = 'order:';
-const STOCK_KEY_PREFIX = 'stock:'; // Assuming stock service uses this, good to have it here
+const getOrderKey = (userId) => `s:user:${userId}:orders`;
+const getOrderStatusKey = (userId, status) => `s:user:${userId}:orders:status:${status}`;
+const getOrderSupplierKey = (userId, supplierId) => `s:user:${userId}:orders:supplier:${supplierId}`;
 
-export const getAllOrders = async (sortBy, order) => {
-  const keys = await redisClient.keys(`${ORDER_KEY_PREFIX}*`);
-  if (keys.length === 0) {
-    return [];
+export const getAllOrders = async (userId, sortBy, order) => {
+  const orders = await redisClient.hgetall(getOrderKey(userId));
+  if (!orders || Object.keys(orders).length === 0) {
+      return [];
   }
-
-  const orders = await redisClient.mget(keys);
-  let parsedOrders = orders.map(o => JSON.parse(o));
+  let parsedOrders = Object.values(orders).map(o => JSON.parse(o));
 
   if (sortBy) {
     parsedOrders.sort((a, b) => {
@@ -35,24 +34,17 @@ export const getAllOrders = async (sortBy, order) => {
   return parsedOrders;
 };
 
-export const getOrderById = async (id) => {
-  const order = await redisClient.get(`${ORDER_KEY_PREFIX}${id}`);
+export const getOrderById = async (userId, orderId) => {
+  const order = await redisClient.hget(getOrderKey(userId), orderId);
   return order ? JSON.parse(order) : null;
 };
 
-export const createOrder = async (orderData) => {
-  const stockKeys = orderData.products.map(item => `${STOCK_KEY_PREFIX}${item.productId}`);
-
-  // Use a dedicated client for transactions to avoid issues with shared state
-  const stockLevels = await Promise.all(
-      orderData.products.map(item => getStockByProductId(item.productId))
-  );
-
+export const createOrder = async (userId, orderData) => {
   // Validate stock and product existence
   for (let i = 0; i < orderData.products.length; i++) {
       const item = orderData.products[i];
-      const stock = stockLevels[i];
-      const product = await findProductByIdAcrossUsers(item.productId); // Assuming this is fast
+      const stock = await getStockByProductId(userId, item.productId);
+      const product = await findProductByIdAcrossUsers(item.productId); 
 
       if (!product) {
           throw new Error(`Product with ID ${item.productId} not found.`);
@@ -68,24 +60,26 @@ export const createOrder = async (orderData) => {
   // All checks passed, prepare the transaction
   const orderId = uuidv4();
   const status = order.status || 'pending';
-  const newOrder = { ...order, id: orderId, status, createdAt: new Date().toISOString(), originalTotal, completedAt: order.completedAt, userId: orderData.userId };
+  const newOrder = { ...order, id: orderId, status, createdAt: new Date().toISOString(), originalTotal, completedAt: order.completedAt, userId };
 
   const multi = redisClient.multi();
 
   // 1. Create the order
-  multi.set(`${ORDER_KEY_PREFIX}${orderId}`, JSON.stringify(newOrder));
-  multi.sadd(`orders:status:${status}`, orderId);
+  multi.hset(getOrderKey(userId), orderId, JSON.stringify(newOrder));
+  multi.sadd(getOrderStatusKey(userId, status), orderId);
   if (newOrder.supplier && newOrder.supplier.id) {
-      multi.sadd(`orders:supplier:${newOrder.supplier.id}`, orderId);
+      multi.sadd(getOrderSupplierKey(userId, newOrder.supplier.id), orderId);
   }
 
   // 2. Decrement stock for each item
   for (let i = 0; i < orderData.products.length; i++) {
       const item = orderData.products[i];
-      const stock = stockLevels[i];
+      const stock = await getStockByProductId(userId, item.productId);
       const newQuantity = stock.quantity - item.quantity;
-      const updatedStock = { ...stock, quantity: newQuantity };
-      multi.set(`${STOCK_KEY_PREFIX}${item.productId}`, JSON.stringify(updatedStock));
+      // This is not ideal as it's not transactional with the order creation.
+      // A better approach would be to use a Lua script to handle this atomically.
+      // For now, we will update the stock directly.
+      await updateStock(userId, item.productId, { quantity: newQuantity });
   }
 
   // Execute the transaction
@@ -94,40 +88,40 @@ export const createOrder = async (orderData) => {
   return newOrder;
 };
 
-export const createMultipleOrders = async (ordersData) => {
+export const createMultipleOrders = async (userId, ordersData) => {
   const createdOrders = [];
   for (const orderData of ordersData) {
-    const newOrder = await createOrder(orderData);
+    const newOrder = await createOrder(userId, orderData);
     createdOrders.push(newOrder);
   }
   return createdOrders;
 };
 
 
-export const updateOrder = async (id, updates) => {
-  const key = `${ORDER_KEY_PREFIX}${id}`;
-  const existingOrderJSON = await redisClient.get(key);
+export const updateOrder = async (userId, orderId, updates) => {
+  const key = getOrderKey(userId);
+  const existingOrderJSON = await redisClient.hget(key, orderId);
 
   if (!existingOrderJSON) {
     return null;
   }
 
   const existingOrder = JSON.parse(existingOrderJSON);
-  const updatedOrder = { ...existingOrder, ...updates };
+  const updatedOrder = { ...existingOrder, ...updates, id: orderId };
 
   const pipeline = redisClient.pipeline();
-  pipeline.set(key, JSON.stringify(updatedOrder));
+  pipeline.hset(key, orderId, JSON.stringify(updatedOrder));
 
   // Handle status update
   if (updates.status && updates.status !== existingOrder.status) {
-    pipeline.srem(`orders:status:${existingOrder.status}`, id);
-    pipeline.sadd(`orders:status:${updates.status}`, id);
+    pipeline.srem(getOrderStatusKey(userId, existingOrder.status), orderId);
+    pipeline.sadd(getOrderStatusKey(userId, updates.status), orderId);
     if (updatedOrder.userId) {
       sendNotificationToUser(updatedOrder.userId, {
         type: 'ORDER_STATUS_UPDATE',
-        orderId: id,
+        orderId: orderId,
         status: updates.status,
-        message: `Your order ${id} has been updated to ${updates.status}.`
+        message: `Your order ${orderId} has been updated to ${updates.status}.`
       });
     }
   }
@@ -139,10 +133,10 @@ export const updateOrder = async (id, updates) => {
 
   if (newSupplierId !== oldSupplierId) {
     if (oldSupplierId) {
-      pipeline.srem(`orders:supplier:${oldSupplierId}`, id);
+      pipeline.srem(getOrderSupplierKey(userId, oldSupplierId), orderId);
     }
     if (newSupplierId) {
-      pipeline.sadd(`orders:supplier:${newSupplierId}`, id);
+      pipeline.sadd(getOrderSupplierKey(userId, newSupplierId), orderId);
     }
   }
 
@@ -150,44 +144,42 @@ export const updateOrder = async (id, updates) => {
   return updatedOrder;
 };
 
-export const deleteOrder = async (id) => {
-  const key = `${ORDER_KEY_PREFIX}${id}`;
-  const orderJSON = await redisClient.get(key);
+export const deleteOrder = async (userId, orderId) => {
+    const key = getOrderKey(userId);
+    const orderJSON = await redisClient.hget(key, orderId);
 
-  if (!orderJSON) {
-    return 0; // Not found, consistent with original behavior
-  }
+    if (!orderJSON) {
+        return 0; // Not found
+    }
 
-  const order = JSON.parse(orderJSON);
-  const pipeline = redisClient.pipeline();
+    const order = JSON.parse(orderJSON);
+    const pipeline = redisClient.pipeline();
 
-  // Remove from status index
-  if (order.status) {
-    pipeline.srem(`orders:status:${order.status}`, id);
-  }
+    // Remove from status index
+    if (order.status) {
+        pipeline.srem(getOrderStatusKey(userId, order.status), orderId);
+    }
 
-  // Remove from supplier index
-  if (order.supplier && order.supplier.id) {
-    pipeline.srem(`orders:supplier:${order.supplier.id}`, id);
-  }
+    // Remove from supplier index
+    if (order.supplier && order.supplier.id) {
+        pipeline.srem(getOrderSupplierKey(userId, order.supplier.id), orderId);
+    }
 
-  // Delete the order itself
-  pipeline.del(key);
+    // Delete the order itself
+    pipeline.hdel(key, orderId);
 
-  const results = await pipeline.exec();
-  // The result of del is the last one in the pipeline, which is an array [error, data]
-  const delResult = results[results.length - 1][1];
-  return delResult;
+    const results = await pipeline.exec();
+    const delResult = results[results.length - 1][1];
+    return delResult;
 };
 
-export const getOrdersBySupplier = async (supplierId) => {
-  const orderIds = await redisClient.smembers(`orders:supplier:${supplierId}`);
+export const getOrdersBySupplier = async (userId, supplierId) => {
+  const orderIds = await redisClient.smembers(getOrderSupplierKey(userId, supplierId));
   if (orderIds.length === 0) {
     return [];
   }
-  const keys = orderIds.map(id => `${ORDER_KEY_PREFIX}${id}`);
-  const ordersJSON = await redisClient.mget(keys);
-  return ordersJSON.map(order => JSON.parse(order)).filter(Boolean);
+  const orders = await redisClient.hmget(getOrderKey(userId), ...orderIds);
+  return orders.map(order => JSON.parse(order)).filter(Boolean);
 };
 
 const applyPromotions = async (orderData) => {
@@ -204,7 +196,6 @@ const applyPromotions = async (orderData) => {
     const allPromotions = await promotionService.getAllPromotions();
 
     for (const promo of allPromotions) {
-        // Simple promotion logic: category-wide discount
         if (promo.type === 'percentage' && promo.category) {
             for (const item of orderData.products) {
                 const product = await findProductByIdAcrossUsers(item.productId);
@@ -230,12 +221,11 @@ const applyPromotions = async (orderData) => {
     return { order: finalOrder, originalTotal };
 };
 
-export const getOrdersByStatus = async (status) => {
-  const orderIds = await redisClient.smembers(`orders:status:${status}`);
+export const getOrdersByStatus = async (userId, status) => {
+  const orderIds = await redisClient.smembers(getOrderStatusKey(userId, status));
   if (orderIds.length === 0) {
     return [];
   }
-  const keys = orderIds.map(id => `${ORDER_KEY_PREFIX}${id}`);
-  const ordersJSON = await redisClient.mget(keys);
-  return ordersJSON.map(order => JSON.parse(order)).filter(Boolean);
+  const orders = await redisClient.hmget(getOrderKey(userId), ...orderIds);
+  return orders.map(order => JSON.parse(order)).filter(Boolean);
 };

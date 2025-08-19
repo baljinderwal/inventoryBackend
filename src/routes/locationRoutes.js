@@ -22,8 +22,8 @@ const router = Router();
  *         - address
  *       properties:
  *         id:
- *           type: integer
- *           description: The auto-generated id of the location
+ *           type: string
+ *           description: The auto-generated id of the location (UUID)
  *         name:
  *           type: string
  *           description: The name of the location
@@ -31,7 +31,7 @@ const router = Router();
  *           type: string
  *           description: The address of the location
  *       example:
- *         id: 1
+ *         id: "d290f1ee-6c54-4b01-90e6-d701748f0851"
  *         name: "Main Warehouse"
  *         address: "123 Main St, Anytown, USA"
  */
@@ -47,7 +47,7 @@ const router = Router();
  * @swagger
  * /locations:
  *   get:
- *     summary: Returns the list of all the locations
+ *     summary: Returns the list of all the locations for the current user
  *     tags: [Locations]
  *     security:
  *       - bearerAuth: []
@@ -77,7 +77,7 @@ router.get('/', protect, getAllLocations);
  *         schema:
  *           type: string
  *         required: true
- *         description: The location id
+ *         description: The location id (UUID)
  *     responses:
  *       200:
  *         description: The location description by id
@@ -150,7 +150,7 @@ router.post('/bulk', protect, createMultipleLocations);
  *         schema:
  *           type: string
  *         required: true
- *         description: The location id
+ *         description: The location id (UUID)
  *     requestBody:
  *       required: true
  *       content:
@@ -181,7 +181,7 @@ router.put('/:id', protect, updateLocation);
  *         schema:
  *           type: string
  *         required: true
- *         description: The location id
+ *         description: The location id (UUID)
  *     responses:
  *       200:
  *         description: The location was deleted

@@ -32,12 +32,9 @@ const router = Router();
  *         - quantity
  *         - warehouse
  *       properties:
- *         id:
- *           type: number
- *           description: The auto-generated id of the stock entry
  *         productId:
- *           type: number
- *           description: The ID of the product
+ *           type: string
+ *           description: The ID of the product (UUID)
  *         quantity:
  *           type: number
  *           description: The total quantity of the product in stock
@@ -49,7 +46,7 @@ const router = Router();
  *           items:
  *             $ref: '#/components/schemas/Batch'
  *       example:
- *         productId: 1
+ *         productId: "d290f1ee-6c54-4b01-90e6-d701748f0851"
  *         quantity: 150
  *         warehouse: "A"
  *         batches:
@@ -69,7 +66,7 @@ const router = Router();
  * @swagger
  * /stock:
  *   get:
- *     summary: Returns the list of all the stock entries
+ *     summary: Returns the list of all the stock entries for the current user
  *     tags: [Stock]
  *     security:
  *       - bearerAuth: []
@@ -97,9 +94,9 @@ router.get('/', protect, getAllStock);
  *       - in: path
  *         name: productId
  *         schema:
- *           type: number
+ *           type: string
  *         required: true
- *         description: The product ID
+ *         description: The product ID (UUID)
  *     responses:
  *       200:
  *         description: The stock information by product ID
@@ -170,9 +167,9 @@ router.post('/bulk', protect, createMultipleStocks);
  *       - in: path
  *         name: productId
  *         schema:
- *           type: number
+ *           type: string
  *         required: true
- *         description: The product ID
+ *         description: The product ID (UUID)
  *     requestBody:
  *       required: true
  *       content:
@@ -201,9 +198,9 @@ router.put('/:productId', protect, updateStock);
  *       - in: path
  *         name: productId
  *         schema:
- *           type: number
+ *           type: string
  *         required: true
- *         description: The product ID
+ *         description: The product ID (UUID)
  *     responses:
  *       200:
  *         description: The stock entry was deleted
