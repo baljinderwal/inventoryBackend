@@ -13,6 +13,11 @@ import reviewRoutes from './reviewRoutes.js';
 
 const router = Router();
 
+router.get('/error', (req, res, next) => {
+  const err = new Error('This is a test error.');
+  next(err);
+});
+
 /**
  * @swagger
  * components:
