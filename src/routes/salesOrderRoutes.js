@@ -24,8 +24,8 @@ const router = Router();
  *         - total
  *       properties:
  *         id:
- *           type: number
- *           description: The numeric ID of the sales order
+ *           type: string
+ *           description: The UUID of the sales order
  *         customerId:
  *           type: number
  *           description: The ID of the customer
@@ -56,7 +56,7 @@ const router = Router();
  *           type: number
  *           description: The total amount of the order
  *       example:
- *         id: 1
+ *         id: "d290f1ee-6c54-4b01-90e6-d701748f0851"
  *         customerId: 1
  *         customerName: "John Smith"
  *         createdAt: "2025-08-14T10:00:00Z"
@@ -84,7 +84,7 @@ const router = Router();
  * @swagger
  * /salesOrders:
  *   get:
- *     summary: Returns the list of all the sales orders
+ *     summary: Returns the list of all the sales orders for the current user
  *     tags: [SalesOrders]
  *     security:
  *       - bearerAuth: []
@@ -112,9 +112,9 @@ router.get('/', protect, getAllSalesOrders);
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
- *         description: The sales order ID
+ *         description: The sales order ID (UUID)
  *     responses:
  *       200:
  *         description: The sales order description by ID
@@ -185,9 +185,9 @@ router.post('/bulk', protect, createMultipleSalesOrders);
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
- *         description: The sales order ID
+ *         description: The sales order ID (UUID)
  *     requestBody:
  *       required: true
  *       content:
@@ -216,9 +216,9 @@ router.put('/:id', protect, updateSalesOrder);
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
- *         description: The sales order ID
+ *         description: The sales order ID (UUID)
  *     responses:
  *       200:
  *         description: The sales order was deleted
