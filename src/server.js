@@ -5,7 +5,7 @@ import * as userService from './services/userService.js';
 import { initWebSocketServer } from './services/notificationService.js';
 
 const users = [
-  { id: 1, name: 'Admin User', email: 'admin@example.com', password: 'password', role: 'Admin' },
+  { id: 1, name: 'Admin User', email: 'admin@example.com', password: 'password', role: 'admin' },
   { id: 2, name: 'Manager User', email: 'manager@example.com', password: 'password', role: 'Manager' },
   { id: 3, name: 'Staff User', email: 'staff@example.com', password: 'password', role: 'Staff' }
 ];
