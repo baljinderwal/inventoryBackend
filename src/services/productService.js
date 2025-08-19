@@ -5,6 +5,14 @@ const USER_PRODUCTS_KEY_PREFIX = 's:user:';
 
 const getUserProductsKey = (userId) => `${USER_PRODUCTS_KEY_PREFIX}${userId}:products`;
 
+const logStream = fs.createWriteStream(path.join(process.cwd(), 'server.log'), { flags: 'a' });
+
+const logRequest = (message) => {
+  const timestamp = new Date().toISOString();
+  logStream.write(`[${timestamp}] ${message}\n`);
+  console.log(`[${timestamp}] ${message}`);
+};
+
 export const getProductById = async (userId, productId) => {
   const userProductsKey = getUserProductsKey(userId);
   const productJSON = await redisClient.hget(userProductsKey, productId);
@@ -62,8 +70,9 @@ export const updateProduct = async (userId, productId, updates) => {
 };
 
 export const deleteProduct = async (userId, productId) => {
+  
   const userProductsKey = getUserProductsKey(userId);
-  console.log(`Deleting product ${productId} for user ${userId} from key ${userProductsKey}`);
+  logRequest(`Deleting product ${productId} for user ${userId} from key ${userProductsKey}`);
   return await redisClient.hdel(userProductsKey, productId);
 };
 

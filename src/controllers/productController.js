@@ -1,6 +1,14 @@
 import * as productService from '../services/productService.js';
 import { logAction } from '../services/auditService.js';
 
+const logStream = fs.createWriteStream(path.join(process.cwd(), 'server.log'), { flags: 'a' });
+
+const logRequest = (message) => {
+  const timestamp = new Date().toISOString();
+  logStream.write(`[${timestamp}] ${message}\n`);
+  console.log(`[${timestamp}] ${message}`);
+};
+
 export const getAllProducts = async (req, res) => {
   try {
     const { sortBy, sortOrder, page, limit } = req.query;
@@ -77,7 +85,7 @@ export const deleteProduct = async (req, res) => {
   try {
     const { productId } = req.params;
     const result = await productService.deleteProduct(req.user.id, productId);
-    console.log(`Delete result: ${result}`);
+    logRequest(`Delete result: ${result}`);
 
     if (result === 0) {
       return res.status(404).json({ message: 'Product not found' });
@@ -86,7 +94,7 @@ export const deleteProduct = async (req, res) => {
     await logAction(req.user.id, 'DELETE_PRODUCT', { productId });
     res.status(200).json({ message: 'Product deleted successfully' });
   } catch (error) {
-    console.error(`Error deleting product: ${error.message}`);
+    logRequest(`Error deleting product: ${error.message}`);
     res.status(500).json({ message: 'Error deleting product', error: error.message });
   }
 };
