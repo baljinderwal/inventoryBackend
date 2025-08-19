@@ -29,8 +29,8 @@ describe('Logging Middleware', () => {
     token = res.body.token;
   });
 
-  afterEach(() => {
-    // Clear the log file after each test
+  beforeEach(() => {
+    // Clear the log file before each test
     if (fs.existsSync(logFilePath)) {
       fs.truncateSync(logFilePath, 0);
     }

@@ -1,85 +1,57 @@
-[2025-08-19T08:57:49.602Z] Request: GET /suppliers/2/products
+[2025-08-19T09:19:21.070Z] Request: GET /products
   Query: {}
   Body: undefined
-  Token: VALID
-  User: {"id":"2e87f300-a93a-45f8-b51e-a68c1f7124cb","name":"Test User","email":"supplier1@example.com","role":"user","iat":1755593869,"exp":1755597469}
-[2025-08-19T08:57:49.638Z] Request: PUT /users/me
-  Query: {}
-  Body: {"email":"newauth3@example.com","password":"newpassword123"}
-  Token: VALID
-  User: {"id":"01ac3ceb-5559-40b2-b9b5-ca245b0dca07","name":"Auth Test User","email":"auth3@example.com","role":"user","iat":1755593869,"exp":1755597469}
-[2025-08-19T08:57:49.749Z] Request: POST /auth/register
-  Query: {}
-  Body: {"name":"Auth Test User","email":"auth4@example.com","password":"password123"}
-  Token: NOT PROVIDED
-[2025-08-19T08:57:49.819Z] Request: GET /suppliers/999/products
-  Query: {}
-  Body: undefined
-  Token: VALID
-  User: {"id":"806d2ada-bf92-4928-968c-e0d7bc2d3c0b","name":"Test User","email":"supplier2@example.com","role":"user","iat":1755593869,"exp":1755597469}
-[2025-08-19T08:57:49.857Z] Request: POST /auth/login
-  Query: {}
-  Body: {"email":"auth4@example.com","password":"password123"}
-  Token: NOT PROVIDED
-[2025-08-19T08:57:49.967Z] Request: PUT /users/me
-  Query: {}
-  Body: {"email":"newauth4@example.com","password":"newpassword123"}
-  Token: VALID
-  User: {"id":"3ff9bed8-3b94-4d13-9f06-6ab261ca907a","name":"Auth Test User","email":"auth4@example.com","role":"user","iat":1755593869,"exp":1755597469}
-[2025-08-19T08:57:50.081Z] Request: POST /auth/login
-  Query: {}
-  Body: {"email":"newauth4@example.com","password":"newpassword123"}
-  Token: NOT PROVIDED
-[2025-08-19T08:57:50.122Z] Request: POST /auth/register
+  Token: INVALID - jwt malformed
+[2025-08-19T09:19:21.707Z] Request: POST /auth/register
   Query: {}
   Body: {"name":"Product Test Admin","email":"product-test-admin@example.com","password":"password123","role":"admin"}
   Token: NOT PROVIDED
-[2025-08-19T08:57:50.251Z] Request: POST /auth/login
+[2025-08-19T09:19:21.841Z] Request: POST /auth/login
   Query: {}
   Body: {"email":"product-test-admin@example.com","password":"password123"}
   Token: NOT PROVIDED
-[2025-08-19T08:57:50.367Z] Request: POST /products
+[2025-08-19T09:19:21.956Z] Request: POST /products
   Query: {}
-  Body: {"name":"Test Wireless Mouse","sku":"WM-TEST-0","category":"Electronics","price":29.99,"costPrice":18.5,"lowStockThreshold":15,"createdAt":"2025-08-19T08:57:50.363Z","barcode":"9876543210123"}
+  Body: {"name":"Test Wireless Mouse","sku":"WM-TEST-0","category":"Electronics","price":29.99,"costPrice":18.5,"lowStockThreshold":15,"createdAt":"2025-08-19T09:19:21.951Z","barcode":"9876543210123"}
   Token: VALID
-  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
-[2025-08-19T08:57:50.378Z] Request: POST /products
+  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
+[2025-08-19T09:19:21.967Z] Request: POST /products
   Query: {}
-  Body: {"name":"Test Wireless Mouse for GET","sku":"WM-TEST-1","category":"Electronics","price":35.99,"costPrice":22,"lowStockThreshold":25,"createdAt":"2025-08-19T08:57:50.375Z","barcode":"5432109876543"}
+  Body: {"name":"Test Wireless Mouse for GET","sku":"WM-TEST-1","category":"Electronics","price":35.99,"costPrice":22,"lowStockThreshold":25,"createdAt":"2025-08-19T09:19:21.964Z","barcode":"5432109876543"}
   Token: VALID
-  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
-[2025-08-19T08:57:50.383Z] Request: GET /products/WM-TEST-1
+  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
+[2025-08-19T09:19:21.972Z] Request: GET /products/WM-TEST-1
   Query: {}
   Body: undefined
   Token: VALID
-  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
-[2025-08-19T08:57:50.391Z] Request: POST /products
+  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
+[2025-08-19T09:19:21.979Z] Request: POST /products
   Query: {}
-  Body: {"name":"Test Mouse to Update","sku":"WM-TEST-2","category":"Peripherals","price":40,"costPrice":25,"lowStockThreshold":10,"createdAt":"2025-08-19T08:57:50.388Z","barcode":"1122334455667"}
+  Body: {"name":"Test Mouse to Update","sku":"WM-TEST-2","category":"Peripherals","price":40,"costPrice":25,"lowStockThreshold":10,"createdAt":"2025-08-19T09:19:21.976Z","barcode":"1122334455667"}
   Token: VALID
-  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
-[2025-08-19T08:57:50.397Z] Request: PUT /products/WM-TEST-2
+  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
+[2025-08-19T09:19:21.985Z] Request: PUT /products/WM-TEST-2
   Query: {}
   Body: {"price":38.5,"lowStockThreshold":12}
   Token: VALID
-  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
-[2025-08-19T08:57:50.403Z] Request: GET /products/WM-TEST-2
+  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
+[2025-08-19T09:19:21.990Z] Request: GET /products/WM-TEST-2
   Query: {}
   Body: undefined
   Token: VALID
-  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
-[2025-08-19T08:57:50.410Z] Request: POST /products
+  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
+[2025-08-19T09:19:21.997Z] Request: POST /products
   Query: {}
-  Body: {"name":"Test Mouse to Delete","sku":"WM-TEST-3","category":"Disposable","price":5,"costPrice":2,"lowStockThreshold":5,"createdAt":"2025-08-19T08:57:50.407Z","barcode":"9988776655443"}
+  Body: {"name":"Test Mouse to Delete","sku":"WM-TEST-3","category":"Disposable","price":5,"costPrice":2,"lowStockThreshold":5,"createdAt":"2025-08-19T09:19:21.994Z","barcode":"9988776655443"}
   Token: VALID
-  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
-[2025-08-19T08:57:50.416Z] Request: DELETE /products/WM-TEST-3
-  Query: {}
-  Body: undefined
-  Token: VALID
-  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
-[2025-08-19T08:57:50.422Z] Request: GET /products/WM-TEST-3
+  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
+[2025-08-19T09:19:22.002Z] Request: DELETE /products/WM-TEST-3
   Query: {}
   Body: undefined
   Token: VALID
-  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
+  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
+[2025-08-19T09:19:22.008Z] Request: GET /products/WM-TEST-3
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}

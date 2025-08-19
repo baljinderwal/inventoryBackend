@@ -17,6 +17,7 @@ import customerRoutes from './routes/customerRoutes.js';
 import salesOrderRoutes from './routes/salesOrderRoutes.js';
 import invoiceRoutes from './routes/invoiceRoutes.js';
 import loggingMiddleware from './middleware/loggingMiddleware.js';
+import errorLoggingMiddleware from './middleware/errorLoggingMiddleware.js';
 
 const app = express();
 
@@ -41,5 +42,7 @@ app.use('/wishlist', wishlistRoutes);
 app.use('/customers', customerRoutes);
 app.use('/salesOrders', salesOrderRoutes);
 app.use('/invoices', invoiceRoutes);
+
+app.use(errorLoggingMiddleware);
 
 export default app;
