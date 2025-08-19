@@ -229,6 +229,6 @@ router.put('/:id', protect, updateSupplier);
  *       404:
  *         description: The supplier was not found
  */
-router.delete('/:id', protect, authorize('admin'), deleteSupplier);
+router.delete('/:id', protect, authorize('Admin'), deleteSupplier);
 
 export default router;

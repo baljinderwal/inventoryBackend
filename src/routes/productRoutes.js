@@ -225,7 +225,7 @@ router.put('/:productId', protect, updateProduct);
  *       404:
  *         description: The product was not found
  */
-router.delete('/:productId', protect, authorize('admin'), deleteProduct);
+router.delete('/:productId', protect, authorize('Admin'), deleteProduct);
 
 router.use('/:productId/reviews', reviewRoutes);
 

@@ -5,6 +5,6 @@ import authorize from '../middleware/authorize.js';
 
 const router = express.Router();
 
-router.get('/', protect, authorize(['admin']), auditController.getAuditLogs);
+router.get('/', protect, authorize(['Admin']), auditController.getAuditLogs);
 
 export default router;

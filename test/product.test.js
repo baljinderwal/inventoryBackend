@@ -16,7 +16,7 @@ describe('Product APIs', () => {
         name: 'Product Test Admin',
         email,
         password,
-        role: 'admin',
+        role: 'Admin',
       });
     userId = registerRes.body.userId;
     const loginRes = await request(app)
