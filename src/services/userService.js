@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import redisClient from '../config/redisClient.js';
 import bcrypt from 'bcryptjs';
 
-const USER_KEY_PREFIX = 'user:';
+const USER_KEY_PREFIX = 'user:userid:';
 
 export const getAllUsers = async () => {
   const keys = await redisClient.keys(`${USER_KEY_PREFIX}[0-9]*`);
@@ -20,7 +20,7 @@ export const getUserById = async (id) => {
 
 export const createUser = async (userData) => {
     const newId = uuidv4();
-    const newUser = { ...userData, id: newId, role: userData.role || 'user' };
+    const newUser = { ...userData, id: newId, role: userData.role };
 
     const pipeline = redisClient.pipeline();
     pipeline.set(`${USER_KEY_PREFIX}${newUser.id}`, JSON.stringify(newUser));
