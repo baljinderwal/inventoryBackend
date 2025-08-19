@@ -1,18 +1,85 @@
-node:internal/modules/package_json_reader:256
-  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
-        ^
-
-Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'dotenv' imported from /app/src/server.js
-    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:256:9)
-    at packageResolve (node:internal/modules/esm/resolve:768:81)
-    at moduleResolve (node:internal/modules/esm/resolve:854:18)
-    at defaultResolve (node:internal/modules/esm/resolve:984:11)
-    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:780:12)
-    at #cachedDefaultResolve (node:internal/modules/esm/loader:704:25)
-    at ModuleLoader.resolve (node:internal/modules/esm/loader:687:38)
-    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:305:38)
-    at ModuleJob._link (node:internal/modules/esm/module_job:175:49) {
-  code: 'ERR_MODULE_NOT_FOUND'
-}
-
-Node.js v22.17.1
+[2025-08-19T08:57:49.602Z] Request: GET /suppliers/2/products
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"2e87f300-a93a-45f8-b51e-a68c1f7124cb","name":"Test User","email":"supplier1@example.com","role":"user","iat":1755593869,"exp":1755597469}
+[2025-08-19T08:57:49.638Z] Request: PUT /users/me
+  Query: {}
+  Body: {"email":"newauth3@example.com","password":"newpassword123"}
+  Token: VALID
+  User: {"id":"01ac3ceb-5559-40b2-b9b5-ca245b0dca07","name":"Auth Test User","email":"auth3@example.com","role":"user","iat":1755593869,"exp":1755597469}
+[2025-08-19T08:57:49.749Z] Request: POST /auth/register
+  Query: {}
+  Body: {"name":"Auth Test User","email":"auth4@example.com","password":"password123"}
+  Token: NOT PROVIDED
+[2025-08-19T08:57:49.819Z] Request: GET /suppliers/999/products
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"806d2ada-bf92-4928-968c-e0d7bc2d3c0b","name":"Test User","email":"supplier2@example.com","role":"user","iat":1755593869,"exp":1755597469}
+[2025-08-19T08:57:49.857Z] Request: POST /auth/login
+  Query: {}
+  Body: {"email":"auth4@example.com","password":"password123"}
+  Token: NOT PROVIDED
+[2025-08-19T08:57:49.967Z] Request: PUT /users/me
+  Query: {}
+  Body: {"email":"newauth4@example.com","password":"newpassword123"}
+  Token: VALID
+  User: {"id":"3ff9bed8-3b94-4d13-9f06-6ab261ca907a","name":"Auth Test User","email":"auth4@example.com","role":"user","iat":1755593869,"exp":1755597469}
+[2025-08-19T08:57:50.081Z] Request: POST /auth/login
+  Query: {}
+  Body: {"email":"newauth4@example.com","password":"newpassword123"}
+  Token: NOT PROVIDED
+[2025-08-19T08:57:50.122Z] Request: POST /auth/register
+  Query: {}
+  Body: {"name":"Product Test Admin","email":"product-test-admin@example.com","password":"password123","role":"admin"}
+  Token: NOT PROVIDED
+[2025-08-19T08:57:50.251Z] Request: POST /auth/login
+  Query: {}
+  Body: {"email":"product-test-admin@example.com","password":"password123"}
+  Token: NOT PROVIDED
+[2025-08-19T08:57:50.367Z] Request: POST /products
+  Query: {}
+  Body: {"name":"Test Wireless Mouse","sku":"WM-TEST-0","category":"Electronics","price":29.99,"costPrice":18.5,"lowStockThreshold":15,"createdAt":"2025-08-19T08:57:50.363Z","barcode":"9876543210123"}
+  Token: VALID
+  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
+[2025-08-19T08:57:50.378Z] Request: POST /products
+  Query: {}
+  Body: {"name":"Test Wireless Mouse for GET","sku":"WM-TEST-1","category":"Electronics","price":35.99,"costPrice":22,"lowStockThreshold":25,"createdAt":"2025-08-19T08:57:50.375Z","barcode":"5432109876543"}
+  Token: VALID
+  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
+[2025-08-19T08:57:50.383Z] Request: GET /products/WM-TEST-1
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
+[2025-08-19T08:57:50.391Z] Request: POST /products
+  Query: {}
+  Body: {"name":"Test Mouse to Update","sku":"WM-TEST-2","category":"Peripherals","price":40,"costPrice":25,"lowStockThreshold":10,"createdAt":"2025-08-19T08:57:50.388Z","barcode":"1122334455667"}
+  Token: VALID
+  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
+[2025-08-19T08:57:50.397Z] Request: PUT /products/WM-TEST-2
+  Query: {}
+  Body: {"price":38.5,"lowStockThreshold":12}
+  Token: VALID
+  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
+[2025-08-19T08:57:50.403Z] Request: GET /products/WM-TEST-2
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
+[2025-08-19T08:57:50.410Z] Request: POST /products
+  Query: {}
+  Body: {"name":"Test Mouse to Delete","sku":"WM-TEST-3","category":"Disposable","price":5,"costPrice":2,"lowStockThreshold":5,"createdAt":"2025-08-19T08:57:50.407Z","barcode":"9988776655443"}
+  Token: VALID
+  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
+[2025-08-19T08:57:50.416Z] Request: DELETE /products/WM-TEST-3
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
+[2025-08-19T08:57:50.422Z] Request: GET /products/WM-TEST-3
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"a0cac72c-2336-4d47-84d3-8c591b9bb9a4","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755593870,"exp":1755597470}
