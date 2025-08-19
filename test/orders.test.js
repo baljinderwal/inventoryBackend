@@ -5,19 +5,18 @@ import * as orderService from '../src/services/orderService.js';
 import * as supplierService from '../src/services/supplierService.js';
 import * as productService from '../src/services/productService.js';
 import * as stockService from '../src/services/stockService.js';
-import * as userService from '../src/services/userService.js';
 import redisClient from '../src/config/redisClient.js';
 
 describe('Order APIs Enhancements', () => {
     let token;
-    let supplierId = 1;
+    let supplierId;
     let productId;
     let orderId;
     let emailCounter = 0;
     let email;
     let password = 'password123';
-
     let userId;
+
     beforeEach(async () => {
         email = `order${emailCounter}@example.com`;
         emailCounter++;
@@ -27,14 +26,15 @@ describe('Order APIs Enhancements', () => {
         token = await authService.login(email, password);
 
         // Create a product
-        const product = await productService.createProduct({ sku: 'ORDER-TEST-001', name: 'Order Test Product' });
+        const product = await productService.createProduct(userId, { sku: 'ORDER-TEST-001', name: 'Order Test Product' });
         productId = product.id;
 
         // Create stock for the product
         await stockService.createStock({ productId: productId, quantity: 50 });
 
         // Create a supplier
-        await supplierService.createSupplier({ id: supplierId, name: 'Test Supplier', products: [productId] });
+        const newSupplier = await supplierService.createSupplier(userId, { name: 'Test Supplier', products: [productId] });
+        supplierId = newSupplier.id;
 
         // Create an order
         const order = await orderService.createOrder({
@@ -81,7 +81,7 @@ describe('Order APIs Enhancements', () => {
 
     it('should return empty array for non-existent supplier', async () => {
         const res = await request(app)
-            .get('/orders/supplier/999')
+            .get('/orders/supplier/a-non-existent-id')
             .set('Authorization', `Bearer ${token}`);
         expect(res.statusCode).toEqual(200);
         expect(res.body.length).toBe(0);
@@ -102,8 +102,8 @@ describe('Order Stock Validation', () => {
     let emailCounter = 0;
     let email;
     let password = 'password123';
-
     let userId;
+
     beforeEach(async () => {
         email = `orderstock${emailCounter}@example.com`;
         emailCounter++;
@@ -113,7 +113,7 @@ describe('Order Stock Validation', () => {
         token = await authService.login(email, password);
 
         // Create a product
-        const product = await productService.createProduct({ sku: 'STOCK-TEST-001', name: 'Stock Test Product' });
+        const product = await productService.createProduct(userId, { sku: 'STOCK-TEST-001', name: 'Stock Test Product' });
         productId = product.id;
 
         // Create stock for the product
@@ -144,7 +144,7 @@ describe('Order Stock Validation', () => {
     });
 
     it('should fail to create an order if product does not exist', async () => {
-        const nonExistentProductId = 999;
+        const nonExistentProductId = 'a-non-existent-id';
         const res = await request(app)
             .post('/orders')
             .set('Authorization', `Bearer ${token}`)

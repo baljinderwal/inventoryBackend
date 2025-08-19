@@ -1,61 +1,84 @@
+import { v4 as uuidv4 } from 'uuid';
 import redisClient from '../config/redisClient.js';
 import { findProductByIdAcrossUsers } from './productService.js';
 
-const SUPPLIER_KEY_PREFIX = 'supplier:';
+const getSupplierKey = (userId) => `s:user:${userId}:suppliers`;
 
-export const getSupplierById = async (id) => {
-  const supplier = await redisClient.get(`${SUPPLIER_KEY_PREFIX}${id}`);
+export const getSupplierById = async (userId, supplierId) => {
+  const supplier = await redisClient.hget(getSupplierKey(userId), supplierId);
   return supplier ? JSON.parse(supplier) : null;
 };
 
-export const createSupplier = async (supplier) => {
-  await redisClient.set(`${SUPPLIER_KEY_PREFIX}${supplier.id}`, JSON.stringify(supplier));
+export const createSupplier = async (userId, supplierData) => {
+  const { id, ...supplier } = supplierData;
+  const supplierId = uuidv4();
+  const newSupplier = { ...supplier, id: supplierId };
+  await redisClient.hset(
+    getSupplierKey(userId),
+    supplierId,
+    JSON.stringify(newSupplier)
+  );
+  return newSupplier;
 };
 
-export const createMultipleSuppliers = async (suppliers) => {
+export const createMultipleSuppliers = async (userId, suppliersData) => {
   const pipeline = redisClient.pipeline();
-  suppliers.forEach(supplier => {
-    pipeline.set(`${SUPPLIER_KEY_PREFIX}${supplier.id}`, JSON.stringify(supplier));
-  });
+  const newSuppliers = [];
+  for (const supplierData of suppliersData) {
+    const { id, ...supplier } = supplierData;
+    const supplierId = uuidv4();
+    const newSupplier = { ...supplier, id: supplierId };
+    newSuppliers.push(newSupplier);
+    pipeline.hset(
+      getSupplierKey(userId),
+      supplierId,
+      JSON.stringify(newSupplier)
+    );
+  }
   await pipeline.exec();
+  return newSuppliers;
 };
 
-export const updateSupplier = async (id, updates) => {
-  const key = `${SUPPLIER_KEY_PREFIX}${id}`;
-  const existingSupplier = await redisClient.get(key);
+export const updateSupplier = async (userId, supplierId, updates) => {
+  const key = getSupplierKey(userId);
+  const existingSupplierJSON = await redisClient.hget(key, supplierId);
 
-  if (!existingSupplier) {
+  if (!existingSupplierJSON) {
     return null;
   }
 
-  const supplier = JSON.parse(existingSupplier);
-  const updatedSupplier = { ...supplier, ...updates };
+  const existingSupplier = JSON.parse(existingSupplierJSON);
+  const updatedSupplier = { ...existingSupplier, ...updates, id: supplierId };
 
-  await redisClient.set(key, JSON.stringify(updatedSupplier));
+  await redisClient.hset(key, supplierId, JSON.stringify(updatedSupplier));
   return updatedSupplier;
 };
 
-export const deleteSupplier = async (id) => {
-  const result = await redisClient.del(`${SUPPLIER_KEY_PREFIX}${id}`);
-  return result;
+export const deleteSupplier = async (userId, supplierId) => {
+  const key = getSupplierKey(userId);
+  return await redisClient.hdel(key, supplierId);
 };
 
-export const getAllSuppliers = async () => {
-  const keys = await redisClient.keys(`${SUPPLIER_KEY_PREFIX}*`);
-  if (!keys.length) {
+export const getAllSuppliers = async (userId) => {
+  const suppliers = await redisClient.hgetall(getSupplierKey(userId));
+  if (!suppliers || Object.keys(suppliers).length === 0) {
     return [];
   }
-  const suppliers = await redisClient.mget(keys);
-  return suppliers.map(supplier => JSON.parse(supplier));
+  return Object.values(suppliers).map(supplier => JSON.parse(supplier));
 };
 
-export const getProductsBySupplier = async (supplierId) => {
-  const supplier = await getSupplierById(supplierId);
+export const getProductsBySupplier = async (userId, supplierId) => {
+  const supplier = await getSupplierById(userId, supplierId);
   if (!supplier || !supplier.products) {
     return [];
   }
 
   const productPromises = supplier.products.map(productId => {
+    // This function finds a product by its ID across all users.
+    // This is not ideal for performance but is used here to maintain
+    // the existing functionality of this specific endpoint.
+    // A better approach would be to ensure products are fetched
+    // within the scope of the user if the business logic requires it.
     return findProductByIdAcrossUsers(productId);
   });
 

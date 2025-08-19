@@ -20,12 +20,11 @@ const router = Router();
  *     Supplier:
  *       type: object
  *       required:
- *         - id
  *         - name
  *       properties:
  *         id:
- *           type: integer
- *           description: The unique identifier for the supplier
+ *           type: string
+ *           description: The unique identifier for the supplier (UUID)
  *         name:
  *           type: string
  *           description: The name of the supplier
@@ -38,14 +37,14 @@ const router = Router();
  *         products:
  *           type: array
  *           items:
- *             type: integer
- *           description: A list of product IDs supplied by the supplier
+ *             type: string
+ *           description: A list of product IDs (UUIDs) supplied by the supplier
  *       example:
- *         id: 1
+ *         id: "d290f1ee-6c54-4b01-90e6-d701748f0851"
  *         name: "ElectroSupply"
  *         contact: "John Doe"
  *         email: "john.doe@electrosupply.com"
- *         products: [1, 2, 8]
+ *         products: ["f805a02b-15ef-4fd8-968b-6ae8373f6d24", "9d9e8050-0d7f-4e01-8c62-bce8bd67d4f8"]
  */
 
 /**
@@ -59,7 +58,7 @@ const router = Router();
  * @swagger
  * /suppliers:
  *   get:
- *     summary: Returns the list of all the suppliers
+ *     summary: Returns the list of all the suppliers for the current user
  *     tags: [Suppliers]
  *     security:
  *       - bearerAuth: []
@@ -87,9 +86,9 @@ router.get('/', protect, getAllSuppliers);
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
- *         description: The supplier ID
+ *         description: The supplier ID (UUID)
  *     responses:
  *       200:
  *         description: The supplier description by ID
@@ -114,9 +113,9 @@ router.get('/:id', protect, getSupplier);
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
- *         description: The supplier ID
+ *         description: The supplier ID (UUID)
  *     responses:
  *       200:
  *         description: A list of products for the specified supplier
@@ -189,9 +188,9 @@ router.post('/bulk', protect, createMultipleSuppliers);
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
- *         description: The supplier ID
+ *         description: The supplier ID (UUID)
  *     requestBody:
  *       required: true
  *       content:
@@ -220,9 +219,9 @@ router.put('/:id', protect, updateSupplier);
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
- *         description: The supplier ID
+ *         description: The supplier ID (UUID)
  *     responses:
  *       200:
  *         description: The supplier was deleted
