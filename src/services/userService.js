@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 const USER_KEY_PREFIX = 'user:userid:';
 
 export const getAllUsers = async () => {
-  const keys = await redisClient.keys(`${USER_KEY_PREFIX}[0-9]*`);
+  const keys = await redisClient.keys(`${USER_KEY_PREFIX}*`);
   if (!keys.length) {
     return [];
   }

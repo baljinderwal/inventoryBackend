@@ -1,6 +1,6 @@
 import redisClient from '../config/redisClient.js';
 import { v4 as uuidv4 } from 'uuid';
-import { getProductByNumericId } from './productService.js';
+import { findProductByIdAcrossUsers } from './productService.js';
 import { getStockByProductId } from './stockService.js';
 import * as promotionService from './promotionService.js';
 import { sendNotificationToUser } from './notificationService.js';
@@ -52,7 +52,7 @@ export const createOrder = async (orderData) => {
   for (let i = 0; i < orderData.products.length; i++) {
       const item = orderData.products[i];
       const stock = stockLevels[i];
-      const product = await getProductByNumericId(item.productId); // Assuming this is fast
+      const product = await findProductByIdAcrossUsers(item.productId); // Assuming this is fast
 
       if (!product) {
           throw new Error(`Product with ID ${item.productId} not found.`);
@@ -193,7 +193,7 @@ export const getOrdersBySupplier = async (supplierId) => {
 const applyPromotions = async (orderData) => {
     let total = 0;
     for (const item of orderData.products) {
-        const product = await getProductByNumericId(item.productId);
+        const product = await findProductByIdAcrossUsers(item.productId);
         total += product.price * item.quantity;
     }
 
@@ -207,7 +207,7 @@ const applyPromotions = async (orderData) => {
         // Simple promotion logic: category-wide discount
         if (promo.type === 'percentage' && promo.category) {
             for (const item of orderData.products) {
-                const product = await getProductByNumericId(item.productId);
+                const product = await findProductByIdAcrossUsers(item.productId);
                 if (product.category === promo.category) {
                     const itemTotal = product.price * item.quantity;
                     discount += itemTotal * (promo.discount / 100);
