@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import redisClient from '../config/redisClient.js';
 import bcrypt from 'bcryptjs';
 
@@ -18,7 +19,7 @@ export const getUserById = async (id) => {
 };
 
 export const createUser = async (userData) => {
-    const newId = await redisClient.incr('user:id_counter');
+    const newId = uuidv4();
     const newUser = { ...userData, id: newId, role: userData.role || 'user' };
 
     const pipeline = redisClient.pipeline();
@@ -34,7 +35,7 @@ export const createMultipleUsers = async (usersData) => {
     const newUsers = [];
 
     for (const userData of usersData) {
-        const newId = await redisClient.incr('user:id_counter');
+        const newId = uuidv4();
         const newUser = { ...userData, id: newId, role: userData.role || 'user' };
         newUsers.push(newUser);
 
@@ -84,7 +85,7 @@ export const createOrUpdateUserProfile = async (userData) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(userData.password, salt);
 
-    const newId = await redisClient.incr('user:id_counter');
+    const newId = uuidv4();
     const newUser = { ...userData, password: hashedPassword, id: newId, role: userData.role || 'user' };
 
     const pipeline = redisClient.pipeline();
