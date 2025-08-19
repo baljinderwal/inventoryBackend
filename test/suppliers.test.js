@@ -3,10 +3,12 @@ import app from '../src/app.js';
 import * as authService from '../src/services/authService.js';
 import * as supplierService from '../src/services/supplierService.js';
 import * as productService from '../src/services/productService.js';
+import jwt from 'jsonwebtoken';
 
 describe('Supplier APIs Enhancements', () => {
     let token;
     let productId;
+    let userId;
     const supplierId = 1;
     let emailCounter = 0;
     let email;
@@ -16,11 +18,13 @@ describe('Supplier APIs Enhancements', () => {
         email = `supplier${emailCounter}@example.com`;
         emailCounter++;
         // Auth
-        await authService.register({ name: 'Test User', email, password });
+        const userRegistered = await authService.register({ name: 'Test User', email, password });
         token = await authService.login(email, password);
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        userId = decodedToken.id;
 
         // Create a product
-        const product = await productService.createProduct({
+        const product = await productService.createProduct(userId, {
             sku: 'TEST-001',
             name: 'Test Product',
         });
@@ -36,7 +40,7 @@ describe('Supplier APIs Enhancements', () => {
 
     afterEach(async () => {
         await supplierService.deleteSupplier(supplierId);
-        await productService.deleteProduct(productId);
+        await productService.deleteProduct(userId, productId);
     });
 
     it('should get all products for a specific supplier', async () => {

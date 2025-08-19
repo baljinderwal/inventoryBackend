@@ -1,5 +1,5 @@
 import redisClient from '../config/redisClient.js';
-import { getProductByNumericId } from './productService.js';
+import { findProductByIdAcrossUsers } from './productService.js';
 
 const SUPPLIER_KEY_PREFIX = 'supplier:';
 
@@ -56,7 +56,7 @@ export const getProductsBySupplier = async (supplierId) => {
   }
 
   const productPromises = supplier.products.map(productId => {
-    return getProductByNumericId(productId);
+    return findProductByIdAcrossUsers(productId);
   });
 
   const products = await Promise.all(productPromises);

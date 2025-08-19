@@ -125,7 +125,7 @@ router.get('/', protect, getAllProducts);
  *       404:
  *         description: The product was not found
  */
-router.get('/:id', protect, getProduct);
+router.get('/:productId', protect, getProduct);
 
 /**
  * @swagger
@@ -175,7 +175,7 @@ router.post('/bulk', protect, createMultipleProducts);
 
 /**
  * @swagger
- * /products/{id}:
+ * /products/{productId}:
  *   put:
  *     summary: Update a product by SKU
  *     tags: [Products]
@@ -183,7 +183,7 @@ router.post('/bulk', protect, createMultipleProducts);
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: productId
  *         schema:
  *           type: string
  *         required: true
@@ -202,11 +202,11 @@ router.post('/bulk', protect, createMultipleProducts);
  *       500:
  *         description: Some server error
  */
-router.put('/:id', protect, updateProduct);
+router.put('/:productId', protect, updateProduct);
 
 /**
  * @swagger
- * /products/{id}:
+ * /products/{productId}:
  *   delete:
  *     summary: Delete a product by SKU
  *     tags: [Products]
@@ -214,7 +214,7 @@ router.put('/:id', protect, updateProduct);
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: productId
  *         schema:
  *           type: string
  *         required: true
@@ -225,7 +225,7 @@ router.put('/:id', protect, updateProduct);
  *       404:
  *         description: The product was not found
  */
-router.delete('/:id', protect, authorize('admin'), deleteProduct);
+router.delete('/:productId', protect, authorize('admin'), deleteProduct);
 
 router.use('/:productId/reviews', reviewRoutes);
 

@@ -1,57 +1,126 @@
-[2025-08-19T09:19:21.070Z] Request: GET /products
+[2025-08-19T09:50:13.146Z] Request: GET /products
   Query: {}
   Body: undefined
   Token: INVALID - jwt malformed
-[2025-08-19T09:19:21.707Z] Request: POST /auth/register
+[2025-08-19T09:50:13.754Z] Request: POST /auth/register
   Query: {}
   Body: {"name":"Product Test Admin","email":"product-test-admin@example.com","password":"password123","role":"admin"}
   Token: NOT PROVIDED
-[2025-08-19T09:19:21.841Z] Request: POST /auth/login
+[2025-08-19T09:50:13.880Z] Request: POST /auth/login
   Query: {}
   Body: {"email":"product-test-admin@example.com","password":"password123"}
   Token: NOT PROVIDED
-[2025-08-19T09:19:21.956Z] Request: POST /products
+[2025-08-19T09:50:13.993Z] Request: POST /products
   Query: {}
-  Body: {"name":"Test Wireless Mouse","sku":"WM-TEST-0","category":"Electronics","price":29.99,"costPrice":18.5,"lowStockThreshold":15,"createdAt":"2025-08-19T09:19:21.951Z","barcode":"9876543210123"}
+  Body: {"name":"Test Wireless Mouse","category":"Electronics","price":29.99,"costPrice":18.5,"lowStockThreshold":15,"barcode":"9876543210123"}
   Token: VALID
-  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
-[2025-08-19T09:19:21.967Z] Request: POST /products
+  User: {"id":"b3db966f-5aa4-4339-8b12-1453c5c7389e","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755597013,"exp":1755600613}
+[2025-08-19T09:50:14.003Z] Request: POST /products
   Query: {}
-  Body: {"name":"Test Wireless Mouse for GET","sku":"WM-TEST-1","category":"Electronics","price":35.99,"costPrice":22,"lowStockThreshold":25,"createdAt":"2025-08-19T09:19:21.964Z","barcode":"5432109876543"}
+  Body: {"name":"Test Mouse for GET","category":"Electronics","price":35.99}
   Token: VALID
-  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
-[2025-08-19T09:19:21.972Z] Request: GET /products/WM-TEST-1
+  User: {"id":"b3db966f-5aa4-4339-8b12-1453c5c7389e","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755597013,"exp":1755600613}
+[2025-08-19T09:50:14.008Z] Request: GET /products/07b3b166-e64e-4216-a0b3-882df9f33d0e
   Query: {}
   Body: undefined
   Token: VALID
-  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
-[2025-08-19T09:19:21.979Z] Request: POST /products
+  User: {"id":"b3db966f-5aa4-4339-8b12-1453c5c7389e","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755597013,"exp":1755600613}
+[2025-08-19T09:50:14.014Z] Request: POST /products
   Query: {}
-  Body: {"name":"Test Mouse to Update","sku":"WM-TEST-2","category":"Peripherals","price":40,"costPrice":25,"lowStockThreshold":10,"createdAt":"2025-08-19T09:19:21.976Z","barcode":"1122334455667"}
+  Body: {"name":"Test Mouse to Update","category":"Peripherals","price":40}
   Token: VALID
-  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
-[2025-08-19T09:19:21.985Z] Request: PUT /products/WM-TEST-2
+  User: {"id":"b3db966f-5aa4-4339-8b12-1453c5c7389e","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755597013,"exp":1755600613}
+[2025-08-19T09:50:14.019Z] Request: PUT /products/4eae5145-ff00-4369-a84d-b6b1cde95a19
   Query: {}
   Body: {"price":38.5,"lowStockThreshold":12}
   Token: VALID
-  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
-[2025-08-19T09:19:21.990Z] Request: GET /products/WM-TEST-2
+  User: {"id":"b3db966f-5aa4-4339-8b12-1453c5c7389e","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755597013,"exp":1755600613}
+[2025-08-19T09:50:14.024Z] Request: GET /products/4eae5145-ff00-4369-a84d-b6b1cde95a19
   Query: {}
   Body: undefined
   Token: VALID
-  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
-[2025-08-19T09:19:21.997Z] Request: POST /products
+  User: {"id":"b3db966f-5aa4-4339-8b12-1453c5c7389e","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755597013,"exp":1755600613}
+[2025-08-19T09:50:14.030Z] Request: POST /products
   Query: {}
-  Body: {"name":"Test Mouse to Delete","sku":"WM-TEST-3","category":"Disposable","price":5,"costPrice":2,"lowStockThreshold":5,"createdAt":"2025-08-19T09:19:21.994Z","barcode":"9988776655443"}
+  Body: {"name":"Test Mouse to Delete","category":"Disposable","price":5}
   Token: VALID
-  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
-[2025-08-19T09:19:22.002Z] Request: DELETE /products/WM-TEST-3
-  Query: {}
-  Body: undefined
-  Token: VALID
-  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
-[2025-08-19T09:19:22.008Z] Request: GET /products/WM-TEST-3
+  User: {"id":"b3db966f-5aa4-4339-8b12-1453c5c7389e","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755597013,"exp":1755600613}
+[2025-08-19T09:50:14.035Z] Request: DELETE /products/194b9ec4-fa5c-42bb-9f2f-a1dafa53dfc4
   Query: {}
   Body: undefined
   Token: VALID
-  User: {"id":"0b82a0f0-2b81-4be8-9dd9-2ed8ecc46323","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755595161,"exp":1755598761}
+  User: {"id":"b3db966f-5aa4-4339-8b12-1453c5c7389e","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755597013,"exp":1755600613}
+[2025-08-19T09:50:14.042Z] Request: GET /products/194b9ec4-fa5c-42bb-9f2f-a1dafa53dfc4
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"b3db966f-5aa4-4339-8b12-1453c5c7389e","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755597013,"exp":1755600613}
+[2025-08-19T09:50:14.047Z] Request: POST /products
+  Query: {}
+  Body: {"name":"Product A"}
+  Token: VALID
+  User: {"id":"b3db966f-5aa4-4339-8b12-1453c5c7389e","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755597013,"exp":1755600613}
+[2025-08-19T09:50:14.052Z] Request: POST /products
+  Query: {}
+  Body: {"name":"Product B"}
+  Token: VALID
+  User: {"id":"b3db966f-5aa4-4339-8b12-1453c5c7389e","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755597013,"exp":1755600613}
+[2025-08-19T09:50:14.056Z] Request: GET /products
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"b3db966f-5aa4-4339-8b12-1453c5c7389e","name":"Product Test Admin","email":"product-test-admin@example.com","role":"admin","iat":1755597013,"exp":1755600613}
+[2025-08-19T09:50:14.602Z] Request: GET /products/error
+  Query: {}
+  Body: undefined
+  Token: NOT PROVIDED
+[2025-08-19T09:50:14.606Z] [ERROR] Error occurred during request: GET /products/error
+  Query: {}
+  Body: undefined
+  Error: This is a test error.
+  Stack: Error: This is a test error.
+    at /app/src/routes/productRoutes.js:17:15
+    at Layer.handleRequest (/app/node_modules/router/lib/layer.js:152:17)
+    at next (/app/node_modules/router/lib/route.js:157:13)
+    at Route.dispatch (/app/node_modules/router/lib/route.js:117:3)
+    at handle (/app/node_modules/router/index.js:435:11)
+    at Layer.handleRequest (/app/node_modules/router/lib/layer.js:152:17)
+    at /app/node_modules/router/index.js:295:15
+    at processParams (/app/node_modules/router/index.js:582:12)
+    at next (/app/node_modules/router/index.js:291:5)
+    at Function.handle (/app/node_modules/router/index.js:186:3)
+    at router (/app/node_modules/router/index.js:60:12)
+    at Layer.handleRequest (/app/node_modules/router/lib/layer.js:152:17)
+    at trimPrefix (/app/node_modules/router/index.js:342:13)
+    at /app/node_modules/router/index.js:297:9
+    at processParams (/app/node_modules/router/index.js:582:12)
+    at next (/app/node_modules/router/index.js:291:5)
+    at loggingMiddleware (/app/src/middleware/loggingMiddleware.js:37:3)
+    at Layer.handleRequest (/app/node_modules/router/lib/layer.js:152:17)
+    at trimPrefix (/app/node_modules/router/index.js:342:13)
+    at /app/node_modules/router/index.js:297:9
+    at processParams (/app/node_modules/router/index.js:582:12)
+    at next (/app/node_modules/router/index.js:291:5)
+    at jsonParser (/app/node_modules/body-parser/lib/types/json.js:100:7)
+    at Layer.handleRequest (/app/node_modules/router/lib/layer.js:152:17)
+    at trimPrefix (/app/node_modules/router/index.js:342:13)
+    at /app/node_modules/router/index.js:297:9
+    at processParams (/app/node_modules/router/index.js:582:12)
+    at next (/app/node_modules/router/index.js:291:5)
+    at cors (/app/node_modules/cors/lib/index.js:188:7)
+    at /app/node_modules/cors/lib/index.js:224:17
+    at originCallback (/app/node_modules/cors/lib/index.js:214:15)
+    at /app/node_modules/cors/lib/index.js:219:13
+    at optionsCallback (/app/node_modules/cors/lib/index.js:199:9)
+    at corsMiddleware (/app/node_modules/cors/lib/index.js:204:7)
+    at Layer.handleRequest (/app/node_modules/router/lib/layer.js:152:17)
+    at trimPrefix (/app/node_modules/router/index.js:342:13)
+    at /app/node_modules/router/index.js:297:9
+    at processParams (/app/node_modules/router/index.js:582:12)
+    at next (/app/node_modules/router/index.js:291:5)
+    at Function.handle (/app/node_modules/router/index.js:186:3)
+    at Function.handle (/app/node_modules/express/lib/application.js:177:15)
+    at Server.app (/app/node_modules/express/lib/express.js:38:9)
+    at Server.emit (node:events:518:28)
+    at parserOnIncoming (node:_http_server:1155:12)
+    at HTTPParser.parserOnHeadersComplete (node:_http_common:117:17)

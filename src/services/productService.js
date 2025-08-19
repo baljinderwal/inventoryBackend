@@ -1,170 +1,85 @@
+import { v4 as uuidv4 } from 'uuid';
 import redisClient from '../config/redisClient.js';
 
-const PRODUCT_KEY_PREFIX = 'product:';
-const ALL_PRODUCTS_SKU_KEY = 'products:all_skus';
-const PRODUCT_PRICE_SORTED_SET_KEY = 'products:price';
-const PRODUCT_CATEGORY_SET_PREFIX = 'products:category:';
+const USER_PRODUCTS_KEY_PREFIX = 's:user:';
 
-export const getProductById = async (sku) => {
-  const product = await redisClient.get(`${PRODUCT_KEY_PREFIX}${sku}`);
-  return product ? JSON.parse(product) : null;
+const getUserProductsKey = (userId) => `${USER_PRODUCTS_KEY_PREFIX}${userId}:products`;
+
+export const getProductById = async (userId, productId) => {
+  const userProductsKey = getUserProductsKey(userId);
+  const productJSON = await redisClient.hget(userProductsKey, productId);
+  return productJSON ? JSON.parse(productJSON) : null;
 };
 
-export const createProduct = async (productData) => {
-  const newId = await redisClient.incr('product:id_counter');
-  const newProduct = { ...productData, id: newId };
+export const createProduct = async (userId, productData) => {
+  const userProductsKey = getUserProductsKey(userId);
+  const productId = uuidv4();
 
-  const pipeline = redisClient.pipeline();
-  pipeline.set(`${PRODUCT_KEY_PREFIX}${newProduct.sku}`, JSON.stringify(newProduct));
-  pipeline.set(`product:id:${newProduct.id}`, newProduct.sku);
+  // Ignore any incoming productId and use the generated one
+  const newProduct = {
+    ...productData,
+    id: productId,
+  };
 
-  // Add to indexes
-  pipeline.sadd(ALL_PRODUCTS_SKU_KEY, newProduct.sku);
-  if (newProduct.price) {
-    pipeline.zadd(PRODUCT_PRICE_SORTED_SET_KEY, newProduct.price, newProduct.sku);
-  }
-  if (newProduct.category) {
-    pipeline.sadd(`${PRODUCT_CATEGORY_SET_PREFIX}${newProduct.category}`, newProduct.sku);
-  }
+  await redisClient.hset(userProductsKey, productId, JSON.stringify(newProduct));
 
-  await pipeline.exec();
   return newProduct;
 };
 
-export const createMultipleProducts = async (productsData) => {
-  const pipeline = redisClient.pipeline();
+export const createMultipleProducts = async (userId, productsData) => {
+  const userProductsKey = getUserProductsKey(userId);
   const newProducts = [];
+  const pipeline = redisClient.pipeline();
 
   for (const productData of productsData) {
-    const newId = await redisClient.incr('product:id_counter');
-    const newProduct = { ...productData, id: newId };
+    const productId = uuidv4();
+    const newProduct = {
+      ...productData,
+      id: productId,
+    };
     newProducts.push(newProduct);
-
-    pipeline.set(`${PRODUCT_KEY_PREFIX}${newProduct.sku}`, JSON.stringify(newProduct));
-    pipeline.set(`product:id:${newProduct.id}`, newProduct.sku);
-    pipeline.sadd(ALL_PRODUCTS_SKU_KEY, newProduct.sku);
-    if (newProduct.price) {
-      pipeline.zadd(PRODUCT_PRICE_SORTED_SET_KEY, newProduct.price, newProduct.sku);
-    }
-    if (newProduct.category) {
-      pipeline.sadd(`${PRODUCT_CATEGORY_SET_PREFIX}${newProduct.category}`, newProduct.sku);
-    }
+    pipeline.hset(userProductsKey, productId, JSON.stringify(newProduct));
   }
 
   await pipeline.exec();
   return newProducts;
 };
 
-export const updateProduct = async (sku, updates) => {
-  const key = `${PRODUCT_KEY_PREFIX}${sku}`;
-  const existingProductJSON = await redisClient.get(key);
+export const updateProduct = async (userId, productId, updates) => {
+  const userProductsKey = getUserProductsKey(userId);
+  const existingProductJSON = await redisClient.hget(userProductsKey, productId);
 
   if (!existingProductJSON) {
     return null;
   }
 
   const existingProduct = JSON.parse(existingProductJSON);
-  const updatedProduct = { ...existingProduct, ...updates };
+  const updatedProduct = { ...existingProduct, ...updates, id: productId };
 
-  const pipeline = redisClient.pipeline();
+  await redisClient.hset(userProductsKey, productId, JSON.stringify(updatedProduct));
 
-  // Update main product hash
-  pipeline.set(key, JSON.stringify(updatedProduct));
-
-  // Update indexes
-  // Price index
-  if (updates.price !== undefined && updates.price !== existingProduct.price) {
-    pipeline.zadd(PRODUCT_PRICE_SORTED_SET_KEY, updates.price, sku);
-  }
-  // Category index
-  if (updates.category && updates.category !== existingProduct.category) {
-    if (existingProduct.category) {
-      pipeline.srem(`${PRODUCT_CATEGORY_SET_PREFIX}${existingProduct.category}`, sku);
-    }
-    pipeline.sadd(`${PRODUCT_CATEGORY_SET_PREFIX}${updates.category}`, sku);
-  }
-
-  await pipeline.exec();
   return updatedProduct;
 };
 
-export const updateProductById = async (id, updates) => {
-    const sku = await redisClient.get(`product:id:${id}`);
-    if (!sku) {
-        return null;
-    }
-    return await updateProduct(sku, updates);
+export const deleteProduct = async (userId, productId) => {
+  const userProductsKey = getUserProductsKey(userId);
+  return await redisClient.hdel(userProductsKey, productId);
 };
 
-export const deleteProduct = async (sku) => {
-  const key = `${PRODUCT_KEY_PREFIX}${sku}`;
-  const productJSON = await redisClient.get(key);
-  if (!productJSON) {
-    return 0;
-  }
-  const product = JSON.parse(productJSON);
+export const getAllProducts = async (userId, options = {}) => {
+  const { sortBy, sortOrder = 'asc', page = 1, limit = 10 } = options;
+  const userProductsKey = getUserProductsKey(userId);
 
-  const pipeline = redisClient.pipeline();
-  pipeline.del(key);
-  if (product.id) {
-    pipeline.del(`product:id:${product.id}`);
-  }
+  const allProducts = await redisClient.hgetall(userProductsKey);
 
-  // Remove from indexes
-  pipeline.srem(ALL_PRODUCTS_SKU_KEY, sku);
-  if (product.price) {
-    pipeline.zrem(PRODUCT_PRICE_SORTED_SET_KEY, sku);
-  }
-  if (product.category) {
-    pipeline.srem(`${PRODUCT_CATEGORY_SET_PREFIX}${product.category}`, sku);
-  }
-
-  const results = await pipeline.exec();
-  return results[0][1]; // Result of the first del command
-};
-
-export const getAllProducts = async (options = {}) => {
-  const { category, sortBy, sortOrder = 'asc', page = 1, limit = 10 } = options;
-  const start = (page - 1) * limit;
-  const end = start + limit - 1;
-
-  let skuKeys;
-
-  // Step 1: Get initial set of SKUs based on category filter
-  const categoryKey = category ? `${PRODUCT_CATEGORY_SET_PREFIX}${category}` : ALL_PRODUCTS_SKU_KEY;
-
-  // Step 2: Get sorted SKUs if sorting is requested
-  if (sortBy === 'price') {
-    const rangeMethod = sortOrder.toLowerCase() === 'desc' ? 'zrevrange' : 'zrange';
-    if (category) {
-        // If filtering by category, we need to intersect the category set with the price sorted set
-        const tempKey = `temp:intersection:${Date.now()}`;
-        await redisClient.zinterstore(tempKey, 2, categoryKey, PRODUCT_PRICE_SORTED_SET_KEY, 'WEIGHTS', 0, 1);
-        skuKeys = await redisClient[rangeMethod](tempKey, start, end);
-        await redisClient.del(tempKey); // Clean up temporary key
-    } else {
-        skuKeys = await redisClient[rangeMethod](PRODUCT_PRICE_SORTED_SET_KEY, start, end);
-    }
-  } else {
-    // For other sorting or no sorting, we get SKUs and sort in-app.
-    // This is less efficient for non-price sorting but avoids complex Redis logic without RediSearch.
-    const allSkusInCategory = await redisClient.smembers(categoryKey);
-    // Note: smembers doesn't guarantee order. For pagination without sorting, this is non-deterministic.
-    // A more robust solution would use SSCAN, but for simplicity, we'll slice here.
-    skuKeys = allSkusInCategory.slice(start, end + 1);
-  }
-
-  if (!skuKeys || skuKeys.length === 0) {
+  if (!allProducts) {
     return [];
   }
 
-  const productKeys = skuKeys.map(sku => `${PRODUCT_KEY_PREFIX}${sku}`);
-  const products = await redisClient.mget(productKeys);
+  let parsedProducts = Object.values(allProducts).map(p => JSON.parse(p));
 
-  const parsedProducts = products.filter(p => p).map(p => JSON.parse(p));
-
-  // In-app sorting for non-indexed fields (e.g., name)
-  if (sortBy && sortBy !== 'price') {
+  // In-app sorting
+  if (sortBy) {
       parsedProducts.sort((a, b) => {
           if (a[sortBy] < b[sortBy]) return sortOrder === 'asc' ? -1 : 1;
           if (a[sortBy] > b[sortBy]) return sortOrder === 'asc' ? 1 : -1;
@@ -172,14 +87,25 @@ export const getAllProducts = async (options = {}) => {
       });
   }
 
-  return parsedProducts;
+  // Pagination
+  const start = (page - 1) * limit;
+  const end = start + limit;
+
+  return parsedProducts.slice(start, end);
 };
 
+export const findProductByIdAcrossUsers = async (productId) => {
+  const stream = redisClient.scanStream({
+    match: `${USER_PRODUCTS_KEY_PREFIX}*:products`,
+    count: 100,
+  });
 
-export const getProductByNumericId = async (id) => {
-  const sku = await redisClient.get(`product:id:${id}`);
-  if (!sku) {
-    return null;
+  for await (const userProductsKey of stream) {
+    const productJSON = await redisClient.hget(userProductsKey, productId);
+    if (productJSON) {
+      return JSON.parse(productJSON);
+    }
   }
-  return await getProductById(sku);
+
+  return null;
 };

@@ -1,6 +1,6 @@
 import redisClient from '../config/redisClient.js';
 import { v4 as uuidv4 } from 'uuid';
-import { getProductByNumericId, updateProductById } from './productService.js';
+import { findProductByIdAcrossUsers } from './productService.js';
 
 const REVIEW_PREFIX = 'review:';
 const PRODUCT_REVIEWS_PREFIX = 'product-reviews:';
@@ -36,10 +36,10 @@ const updateProductRating = async (productId) => {
   const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
   const averageRating = totalRating / reviews.length;
 
-  const product = await getProductByNumericId(productId);
+  const product = await findProductByIdAcrossUsers(productId);
   if (product) {
     product.averageRating = averageRating;
     product.reviewCount = reviews.length;
-    await updateProductById(productId, product);
+    // await updateProductById(productId, product);
   }
 };

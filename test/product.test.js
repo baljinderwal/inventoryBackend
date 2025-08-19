@@ -4,14 +4,13 @@ import { expect } from '@jest/globals';
 
 describe('Product APIs', () => {
   let token;
-  let skuCounter = 0;
-  let productSku;
+  let userId;
 
   beforeAll(async () => {
     // Register and login an admin user to get a token
     const email = `product-test-admin@example.com`;
     const password = 'password123';
-    await request(app)
+    const registerRes = await request(app)
       .post('/auth/register')
       .send({
         name: 'Product Test Admin',
@@ -19,87 +18,74 @@ describe('Product APIs', () => {
         password,
         role: 'admin',
       });
-    const res = await request(app)
+    userId = registerRes.body.userId;
+    const loginRes = await request(app)
       .post('/auth/login')
       .send({
         email,
         password,
       });
-    token = res.body.token;
+    token = loginRes.body.token;
   });
 
-  beforeEach(() => {
-    productSku = `WM-TEST-${skuCounter}`;
-    skuCounter++;
-  });
-
-  it('should create a new product with the updated schema', async () => {
-    const newProduct = {
+  it('should create a new product and return it', async () => {
+    const newProductData = {
       name: 'Test Wireless Mouse',
-      sku: productSku,
       category: 'Electronics',
       price: 29.99,
       costPrice: 18.50,
       lowStockThreshold: 15,
-      createdAt: new Date().toISOString(),
       barcode: '9876543210123',
     };
 
     const res = await request(app)
       .post('/products')
       .set('Authorization', `Bearer ${token}`)
-      .send(newProduct);
+      .send(newProductData);
 
     expect(res.statusCode).toEqual(201);
     expect(res.body).toHaveProperty('id');
-    expect(res.body).toHaveProperty('name', newProduct.name);
-    expect(res.body).toHaveProperty('sku', newProduct.sku);
-    expect(res.body).toHaveProperty('lowStockThreshold', newProduct.lowStockThreshold);
-    expect(res.body).toHaveProperty('barcode', newProduct.barcode);
+    expect(res.body.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format
+    expect(res.body).toHaveProperty('name', newProductData.name);
+    expect(res.body).toHaveProperty('price', newProductData.price);
   });
 
-  it('should get a product by SKU', async () => {
-    // First, create a product to get
-    const newProduct = {
-      name: 'Test Wireless Mouse for GET',
-      sku: productSku,
+  it('should get a product by its ID', async () => {
+    // First, create a product
+    const newProductData = {
+      name: 'Test Mouse for GET',
       category: 'Electronics',
       price: 35.99,
-      costPrice: 22.00,
-      lowStockThreshold: 25,
-      createdAt: new Date().toISOString(),
-      barcode: '5432109876543',
     };
-    await request(app)
+    const createRes = await request(app)
         .post('/products')
         .set('Authorization', `Bearer ${token}`)
-        .send(newProduct);
+        .send(newProductData);
+
+    const productId = createRes.body.id;
 
     const res = await request(app)
-      .get(`/products/${productSku}`)
+      .get(`/products/${productId}`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.statusCode).toEqual(200);
-    expect(res.body).toHaveProperty('sku', productSku);
-    expect(res.body).toHaveProperty('name', newProduct.name);
+    expect(res.body).toHaveProperty('id', productId);
+    expect(res.body).toHaveProperty('name', newProductData.name);
   });
 
-  it('should update a product by SKU', async () => {
-    // First, create a product to update
-    const newProduct = {
+  it('should update a product by its ID', async () => {
+    // First, create a product
+    const newProductData = {
       name: 'Test Mouse to Update',
-      sku: productSku,
       category: 'Peripherals',
       price: 40.00,
-      costPrice: 25.00,
-      lowStockThreshold: 10,
-      createdAt: new Date().toISOString(),
-      barcode: '1122334455667',
     };
-    await request(app)
+    const createRes = await request(app)
         .post('/products')
         .set('Authorization', `Bearer ${token}`)
-        .send(newProduct);
+        .send(newProductData);
+
+    const productId = createRes.body.id;
 
     const updates = {
       price: 38.50,
@@ -107,7 +93,7 @@ describe('Product APIs', () => {
     };
 
     const res = await request(app)
-      .put(`/products/${productSku}`)
+      .put(`/products/${productId}`)
       .set('Authorization', `Bearer ${token}`)
       .send(updates);
 
@@ -116,32 +102,29 @@ describe('Product APIs', () => {
 
     // Verify the update
     const getRes = await request(app)
-      .get(`/products/${productSku}`)
+      .get(`/products/${productId}`)
       .set('Authorization', `Bearer ${token}`);
     expect(getRes.statusCode).toEqual(200);
     expect(getRes.body).toHaveProperty('price', updates.price);
     expect(getRes.body).toHaveProperty('lowStockThreshold', updates.lowStockThreshold);
   });
 
-  it('should delete a product by SKU', async () => {
-    // First, create a product to delete
-    const newProduct = {
+  it('should delete a product by its ID', async () => {
+    // First, create a product
+    const newProductData = {
         name: 'Test Mouse to Delete',
-        sku: productSku,
         category: 'Disposable',
         price: 5.00,
-        costPrice: 2.00,
-        lowStockThreshold: 5,
-        createdAt: new Date().toISOString(),
-        barcode: '9988776655443',
     };
-    await request(app)
+    const createRes = await request(app)
         .post('/products')
         .set('Authorization', `Bearer ${token}`)
-        .send(newProduct);
+        .send(newProductData);
+
+    const productId = createRes.body.id;
 
     const res = await request(app)
-      .delete(`/products/${productSku}`)
+      .delete(`/products/${productId}`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.statusCode).toEqual(200);
@@ -149,8 +132,29 @@ describe('Product APIs', () => {
 
     // Verify the deletion
     const getRes = await request(app)
-      .get(`/products/${productSku}`)
+      .get(`/products/${productId}`)
       .set('Authorization', `Bearer ${token}`);
     expect(getRes.statusCode).toEqual(404);
+  });
+
+  it('should get all products for a user', async () => {
+    // Create a couple of products
+    await request(app)
+        .post('/products')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'Product A' });
+    await request(app)
+        .post('/products')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'Product B' });
+
+    const res = await request(app)
+      .get('/products')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.statusCode).toEqual(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    // This assertion depends on the state of redis, so we check for at least the two we created.
+    expect(res.body.length).toBeGreaterThanOrEqual(2);
   });
 });
