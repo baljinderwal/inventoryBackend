@@ -4,12 +4,13 @@ import * as authService from '../src/services/authService.js';
 import * as supplierService from '../src/services/supplierService.js';
 import * as productService from '../src/services/productService.js';
 import jwt from 'jsonwebtoken';
+import redisClient from '../src/config/redisClient.js';
 
 describe('Supplier APIs Enhancements', () => {
     let token;
     let productId;
     let userId;
-    const supplierId = 1;
+    let supplierId;
     let emailCounter = 0;
     let email;
     let password = 'password123';
@@ -31,16 +32,16 @@ describe('Supplier APIs Enhancements', () => {
         productId = product.id;
 
         // Create a supplier and associate the product
-        await supplierService.createSupplier({
-            id: supplierId,
+        const newSupplier = await supplierService.createSupplier(userId, {
             name: 'Test Supplier',
             products: [productId], // product id
         });
+        supplierId = newSupplier.id;
     });
 
     afterEach(async () => {
-        await supplierService.deleteSupplier(supplierId);
-        await productService.deleteProduct(userId, productId);
+        // Clean up the database
+        await redisClient.flushall();
     });
 
     it('should get all products for a specific supplier', async () => {
@@ -55,25 +56,22 @@ describe('Supplier APIs Enhancements', () => {
 
     it('should return an empty array for a supplier with no products', async () => {
         // Create a supplier with no products
-        const newSupplierId = 2;
-        await supplierService.createSupplier({
-            id: newSupplierId,
+        const newSupplier = await supplierService.createSupplier(userId, {
             name: 'Another Supplier',
             products: [],
         });
+        const newSupplierId = newSupplier.id;
 
         const res = await request(app)
             .get(`/suppliers/${newSupplierId}/products`)
             .set('Authorization', `Bearer ${token}`);
         expect(res.statusCode).toEqual(200);
         expect(res.body.length).toBe(0);
-
-        await supplierService.deleteSupplier(newSupplierId);
     });
 
     it('should return an empty array for a non-existent supplier', async () => {
         const res = await request(app)
-            .get('/suppliers/999/products')
+            .get('/suppliers/a-non-existent-id/products')
             .set('Authorization', `Bearer ${token}`);
         expect(res.statusCode).toEqual(200);
         expect(res.body.length).toBe(0);
