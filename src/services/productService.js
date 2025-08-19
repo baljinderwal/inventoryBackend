@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import redisClient from '../config/redisClient.js';
+import fs from 'fs';
+import path from 'path';
 
 const USER_PRODUCTS_KEY_PREFIX = 's:user:';
 

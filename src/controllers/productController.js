@@ -1,5 +1,7 @@
 import * as productService from '../services/productService.js';
 import { logAction } from '../services/auditService.js';
+import fs from 'fs';
+import path from 'path';
 
 const logStream = fs.createWriteStream(path.join(process.cwd(), 'server.log'), { flags: 'a' });
 
