@@ -63,6 +63,7 @@ export const updateProduct = async (userId, productId, updates) => {
 
 export const deleteProduct = async (userId, productId) => {
   const userProductsKey = getUserProductsKey(userId);
+  console.log(`Deleting product ${productId} for user ${userId} from key ${userProductsKey}`);
   return await redisClient.hdel(userProductsKey, productId);
 };
 
