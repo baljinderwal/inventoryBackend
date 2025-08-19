@@ -1,72 +1,77 @@
+import { v4 as uuidv4 } from 'uuid';
 import redisClient from '../config/redisClient.js';
 
-const CUSTOMER_KEY_PREFIX = 'customer:';
-const ALL_CUSTOMERS_KEY = 'customers:all';
+const USER_CUSTOMERS_KEY_PREFIX = 's:user:';
 
-export const getAllCustomers = async () => {
-    const customerIds = await redisClient.smembers(ALL_CUSTOMERS_KEY);
-    if (!customerIds || customerIds.length === 0) {
-        return [];
-    }
-    const customerKeys = customerIds.map(id => `${CUSTOMER_KEY_PREFIX}${id}`);
-    const customers = await redisClient.mget(customerKeys);
-    return customers.map(customer => JSON.parse(customer));
+const getUserCustomersKey = (userId) => `${USER_CUSTOMERS_KEY_PREFIX}${userId}:customers`;
+
+export const getAllCustomers = async (userId) => {
+  const userCustomersKey = getUserCustomersKey(userId);
+  const allCustomers = await redisClient.hgetall(userCustomersKey);
+
+  if (!allCustomers) {
+    return [];
+  }
+
+  return Object.values(allCustomers).map(c => JSON.parse(c));
 };
 
-export const getCustomerById = async (id) => {
-    const customer = await redisClient.get(`${CUSTOMER_KEY_PREFIX}${id}`);
-    return customer ? JSON.parse(customer) : null;
+export const getCustomerById = async (userId, customerId) => {
+  const userCustomersKey = getUserCustomersKey(userId);
+  const customerJSON = await redisClient.hget(userCustomersKey, customerId);
+  return customerJSON ? JSON.parse(customerJSON) : null;
 };
 
-export const createCustomer = async (customerData) => {
-    const newId = await redisClient.incr('customer:id_counter');
-    const newCustomer = { ...customerData, id: newId };
+export const createCustomer = async (userId, customerData) => {
+  const userCustomersKey = getUserCustomersKey(userId);
+  const customerId = uuidv4();
 
-    const pipeline = redisClient.pipeline();
-    pipeline.set(`${CUSTOMER_KEY_PREFIX}${newCustomer.id}`, JSON.stringify(newCustomer));
-    pipeline.sadd(ALL_CUSTOMERS_KEY, newCustomer.id);
-    await pipeline.exec();
+  const newCustomer = {
+    ...customerData,
+    id: customerId,
+  };
 
-    return newCustomer;
+  await redisClient.hset(userCustomersKey, customerId, JSON.stringify(newCustomer));
+
+  return newCustomer;
 };
 
-export const createMultipleCustomers = async (customersData) => {
-    const pipeline = redisClient.pipeline();
-    const newCustomers = [];
+export const createMultipleCustomers = async (userId, customersData) => {
+  const userCustomersKey = getUserCustomersKey(userId);
+  const newCustomers = [];
+  const pipeline = redisClient.pipeline();
 
-    for (const customerData of customersData) {
-        const newId = await redisClient.incr('customer:id_counter');
-        const newCustomer = { ...customerData, id: newId };
-        newCustomers.push(newCustomer);
+  for (const customerData of customersData) {
+    const customerId = uuidv4();
+    const newCustomer = {
+      ...customerData,
+      id: customerId,
+    };
+    newCustomers.push(newCustomer);
+    pipeline.hset(userCustomersKey, customerId, JSON.stringify(newCustomer));
+  }
 
-        pipeline.set(`${CUSTOMER_KEY_PREFIX}${newCustomer.id}`, JSON.stringify(newCustomer));
-        pipeline.sadd(ALL_CUSTOMERS_KEY, newCustomer.id);
-    }
-
-    await pipeline.exec();
-    return newCustomers;
+  await pipeline.exec();
+  return newCustomers;
 };
 
-export const updateCustomer = async (id, updates) => {
-    const key = `${CUSTOMER_KEY_PREFIX}${id}`;
-    const existingCustomerJSON = await redisClient.get(key);
+export const updateCustomer = async (userId, customerId, updates) => {
+  const userCustomersKey = getUserCustomersKey(userId);
+  const existingCustomerJSON = await redisClient.hget(userCustomersKey, customerId);
 
-    if (!existingCustomerJSON) {
-        return null;
-    }
+  if (!existingCustomerJSON) {
+    return null;
+  }
 
-    const existingCustomer = JSON.parse(existingCustomerJSON);
-    const updatedCustomer = { ...existingCustomer, ...updates };
+  const existingCustomer = JSON.parse(existingCustomerJSON);
+  const updatedCustomer = { ...existingCustomer, ...updates, id: customerId };
 
-    await redisClient.set(key, JSON.stringify(updatedCustomer));
-    return updatedCustomer;
+  await redisClient.hset(userCustomersKey, customerId, JSON.stringify(updatedCustomer));
+
+  return updatedCustomer;
 };
 
-export const deleteCustomer = async (id) => {
-    const key = `${CUSTOMER_KEY_PREFIX}${id}`;
-    const pipeline = redisClient.pipeline();
-    pipeline.del(key);
-    pipeline.srem(ALL_CUSTOMERS_KEY, id);
-    const results = await pipeline.exec();
-    return results[0][1]; // Result of the first del command
+export const deleteCustomer = async (userId, customerId) => {
+  const userCustomersKey = getUserCustomersKey(userId);
+  return await redisClient.hdel(userCustomersKey, customerId);
 };

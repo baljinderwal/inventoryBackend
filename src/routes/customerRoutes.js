@@ -22,8 +22,8 @@ const router = Router();
  *         - email
  *       properties:
  *         id:
- *           type: number
- *           description: The numeric ID of the customer
+ *           type: string
+ *           description: The UUID of the customer
  *         name:
  *           type: string
  *           description: The name of the customer
@@ -37,7 +37,7 @@ const router = Router();
  *           type: string
  *           description: The address of the customer
  *       example:
- *         id: 1
+ *         id: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
  *         name: "John Smith"
  *         email: "john.smith@example.com"
  *         phone: "555-1234"
@@ -55,7 +55,7 @@ const router = Router();
  * @swagger
  * /customers:
  *   get:
- *     summary: Returns the list of all the customers
+ *     summary: Returns the list of all the customers for the current user
  *     tags: [Customers]
  *     security:
  *       - bearerAuth: []
@@ -73,7 +73,7 @@ router.get('/', protect, getAllCustomers);
 
 /**
  * @swagger
- * /customers/{id}:
+ * /customers/{customerId}:
  *   get:
  *     summary: Get a customer by ID
  *     tags: [Customers]
@@ -81,9 +81,9 @@ router.get('/', protect, getAllCustomers);
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: customerId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The customer ID
  *     responses:
@@ -96,7 +96,7 @@ router.get('/', protect, getAllCustomers);
  *       404:
  *         description: The customer was not found
  */
-router.get('/:id', protect, getCustomer);
+router.get('/:customerId', protect, getCustomer);
 
 /**
  * @swagger
@@ -146,7 +146,7 @@ router.post('/bulk', protect, createMultipleCustomers);
 
 /**
  * @swagger
- * /customers/{id}:
+ * /customers/{customerId}:
  *   put:
  *     summary: Update a customer by ID
  *     tags: [Customers]
@@ -154,9 +154,9 @@ router.post('/bulk', protect, createMultipleCustomers);
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: customerId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The customer ID
  *     requestBody:
@@ -173,11 +173,11 @@ router.post('/bulk', protect, createMultipleCustomers);
  *       500:
  *         description: Some server error
  */
-router.put('/:id', protect, updateCustomer);
+router.put('/:customerId', protect, updateCustomer);
 
 /**
  * @swagger
- * /customers/{id}:
+ * /customers/{customerId}:
  *   delete:
  *     summary: Delete a customer by ID
  *     tags: [Customers]
@@ -185,9 +185,9 @@ router.put('/:id', protect, updateCustomer);
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: customerId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The customer ID
  *     responses:
@@ -196,6 +196,6 @@ router.put('/:id', protect, updateCustomer);
  *       404:
  *         description: The customer was not found
  */
-router.delete('/:id', protect, deleteCustomer);
+router.delete('/:customerId', protect, deleteCustomer);
 
 export default router;
