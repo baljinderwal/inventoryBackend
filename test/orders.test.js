@@ -40,7 +40,7 @@ describe('Order APIs Enhancements', () => {
         const order = await orderService.createOrder({
             supplier: { id: supplierId, name: 'Test Supplier' },
             status: 'Pending',
-            items: [{ productId: productId, quantity: 10 }],
+            products: [{ productId: productId, quantity: 10 }],
         });
         orderId = order.id;
     });
@@ -56,7 +56,7 @@ describe('Order APIs Enhancements', () => {
             .send({
                 supplier: { id: supplierId, name: 'Test Supplier' },
                 status: 'Pending',
-                items: [{ productId: productId, quantity: 10 }],
+                products: [{ productId: productId, quantity: 10 }],
             });
         expect(res.statusCode).toEqual(201);
     });
@@ -130,7 +130,7 @@ describe('Order Stock Validation', () => {
             .set('Authorization', `Bearer ${token}`)
             .send({
                 customerName: 'Sufficient Stock',
-                items: [{ productId: productId, quantity: 10 }],
+                products: [{ productId: productId, quantity: 10 }],
             });
         expect(res.statusCode).toEqual(201);
         expect(res.body).toHaveProperty('id');
@@ -150,7 +150,7 @@ describe('Order Stock Validation', () => {
             .set('Authorization', `Bearer ${token}`)
             .send({
                 customerName: 'Non-existent Product',
-                items: [{ productId: nonExistentProductId, quantity: 1 }],
+                products: [{ productId: nonExistentProductId, quantity: 1 }],
             });
         expect(res.statusCode).toEqual(500);
         expect(res.body.message).toContain(`Product with ID ${nonExistentProductId} not found`);
@@ -162,7 +162,7 @@ describe('Order Stock Validation', () => {
             .set('Authorization', `Bearer ${token}`)
             .send({
                 customerName: 'Insufficient Stock',
-                items: [{ productId: productId, quantity: 101 }], // We have 90 left
+                products: [{ productId: productId, quantity: 101 }], // We have 90 left
             });
         expect(res.statusCode).toEqual(500);
         expect(res.body.message).toContain('Insufficient stock');
