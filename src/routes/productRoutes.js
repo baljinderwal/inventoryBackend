@@ -9,7 +9,7 @@ import {
 } from '../controllers/productController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import authorize from '../middleware/authorize.js';
-import reviewRoutes from './reviewRoutes.js';
+import reviewRoutes from './productReviewRoutes.js';
 
 const router = Router();
 

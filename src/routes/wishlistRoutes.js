@@ -60,7 +60,7 @@ router.post('/', protect, addProductToWishlist);
 
 /**
  * @swagger
- * /wishlist/{productId}:
+ * /wishlist/{wishlistId}:
  *   delete:
  *     summary: Remove a product from the wishlist
  *     tags: [Wishlist]
@@ -68,15 +68,15 @@ router.post('/', protect, addProductToWishlist);
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: productId
+ *         name: wishlistId
  *         schema:
  *           type: string
  *         required: true
- *         description: The product ID
+ *         description: The wishlist item ID
  *     responses:
  *       200:
  *         description: Product removed from wishlist
  */
-router.delete('/:productId', protect, removeProductFromWishlist);
+router.delete('/:wishlistId', protect, removeProductFromWishlist);
 
 export default router;

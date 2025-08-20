@@ -2,9 +2,9 @@ import express from 'express';
 import * as reviewController from '../controllers/reviewController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
-router.get('/:reviewId', protect, reviewController.getReviewById);
-router.get('/user/:userId', protect, reviewController.getReviewsForUser);
+router.post('/', protect, reviewController.addReview);
+router.get('/', reviewController.getReviewsByProduct);
 
 export default router;

@@ -2,15 +2,21 @@ import redisClient from '../config/redisClient.js';
 import { v4 as uuidv4 } from 'uuid';
 import { findProductByIdAcrossUsers } from './productService.js';
 
-const REVIEW_PREFIX = 'review:';
-const PRODUCT_REVIEWS_PREFIX = 'product-reviews:';
+const getReviewUserKey = (userId) => `s:user:${userId}:reviews`;
+const getReviewKey = (reviewId) => `review:${reviewId}`;
+const getProductReviewsKey = (productId) => `product:${productId}:reviews`;
+
 
 export const addReview = async (productId, userId, reviewData) => {
   const reviewId = uuidv4();
   const review = { id: reviewId, productId, userId, ...reviewData, createdAt: new Date().toISOString() };
+  const reviewJSON = JSON.stringify(review);
 
-  await redisClient.set(`${REVIEW_PREFIX}${reviewId}`, JSON.stringify(review));
-  await redisClient.sadd(`${PRODUCT_REVIEWS_PREFIX}${productId}`, reviewId);
+  await redisClient.hset(getReviewUserKey(userId), reviewId, reviewJSON);
+  // Storing review also by reviewId for easy lookup
+  await redisClient.set(getReviewKey(reviewId), reviewJSON);
+  await redisClient.sadd(getProductReviewsKey(productId), reviewId);
+
 
   // Update product's average rating
   await updateProductRating(productId);
@@ -18,14 +24,28 @@ export const addReview = async (productId, userId, reviewData) => {
   return review;
 };
 
+export const getReview = async (reviewId) => {
+    const reviewJSON = await redisClient.get(getReviewKey(reviewId));
+    return reviewJSON ? JSON.parse(reviewJSON) : null;
+};
+
 export const getReviewsByProduct = async (productId) => {
-  const reviewIds = await redisClient.smembers(`${PRODUCT_REVIEWS_PREFIX}${productId}`);
+  const reviewIds = await redisClient.smembers(getProductReviewsKey(productId));
   if (reviewIds.length === 0) {
     return [];
   }
-  const reviews = await redisClient.mget(reviewIds.map(id => `${REVIEW_PREFIX}${id}`));
-  return reviews.map(r => JSON.parse(r));
+  const reviews = await redisClient.mget(reviewIds.map(id => getReviewKey(id)));
+  return reviews.map(r => JSON.parse(r)).filter(r => r);
 };
+
+// New function to get reviews by user
+export const getReviewsByUser = async (userId) => {
+    const reviews = await redisClient.hgetall(getReviewUserKey(userId));
+    if (!reviews) {
+        return [];
+    }
+    return Object.values(reviews).map(r => JSON.parse(r));
+}
 
 const updateProductRating = async (productId) => {
   const reviews = await getReviewsByProduct(productId);
