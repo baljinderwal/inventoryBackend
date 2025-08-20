@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import redisClient from '../config/redisClient.js';
-import { findProductByIdAcrossUsers } from './productService.js';
+import { findProductByIdAcrossUsers, getProductById } from './productService.js';
 import { getStockByProductId, updateStock } from './stockService.js';
 import * as promotionService from './promotionService.js';
 import { sendNotificationToUser } from './notificationService.js';
@@ -44,7 +44,7 @@ export const createOrder = async (userId, orderData) => {
   for (let i = 0; i < orderData.products.length; i++) {
       const item = orderData.products[i];
       const stock = await getStockByProductId(userId, item.productId);
-      const product = await findProductByIdAcrossUsers(item.productId); 
+      const product = await getProductById(userId, item.productId); 
 
       if (!product) {
           throw new Error(`Product with ID ${item.productId} not found.`);
@@ -55,7 +55,7 @@ export const createOrder = async (userId, orderData) => {
   }
 
   // Apply promotions
-  const { order, originalTotal } = await applyPromotions(orderData);
+  const { order, originalTotal } = await applyPromotions(userId, orderData);
 
   // All checks passed, prepare the transaction
   const orderId = uuidv4();
@@ -182,10 +182,10 @@ export const getOrdersBySupplier = async (userId, supplierId) => {
   return orders.map(order => JSON.parse(order)).filter(Boolean);
 };
 
-const applyPromotions = async (orderData) => {
+const applyPromotions = async (userId, orderData) => {
     let total = 0;
     for (const item of orderData.products) {
-        const product = await findProductByIdAcrossUsers(item.productId);
+        const product = await getProductById(userId, item.productId);
         total += product.price * item.quantity;
     }
 
