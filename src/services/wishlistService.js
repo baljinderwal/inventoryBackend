@@ -1,16 +1,23 @@
+import { v4 as uuidv4 } from 'uuid';
 import redisClient from '../config/redisClient.js';
 
-const WISHLIST_KEY_PREFIX = 'wishlist:';
+const getWishlistKey = (userId) => `s:user:${userId}:wishlists`;
 
 export const getWishlistByUserId = async (userId) => {
-  const productIds = await redisClient.smembers(`${WISHLIST_KEY_PREFIX}${userId}`);
-  return productIds;
+  const wishlist = await redisClient.hgetall(getWishlistKey(userId));
+  if (!wishlist) {
+    return [];
+  }
+  return Object.values(wishlist).map(item => JSON.parse(item));
 };
 
 export const addProductToWishlist = async (userId, productId) => {
-  await redisClient.sadd(`${WISHLIST_KEY_PREFIX}${userId}`, productId);
+  const wishlistId = uuidv4();
+  const wishlistItem = { id: wishlistId, productId };
+  await redisClient.hset(getWishlistKey(userId), wishlistId, JSON.stringify(wishlistItem));
+  return wishlistItem;
 };
 
-export const removeProductFromWishlist = async (userId, productId) => {
-  await redisClient.srem(`${WISHLIST_KEY_PREFIX}${userId}`, productId);
+export const removeProductFromWishlist = async (userId, wishlistId) => {
+  await redisClient.hdel(getWishlistKey(userId), wishlistId);
 };
