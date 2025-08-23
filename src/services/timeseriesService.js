@@ -1,69 +1,64 @@
-import { InfluxDB, Point } from '@influxdata/influxdb-client';
-import 'dotenv/config';
-import influxDB from '../config/influxdbClient.js';
+import { Point } from '@influxdata/influxdb3-client'
+import influxDB from '../config/influxdbClient.js'
 
-const org = process.env.INFLUXDB_ORG;
-const bucket = process.env.INFLUXDB_BUCKET;
+const database = process.env.INFLUXDB_DATABASE // make sure this is set in .env
 
-const writeApi = influxDB.getWriteApi(org, bucket);
-const queryApi = influxDB.getQueryApi(org);
-
+// ---------------- Add Shoe ----------------
 export const addShoe = async (size, color, quantity) => {
-  const point = new Point('shoes')
-    .tag('size', size)
-    .tag('color', color)
-    .intField('quantity', quantity)
-    .timestamp(new Date());
+  console.log(`Adding shoe - Size: ${size}, Color: ${color}, Quantity: ${quantity}`)
+  const point = Point
+    .measurement("shoes")
+    .setTag("size", size)
+    .setTag("color", color)
+    .setIntegerField("quantity", quantity)
 
-  writeApi.writePoint(point);
-  await writeApi.flush();
-};
+    console.log("Writing point:", point)
+    console.log("To database:", database)
 
+  await influxDB.write(point, database)
+}
+
+// ---------------- Get Shoes ----------------
 export const getShoes = async (filters) => {
-  let fluxQuery = `from(bucket: "${bucket}")
-    |> range(start: -30d)
-    |> filter(fn: (r) => r._measurement == "shoes")`;
+  let query = `SELECT * FROM "shoes" WHERE time > now() - interval '30 days'`
 
   if (filters.size) {
-    fluxQuery += ` |> filter(fn: (r) => r.size == "${filters.size}")`;
+    query += ` AND size = '${filters.size}'`
   }
 
   if (filters.color) {
-    fluxQuery += ` |> filter(fn: (r) => r.color == "${filters.color}")`;
+    query += ` AND color = '${filters.color}'`
   }
 
-  fluxQuery += `
-    |> last()
-    |> filter(fn: (r) => r._value > 0)`;
+  query += ` AND quantity > 0 ORDER BY time DESC LIMIT 1`
 
-  const results = [];
-  return new Promise((resolve, reject) => {
-    queryApi.queryRows(fluxQuery, {
-      next(row, tableMeta) {
-        const o = tableMeta.toObject(row);
-        results.push(o);
-      },
-      error(error) {
-        reject(error);
-      },
-      complete() {
-        resolve(results);
-      },
-    });
-  });
-};
+  const rows = await influxDB.query(query, database )
+  let results = [];
+  //console.log(`${"ants".padEnd(5)}${"bees".padEnd(5)}${"location".padEnd(10)}${"time".padEnd(15)}`);
+  for await (const row of rows) {
+    console.log(row);
+    results.push(row);
+      // let ants = row.ants || '';
+      // let bees = row.bees || '';
+      // let time = new Date(row.time);
+      // console.log(`${ants.toString().padEnd(5)}${bees.toString().padEnd(5)}${row.location.padEnd(10)}${time.toString().padEnd(15)}`);
+  }
+  return results;
+}
 
+// ---------------- Sell Shoe ----------------
 export const sellShoe = async (size, color) => {
-    const point = new Point('shoes')
-        .tag('size', size)
-        .tag('color', color)
-        .intField('quantity', 0)
-        .timestamp(new Date());
+  const point = Point
+    .measurement("shoes")
+    .setTag("size", size)
+    .setTag("color", color)
+    .setIntegerField("quantity", 0)
+    .setTimestamp(new Date())
 
-    writeApi.writePoint(point);
-    await writeApi.flush();
-};
+  await influxDB.write(point, database)
+}
 
+// ---------------- Close ----------------
 export const close = async () => {
-    await writeApi.close();
-};
+  await influxDB.close()
+}
