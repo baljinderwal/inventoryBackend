@@ -17,6 +17,7 @@ import reviewRoutes from './routes/reviewRoutes.js';
 import customerRoutes from './routes/customerRoutes.js';
 import salesOrderRoutes from './routes/salesOrderRoutes.js';
 import invoiceRoutes from './routes/invoiceRoutes.js';
+import timeseriesRoutes from './routes/timeseriesRoutes.js';
 import loggingMiddleware from './middleware/loggingMiddleware.js';
 import errorLoggingMiddleware from './middleware/errorLoggingMiddleware.js';
 
@@ -44,6 +45,7 @@ app.use('/reviews', reviewRoutes);
 app.use('/customers', customerRoutes);
 app.use('/salesOrders', salesOrderRoutes);
 app.use('/invoices', invoiceRoutes);
+app.use('/timeseries', timeseriesRoutes);
 
 app.use(errorLoggingMiddleware);
 
