@@ -1,605 +1,208 @@
-[2025-08-21T18:03:32.430Z] Request: POST /auth/register
+[2025-08-23T11:49:05.674Z] Request: GET /products
   Query: {}
-  Body: {"name":"Timeseries Test User","email":"timeseries-test@example.com","password":"password123","role":"Admin"}
+  Body: undefined
+  Token: INVALID - jwt malformed
+[2025-08-23T11:49:06.568Z] Request: GET /suppliers/f2d16218-a73e-4196-8133-f6c52b5283e5/products
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"2a3e212b-7ee8-4108-8776-a2a1ecbeba55","name":"Test User","email":"supplier0@example.com","iat":1755949746,"exp":1755953346}
+[2025-08-23T11:49:06.802Z] Request: GET /suppliers/8ce1edd3-38eb-4d6f-ae67-449318187203/products
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"6095c36a-b223-41f3-a0b1-8547b9646844","name":"Test User","email":"supplier1@example.com","iat":1755949746,"exp":1755953346}
+[2025-08-23T11:49:07.023Z] Request: GET /suppliers/a-non-existent-id/products
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"0fdebbd6-fa53-4c5d-8e16-6a8657c8da96","name":"Test User","email":"supplier2@example.com","iat":1755949747,"exp":1755953347}
+[2025-08-23T11:49:07.583Z] Request: POST /auth/register
+  Query: {}
+  Body: {"name":"Product Test Admin","email":"product-test-admin@example.com","password":"password123","role":"Admin"}
   Token: NOT PROVIDED
-[2025-08-21T18:03:32.620Z] Request: POST /auth/login
+[2025-08-23T11:49:07.713Z] Request: POST /auth/login
   Query: {}
-  Body: {"email":"timeseries-test@example.com","password":"password123"}
+  Body: {"email":"product-test-admin@example.com","password":"password123"}
   Token: NOT PROVIDED
-[2025-08-21T18:03:32.755Z] Request: POST /timeseries/shoes
+[2025-08-23T11:49:07.827Z] Request: POST /products
   Query: {}
-  Body: {"size":"10","color":"blue","quantity":100}
-  Token: INVALID - secret or public key must be provided
-[2025-08-21T18:03:32.773Z] Request: POST /timeseries/shoes
+  Body: {"name":"Test Wireless Mouse","category":"Electronics","price":29.99,"costPrice":18.5,"lowStockThreshold":15,"barcode":"9876543210123","sku":"TWM-001"}
+  Token: VALID
+  User: {"id":"d64f413b-435d-4ccf-b733-44aa4039dfc0","name":"Product Test Admin","email":"product-test-admin@example.com","role":"Admin","iat":1755949747,"exp":1755953347}
+[2025-08-23T11:49:07.838Z] Request: POST /products
   Query: {}
-  Body: {"size":"10"}
-  Token: INVALID - secret or public key must be provided
-[2025-08-21T18:03:32.783Z] Request: POST /timeseries/shoes
+  Body: {"name":"Test Shoes","category":"Footwear","price":120,"color":"Red","sizes":[9,10,11],"sku":"SHOE-RED-TEST"}
+  Token: VALID
+  User: {"id":"d64f413b-435d-4ccf-b733-44aa4039dfc0","name":"Product Test Admin","email":"product-test-admin@example.com","role":"Admin","iat":1755949747,"exp":1755953347}
+[2025-08-23T11:49:07.847Z] Request: POST /products
   Query: {}
-  Body: {"size":"9","color":"red","quantity":50}
-  Token: INVALID - secret or public key must be provided
-[2025-08-21T18:03:32.791Z] Request: GET /timeseries/shoes
+  Body: {"name":"Test Mouse for GET","category":"Electronics","price":35.99}
+  Token: VALID
+  User: {"id":"d64f413b-435d-4ccf-b733-44aa4039dfc0","name":"Product Test Admin","email":"product-test-admin@example.com","role":"Admin","iat":1755949747,"exp":1755953347}
+[2025-08-23T11:49:07.853Z] Request: GET /products/b09d237e-4cc5-4ca8-852a-a08745bdcd1a
   Query: {}
   Body: undefined
-  Token: INVALID - secret or public key must be provided
-[2025-08-21T18:03:32.804Z] Request: POST /timeseries/shoes
+  Token: VALID
+  User: {"id":"d64f413b-435d-4ccf-b733-44aa4039dfc0","name":"Product Test Admin","email":"product-test-admin@example.com","role":"Admin","iat":1755949747,"exp":1755953347}
+[2025-08-23T11:49:07.860Z] Request: POST /products
   Query: {}
-  Body: {"size":"11","color":"green","quantity":20}
-  Token: INVALID - secret or public key must be provided
-[2025-08-21T18:03:32.811Z] Request: GET /timeseries/shoes?size=11
-  Query: {"size":"11"}
+  Body: {"name":"Test Mouse to Update","category":"Peripherals","price":40}
+  Token: VALID
+  User: {"id":"d64f413b-435d-4ccf-b733-44aa4039dfc0","name":"Product Test Admin","email":"product-test-admin@example.com","role":"Admin","iat":1755949747,"exp":1755953347}
+[2025-08-23T11:49:07.865Z] Request: PUT /products/e64720b4-8193-4920-975c-377656899725
+  Query: {}
+  Body: {"price":38.5,"lowStockThreshold":12}
+  Token: VALID
+  User: {"id":"d64f413b-435d-4ccf-b733-44aa4039dfc0","name":"Product Test Admin","email":"product-test-admin@example.com","role":"Admin","iat":1755949747,"exp":1755953347}
+[2025-08-23T11:49:07.871Z] Request: GET /products/e64720b4-8193-4920-975c-377656899725
+  Query: {}
   Body: undefined
-  Token: INVALID - secret or public key must be provided
-[2025-08-21T18:03:32.824Z] Request: POST /timeseries/shoes
+  Token: VALID
+  User: {"id":"d64f413b-435d-4ccf-b733-44aa4039dfc0","name":"Product Test Admin","email":"product-test-admin@example.com","role":"Admin","iat":1755949747,"exp":1755953347}
+[2025-08-23T11:49:07.878Z] Request: POST /products
   Query: {}
-  Body: {"size":"12","color":"black","quantity":30}
-  Token: INVALID - secret or public key must be provided
-[2025-08-21T18:03:32.834Z] Request: GET /timeseries/shoes?color=black
-  Query: {"color":"black"}
+  Body: {"name":"Test Mouse to Delete","category":"Disposable","price":5}
+  Token: VALID
+  User: {"id":"d64f413b-435d-4ccf-b733-44aa4039dfc0","name":"Product Test Admin","email":"product-test-admin@example.com","role":"Admin","iat":1755949747,"exp":1755953347}
+[2025-08-23T11:49:07.882Z] Request: DELETE /products/945bb427-4b64-441e-8a49-82303ec729a6
+  Query: {}
   Body: undefined
-  Token: INVALID - secret or public key must be provided
-[2025-08-21T18:03:32.847Z] Request: POST /timeseries/shoes
+  Token: VALID
+  User: {"id":"d64f413b-435d-4ccf-b733-44aa4039dfc0","name":"Product Test Admin","email":"product-test-admin@example.com","role":"Admin","iat":1755949747,"exp":1755953347}
+[2025-08-23T11:49:07.884Z] Deleting product 945bb427-4b64-441e-8a49-82303ec729a6 for user d64f413b-435d-4ccf-b733-44aa4039dfc0 from key s:user:d64f413b-435d-4ccf-b733-44aa4039dfc0:products
+[2025-08-23T11:49:07.886Z] Delete result: 1
+[2025-08-23T11:49:07.890Z] Request: GET /products/945bb427-4b64-441e-8a49-82303ec729a6
   Query: {}
-  Body: {"size":"8","color":"white","quantity":10}
-  Token: INVALID - secret or public key must be provided
-[2025-08-21T18:03:32.853Z] Request: DELETE /timeseries/shoes
+  Body: undefined
+  Token: VALID
+  User: {"id":"d64f413b-435d-4ccf-b733-44aa4039dfc0","name":"Product Test Admin","email":"product-test-admin@example.com","role":"Admin","iat":1755949747,"exp":1755953347}
+[2025-08-23T11:49:07.896Z] Request: POST /products
   Query: {}
-  Body: {"size":"8","color":"white"}
-  Token: INVALID - secret or public key must be provided
-[2025-08-21T18:05:05.919Z] Request: POST /auth/register
+  Body: {"name":"Product A"}
+  Token: VALID
+  User: {"id":"d64f413b-435d-4ccf-b733-44aa4039dfc0","name":"Product Test Admin","email":"product-test-admin@example.com","role":"Admin","iat":1755949747,"exp":1755953347}
+[2025-08-23T11:49:07.901Z] Request: POST /products
   Query: {}
-  Body: {"name":"Timeseries Test User","email":"timeseries-test@example.com","password":"password123","role":"Admin"}
+  Body: {"name":"Product B"}
+  Token: VALID
+  User: {"id":"d64f413b-435d-4ccf-b733-44aa4039dfc0","name":"Product Test Admin","email":"product-test-admin@example.com","role":"Admin","iat":1755949747,"exp":1755953347}
+[2025-08-23T11:49:07.906Z] Request: GET /products
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"d64f413b-435d-4ccf-b733-44aa4039dfc0","name":"Product Test Admin","email":"product-test-admin@example.com","role":"Admin","iat":1755949747,"exp":1755953347}
+[2025-08-23T11:49:08.696Z] Request: POST /customers
+  Query: {}
+  Body: {"name":"Test Customer","email":"customer@test.com","phone":"123-456-7890"}
+  Token: VALID
+  User: {"id":"0712c482-24e1-41c7-9092-265f49886256","name":"Customer Test Admin","email":"customer-test-admin@example.com","role":"admin","iat":1755949748,"exp":1755953348}
+[2025-08-23T11:49:08.709Z] Request: POST /customers
+  Query: {}
+  Body: {"name":"Test Customer for GET","email":"customerget@test.com"}
+  Token: VALID
+  User: {"id":"0712c482-24e1-41c7-9092-265f49886256","name":"Customer Test Admin","email":"customer-test-admin@example.com","role":"admin","iat":1755949748,"exp":1755953348}
+[2025-08-23T11:49:08.714Z] Request: GET /customers/62370bdf-de05-4520-80c5-b9dfab48a6ca
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"0712c482-24e1-41c7-9092-265f49886256","name":"Customer Test Admin","email":"customer-test-admin@example.com","role":"admin","iat":1755949748,"exp":1755953348}
+[2025-08-23T11:49:08.722Z] Request: POST /customers
+  Query: {}
+  Body: {"name":"Test Customer to Update","email":"customerupdate@test.com"}
+  Token: VALID
+  User: {"id":"0712c482-24e1-41c7-9092-265f49886256","name":"Customer Test Admin","email":"customer-test-admin@example.com","role":"admin","iat":1755949748,"exp":1755953348}
+[2025-08-23T11:49:08.728Z] Request: PUT /customers/4c48f6ef-2c51-4dd5-802f-950803dc7445
+  Query: {}
+  Body: {"name":"Updated Customer Name","phone":"987-654-3210"}
+  Token: VALID
+  User: {"id":"0712c482-24e1-41c7-9092-265f49886256","name":"Customer Test Admin","email":"customer-test-admin@example.com","role":"admin","iat":1755949748,"exp":1755953348}
+[2025-08-23T11:49:08.733Z] Request: GET /customers/4c48f6ef-2c51-4dd5-802f-950803dc7445
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"0712c482-24e1-41c7-9092-265f49886256","name":"Customer Test Admin","email":"customer-test-admin@example.com","role":"admin","iat":1755949748,"exp":1755953348}
+[2025-08-23T11:49:08.745Z] Request: POST /customers
+  Query: {}
+  Body: {"name":"Test Customer to Delete","email":"customerdelete@test.com"}
+  Token: VALID
+  User: {"id":"0712c482-24e1-41c7-9092-265f49886256","name":"Customer Test Admin","email":"customer-test-admin@example.com","role":"admin","iat":1755949748,"exp":1755953348}
+[2025-08-23T11:49:08.750Z] Request: DELETE /customers/eaa908ee-be2c-4d0f-b714-8c42b210022a
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"0712c482-24e1-41c7-9092-265f49886256","name":"Customer Test Admin","email":"customer-test-admin@example.com","role":"admin","iat":1755949748,"exp":1755953348}
+[2025-08-23T11:49:08.757Z] Request: GET /customers/eaa908ee-be2c-4d0f-b714-8c42b210022a
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"0712c482-24e1-41c7-9092-265f49886256","name":"Customer Test Admin","email":"customer-test-admin@example.com","role":"admin","iat":1755949748,"exp":1755953348}
+[2025-08-23T11:49:08.764Z] Request: POST /customers
+  Query: {}
+  Body: {"name":"Customer A","email":"a@test.com"}
+  Token: VALID
+  User: {"id":"0712c482-24e1-41c7-9092-265f49886256","name":"Customer Test Admin","email":"customer-test-admin@example.com","role":"admin","iat":1755949748,"exp":1755953348}
+[2025-08-23T11:49:08.769Z] Request: POST /customers
+  Query: {}
+  Body: {"name":"Customer B","email":"b@test.com"}
+  Token: VALID
+  User: {"id":"0712c482-24e1-41c7-9092-265f49886256","name":"Customer Test Admin","email":"customer-test-admin@example.com","role":"admin","iat":1755949748,"exp":1755953348}
+[2025-08-23T11:49:08.774Z] Request: GET /customers
+  Query: {}
+  Body: undefined
+  Token: VALID
+  User: {"id":"0712c482-24e1-41c7-9092-265f49886256","name":"Customer Test Admin","email":"customer-test-admin@example.com","role":"admin","iat":1755949748,"exp":1755953348}
+[2025-08-23T11:49:10.044Z] Request: GET /products/error
+  Query: {}
+  Body: undefined
   Token: NOT PROVIDED
-[2025-08-21T18:05:06.107Z] Request: POST /auth/login
-  Query: {}
-  Body: {"email":"timeseries-test@example.com","password":"password123"}
-  Token: NOT PROVIDED
-[2025-08-21T18:05:06.232Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10","color":"blue","quantity":100}
-  Token: VALID
-  User: {"id":"b3e74806-06f1-472c-a8e4-5b350fc9b5d0","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799506,"exp":1755803106}
-[2025-08-21T18:05:06.487Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10"}
-  Token: VALID
-  User: {"id":"b3e74806-06f1-472c-a8e4-5b350fc9b5d0","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799506,"exp":1755803106}
-[2025-08-21T18:05:06.498Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"9","color":"red","quantity":50}
-  Token: VALID
-  User: {"id":"b3e74806-06f1-472c-a8e4-5b350fc9b5d0","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799506,"exp":1755803106}
-[2025-08-21T18:05:06.638Z] Request: GET /timeseries/shoes
+[2025-08-23T11:49:10.067Z] [ERROR] Error occurred during request: GET /products/error
   Query: {}
   Body: undefined
-  Token: VALID
-  User: {"id":"b3e74806-06f1-472c-a8e4-5b350fc9b5d0","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799506,"exp":1755803106}
-[2025-08-21T18:05:06.707Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"11","color":"green","quantity":20}
-  Token: VALID
-  User: {"id":"b3e74806-06f1-472c-a8e4-5b350fc9b5d0","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799506,"exp":1755803106}
-[2025-08-21T18:05:06.760Z] Request: GET /timeseries/shoes?size=11
-  Query: {"size":"11"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"b3e74806-06f1-472c-a8e4-5b350fc9b5d0","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799506,"exp":1755803106}
-[2025-08-21T18:05:06.839Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"12","color":"black","quantity":30}
-  Token: VALID
-  User: {"id":"b3e74806-06f1-472c-a8e4-5b350fc9b5d0","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799506,"exp":1755803106}
-[2025-08-21T18:05:06.899Z] Request: GET /timeseries/shoes?color=black
-  Query: {"color":"black"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"b3e74806-06f1-472c-a8e4-5b350fc9b5d0","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799506,"exp":1755803106}
-[2025-08-21T18:05:06.966Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"8","color":"white","quantity":10}
-  Token: VALID
-  User: {"id":"b3e74806-06f1-472c-a8e4-5b350fc9b5d0","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799506,"exp":1755803106}
-[2025-08-21T18:05:07.025Z] Request: DELETE /timeseries/shoes
-  Query: {}
-  Body: {"size":"8","color":"white"}
-  Token: VALID
-  User: {"id":"b3e74806-06f1-472c-a8e4-5b350fc9b5d0","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799506,"exp":1755803106}
-[2025-08-21T18:05:36.769Z] Request: POST /auth/register
-  Query: {}
-  Body: {"name":"Timeseries Test User","email":"timeseries-test@example.com","password":"password123","role":"Admin"}
-  Token: NOT PROVIDED
-[2025-08-21T18:05:36.947Z] Request: POST /auth/login
-  Query: {}
-  Body: {"email":"timeseries-test@example.com","password":"password123"}
-  Token: NOT PROVIDED
-[2025-08-21T18:05:37.074Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10","color":"blue","quantity":100}
-  Token: VALID
-  User: {"id":"dbe44dad-aad4-4d67-aecb-d0ee8c751295","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799537,"exp":1755803137}
-[2025-08-21T18:05:37.261Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10"}
-  Token: VALID
-  User: {"id":"dbe44dad-aad4-4d67-aecb-d0ee8c751295","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799537,"exp":1755803137}
-[2025-08-21T18:05:37.274Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"9","color":"red","quantity":50}
-  Token: VALID
-  User: {"id":"dbe44dad-aad4-4d67-aecb-d0ee8c751295","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799537,"exp":1755803137}
-[2025-08-21T18:05:37.331Z] Request: GET /timeseries/shoes
-  Query: {}
-  Body: undefined
-  Token: VALID
-  User: {"id":"dbe44dad-aad4-4d67-aecb-d0ee8c751295","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799537,"exp":1755803137}
-[2025-08-21T18:05:37.398Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"11","color":"green","quantity":20}
-  Token: VALID
-  User: {"id":"dbe44dad-aad4-4d67-aecb-d0ee8c751295","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799537,"exp":1755803137}
-[2025-08-21T18:05:37.450Z] Request: GET /timeseries/shoes?size=11
-  Query: {"size":"11"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"dbe44dad-aad4-4d67-aecb-d0ee8c751295","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799537,"exp":1755803137}
-[2025-08-21T18:05:37.513Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"12","color":"black","quantity":30}
-  Token: VALID
-  User: {"id":"dbe44dad-aad4-4d67-aecb-d0ee8c751295","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799537,"exp":1755803137}
-[2025-08-21T18:05:37.569Z] Request: GET /timeseries/shoes?color=black
-  Query: {"color":"black"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"dbe44dad-aad4-4d67-aecb-d0ee8c751295","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799537,"exp":1755803137}
-[2025-08-21T18:05:37.640Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"8","color":"white","quantity":10}
-  Token: VALID
-  User: {"id":"dbe44dad-aad4-4d67-aecb-d0ee8c751295","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799537,"exp":1755803137}
-[2025-08-21T18:05:37.695Z] Request: DELETE /timeseries/shoes
-  Query: {}
-  Body: {"size":"8","color":"white"}
-  Token: VALID
-  User: {"id":"dbe44dad-aad4-4d67-aecb-d0ee8c751295","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755799537,"exp":1755803137}
-[2025-08-22T07:05:57.643Z] Request: POST /auth/register
-  Query: {}
-  Body: {"name":"Timeseries Test User","email":"timeseries-test@example.com","password":"password123","role":"Admin"}
-  Token: NOT PROVIDED
-[2025-08-22T07:05:57.824Z] Request: POST /auth/login
-  Query: {}
-  Body: {"email":"timeseries-test@example.com","password":"password123"}
-  Token: NOT PROVIDED
-[2025-08-22T07:05:57.950Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10","color":"blue","quantity":100}
-  Token: VALID
-  User: {"id":"cdbd9b20-c83a-4c02-830b-8ce159bd4b02","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846357,"exp":1755849957}
-[2025-08-22T07:05:58.226Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10"}
-  Token: VALID
-  User: {"id":"cdbd9b20-c83a-4c02-830b-8ce159bd4b02","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846357,"exp":1755849957}
-[2025-08-22T07:05:58.238Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"9","color":"red","quantity":50}
-  Token: VALID
-  User: {"id":"cdbd9b20-c83a-4c02-830b-8ce159bd4b02","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846357,"exp":1755849957}
-[2025-08-22T07:05:58.297Z] Request: GET /timeseries/shoes
-  Query: {}
-  Body: undefined
-  Token: VALID
-  User: {"id":"cdbd9b20-c83a-4c02-830b-8ce159bd4b02","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846357,"exp":1755849957}
-[2025-08-22T07:05:58.375Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"11","color":"green","quantity":20}
-  Token: VALID
-  User: {"id":"cdbd9b20-c83a-4c02-830b-8ce159bd4b02","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846357,"exp":1755849957}
-[2025-08-22T07:05:58.433Z] Request: GET /timeseries/shoes?size=11
-  Query: {"size":"11"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"cdbd9b20-c83a-4c02-830b-8ce159bd4b02","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846357,"exp":1755849957}
-[2025-08-22T07:05:58.499Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"12","color":"black","quantity":30}
-  Token: VALID
-  User: {"id":"cdbd9b20-c83a-4c02-830b-8ce159bd4b02","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846357,"exp":1755849957}
-[2025-08-22T07:05:58.555Z] Request: GET /timeseries/shoes?color=black
-  Query: {"color":"black"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"cdbd9b20-c83a-4c02-830b-8ce159bd4b02","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846357,"exp":1755849957}
-[2025-08-22T07:05:58.615Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"8","color":"white","quantity":10}
-  Token: VALID
-  User: {"id":"cdbd9b20-c83a-4c02-830b-8ce159bd4b02","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846357,"exp":1755849957}
-[2025-08-22T07:05:58.674Z] Request: POST /timeseries/shoes/sell
-  Query: {}
-  Body: {"size":"8","color":"white"}
-  Token: VALID
-  User: {"id":"cdbd9b20-c83a-4c02-830b-8ce159bd4b02","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846357,"exp":1755849957}
-[2025-08-22T07:05:58.732Z] Request: GET /timeseries/shoes?size=8&color=white
-  Query: {"size":"8","color":"white"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"cdbd9b20-c83a-4c02-830b-8ce159bd4b02","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846357,"exp":1755849957}
-[2025-08-22T07:06:22.038Z] Request: POST /auth/register
-  Query: {}
-  Body: {"name":"Timeseries Test User","email":"timeseries-test@example.com","password":"password123","role":"Admin"}
-  Token: NOT PROVIDED
-[2025-08-22T07:06:22.215Z] Request: POST /auth/login
-  Query: {}
-  Body: {"email":"timeseries-test@example.com","password":"password123"}
-  Token: NOT PROVIDED
-[2025-08-22T07:06:22.341Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10","color":"blue","quantity":100}
-  Token: VALID
-  User: {"id":"a7c0dfa4-cf27-4b07-b6b9-8d8e8a5955f2","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846382,"exp":1755849982}
-[2025-08-22T07:06:22.535Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10"}
-  Token: VALID
-  User: {"id":"a7c0dfa4-cf27-4b07-b6b9-8d8e8a5955f2","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846382,"exp":1755849982}
-[2025-08-22T07:06:22.547Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"9","color":"red","quantity":50}
-  Token: VALID
-  User: {"id":"a7c0dfa4-cf27-4b07-b6b9-8d8e8a5955f2","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846382,"exp":1755849982}
-[2025-08-22T07:06:22.598Z] Request: GET /timeseries/shoes
-  Query: {}
-  Body: undefined
-  Token: VALID
-  User: {"id":"a7c0dfa4-cf27-4b07-b6b9-8d8e8a5955f2","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846382,"exp":1755849982}
-[2025-08-22T07:06:22.760Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"11","color":"green","quantity":20}
-  Token: VALID
-  User: {"id":"a7c0dfa4-cf27-4b07-b6b9-8d8e8a5955f2","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846382,"exp":1755849982}
-[2025-08-22T07:06:22.815Z] Request: GET /timeseries/shoes?size=11
-  Query: {"size":"11"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"a7c0dfa4-cf27-4b07-b6b9-8d8e8a5955f2","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846382,"exp":1755849982}
-[2025-08-22T07:06:22.885Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"12","color":"black","quantity":30}
-  Token: VALID
-  User: {"id":"a7c0dfa4-cf27-4b07-b6b9-8d8e8a5955f2","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846382,"exp":1755849982}
-[2025-08-22T07:06:22.944Z] Request: GET /timeseries/shoes?color=black
-  Query: {"color":"black"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"a7c0dfa4-cf27-4b07-b6b9-8d8e8a5955f2","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846382,"exp":1755849982}
-[2025-08-22T07:06:23.019Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"8","color":"white","quantity":10}
-  Token: VALID
-  User: {"id":"a7c0dfa4-cf27-4b07-b6b9-8d8e8a5955f2","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846382,"exp":1755849982}
-[2025-08-22T07:06:23.077Z] Request: POST /timeseries/shoes/sell
-  Query: {}
-  Body: {"size":"8","color":"white"}
-  Token: VALID
-  User: {"id":"a7c0dfa4-cf27-4b07-b6b9-8d8e8a5955f2","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846382,"exp":1755849982}
-[2025-08-22T07:06:23.139Z] Request: GET /timeseries/shoes?size=8&color=white
-  Query: {"size":"8","color":"white"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"a7c0dfa4-cf27-4b07-b6b9-8d8e8a5955f2","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846382,"exp":1755849982}
-[2025-08-22T07:09:00.405Z] Request: POST /auth/register
-  Query: {}
-  Body: {"name":"Timeseries Test User","email":"timeseries-test@example.com","password":"password123","role":"Admin"}
-  Token: NOT PROVIDED
-[2025-08-22T07:09:00.604Z] Request: POST /auth/login
-  Query: {}
-  Body: {"email":"timeseries-test@example.com","password":"password123"}
-  Token: NOT PROVIDED
-[2025-08-22T07:09:00.749Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10","color":"blue","quantity":100}
-  Token: VALID
-  User: {"id":"bda9ccc7-3bea-45bb-a25a-df79691b21f8","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846540,"exp":1755850140}
-[2025-08-22T07:09:00.962Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10"}
-  Token: VALID
-  User: {"id":"bda9ccc7-3bea-45bb-a25a-df79691b21f8","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846540,"exp":1755850140}
-[2025-08-22T07:09:00.974Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"9","color":"red","quantity":50}
-  Token: VALID
-  User: {"id":"bda9ccc7-3bea-45bb-a25a-df79691b21f8","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846540,"exp":1755850140}
-[2025-08-22T07:09:01.055Z] Request: GET /timeseries/shoes
-  Query: {}
-  Body: undefined
-  Token: VALID
-  User: {"id":"bda9ccc7-3bea-45bb-a25a-df79691b21f8","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846540,"exp":1755850140}
-[2025-08-22T07:09:01.133Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"11","color":"green","quantity":20}
-  Token: VALID
-  User: {"id":"bda9ccc7-3bea-45bb-a25a-df79691b21f8","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846540,"exp":1755850140}
-[2025-08-22T07:09:01.192Z] Request: GET /timeseries/shoes?size=11
-  Query: {"size":"11"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"bda9ccc7-3bea-45bb-a25a-df79691b21f8","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846540,"exp":1755850140}
-[2025-08-22T07:09:01.264Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"12","color":"black","quantity":30}
-  Token: VALID
-  User: {"id":"bda9ccc7-3bea-45bb-a25a-df79691b21f8","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846540,"exp":1755850140}
-[2025-08-22T07:09:01.323Z] Request: GET /timeseries/shoes?color=black
-  Query: {"color":"black"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"bda9ccc7-3bea-45bb-a25a-df79691b21f8","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846540,"exp":1755850140}
-[2025-08-22T07:09:01.390Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"8","color":"white","quantity":10}
-  Token: VALID
-  User: {"id":"bda9ccc7-3bea-45bb-a25a-df79691b21f8","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846540,"exp":1755850140}
-[2025-08-22T07:09:01.447Z] Request: POST /timeseries/shoes/sell
-  Query: {}
-  Body: {"size":"8","color":"white"}
-  Token: VALID
-  User: {"id":"bda9ccc7-3bea-45bb-a25a-df79691b21f8","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846540,"exp":1755850140}
-[2025-08-22T07:09:01.503Z] Request: GET /timeseries/shoes?size=8&color=white
-  Query: {"size":"8","color":"white"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"bda9ccc7-3bea-45bb-a25a-df79691b21f8","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846540,"exp":1755850140}
-[2025-08-22T07:09:42.309Z] Request: POST /auth/register
-  Query: {}
-  Body: {"name":"Timeseries Test User","email":"timeseries-test@example.com","password":"password123","role":"Admin"}
-  Token: NOT PROVIDED
-[2025-08-22T07:09:42.465Z] Request: POST /auth/login
-  Query: {}
-  Body: {"email":"timeseries-test@example.com","password":"password123"}
-  Token: NOT PROVIDED
-[2025-08-22T07:09:42.592Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10","color":"blue","quantity":100}
-  Token: VALID
-  User: {"id":"b4958bc7-e4dd-464d-8b6b-043252ced975","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846582,"exp":1755850182}
-[2025-08-22T07:09:42.793Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10"}
-  Token: VALID
-  User: {"id":"b4958bc7-e4dd-464d-8b6b-043252ced975","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846582,"exp":1755850182}
-[2025-08-22T07:09:42.805Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"9","color":"red","quantity":50}
-  Token: VALID
-  User: {"id":"b4958bc7-e4dd-464d-8b6b-043252ced975","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846582,"exp":1755850182}
-[2025-08-22T07:09:42.858Z] Request: GET /timeseries/shoes
-  Query: {}
-  Body: undefined
-  Token: VALID
-  User: {"id":"b4958bc7-e4dd-464d-8b6b-043252ced975","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846582,"exp":1755850182}
-[2025-08-22T07:09:42.926Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"11","color":"green","quantity":20}
-  Token: VALID
-  User: {"id":"b4958bc7-e4dd-464d-8b6b-043252ced975","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846582,"exp":1755850182}
-[2025-08-22T07:09:42.979Z] Request: GET /timeseries/shoes?size=11
-  Query: {"size":"11"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"b4958bc7-e4dd-464d-8b6b-043252ced975","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846582,"exp":1755850182}
-[2025-08-22T07:09:43.042Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"12","color":"black","quantity":30}
-  Token: VALID
-  User: {"id":"b4958bc7-e4dd-464d-8b6b-043252ced975","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846582,"exp":1755850182}
-[2025-08-22T07:09:43.097Z] Request: GET /timeseries/shoes?color=black
-  Query: {"color":"black"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"b4958bc7-e4dd-464d-8b6b-043252ced975","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846582,"exp":1755850182}
-[2025-08-22T07:09:43.160Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"8","color":"white","quantity":10}
-  Token: VALID
-  User: {"id":"b4958bc7-e4dd-464d-8b6b-043252ced975","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846582,"exp":1755850182}
-[2025-08-22T07:09:43.210Z] Request: POST /timeseries/shoes/sell
-  Query: {}
-  Body: {"size":"8","color":"white"}
-  Token: VALID
-  User: {"id":"b4958bc7-e4dd-464d-8b6b-043252ced975","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846582,"exp":1755850182}
-[2025-08-22T07:09:43.268Z] Request: GET /timeseries/shoes?size=8&color=white
-  Query: {"size":"8","color":"white"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"b4958bc7-e4dd-464d-8b6b-043252ced975","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846582,"exp":1755850182}
-[2025-08-22T07:12:25.449Z] Request: POST /auth/register
-  Query: {}
-  Body: {"name":"Timeseries Test User","email":"timeseries-test@example.com","password":"password123","role":"Admin"}
-  Token: NOT PROVIDED
-[2025-08-22T07:12:25.608Z] Request: POST /auth/login
-  Query: {}
-  Body: {"email":"timeseries-test@example.com","password":"password123"}
-  Token: NOT PROVIDED
-[2025-08-22T07:12:25.732Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10","color":"blue","quantity":100}
-  Token: VALID
-  User: {"id":"86b092a2-c1e8-41c6-9dc0-1514e03d6bca","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846745,"exp":1755850345}
-[2025-08-22T07:12:25.861Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10"}
-  Token: VALID
-  User: {"id":"86b092a2-c1e8-41c6-9dc0-1514e03d6bca","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846745,"exp":1755850345}
-[2025-08-22T07:12:25.870Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"9","color":"red","quantity":50}
-  Token: VALID
-  User: {"id":"86b092a2-c1e8-41c6-9dc0-1514e03d6bca","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846745,"exp":1755850345}
-[2025-08-22T07:12:25.926Z] Request: GET /timeseries/shoes
-  Query: {}
-  Body: undefined
-  Token: VALID
-  User: {"id":"86b092a2-c1e8-41c6-9dc0-1514e03d6bca","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846745,"exp":1755850345}
-[2025-08-22T07:12:25.992Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"11","color":"green","quantity":20}
-  Token: VALID
-  User: {"id":"86b092a2-c1e8-41c6-9dc0-1514e03d6bca","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846745,"exp":1755850345}
-[2025-08-22T07:12:26.060Z] Request: GET /timeseries/shoes?size=11
-  Query: {"size":"11"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"86b092a2-c1e8-41c6-9dc0-1514e03d6bca","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846745,"exp":1755850345}
-[2025-08-22T07:12:26.123Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"12","color":"black","quantity":30}
-  Token: VALID
-  User: {"id":"86b092a2-c1e8-41c6-9dc0-1514e03d6bca","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846745,"exp":1755850345}
-[2025-08-22T07:12:26.180Z] Request: GET /timeseries/shoes?color=black
-  Query: {"color":"black"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"86b092a2-c1e8-41c6-9dc0-1514e03d6bca","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846745,"exp":1755850345}
-[2025-08-22T07:12:26.241Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"8","color":"white","quantity":10}
-  Token: VALID
-  User: {"id":"86b092a2-c1e8-41c6-9dc0-1514e03d6bca","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846745,"exp":1755850345}
-[2025-08-22T07:12:26.296Z] Request: POST /timeseries/shoes/sell
-  Query: {}
-  Body: {"size":"8","color":"white"}
-  Token: VALID
-  User: {"id":"86b092a2-c1e8-41c6-9dc0-1514e03d6bca","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846745,"exp":1755850345}
-[2025-08-22T07:12:26.352Z] Request: GET /timeseries/shoes?size=8&color=white
-  Query: {"size":"8","color":"white"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"86b092a2-c1e8-41c6-9dc0-1514e03d6bca","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846745,"exp":1755850345}
-[2025-08-22T07:14:40.815Z] Request: POST /auth/register
-  Query: {}
-  Body: {"name":"Timeseries Test User","email":"timeseries-test@example.com","password":"password123","role":"Admin"}
-  Token: NOT PROVIDED
-[2025-08-22T07:14:41.007Z] Request: POST /auth/login
-  Query: {}
-  Body: {"email":"timeseries-test@example.com","password":"password123"}
-  Token: NOT PROVIDED
-[2025-08-22T07:14:41.140Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10","color":"blue","quantity":100}
-  Token: VALID
-  User: {"id":"7d514bf2-55be-4a49-b404-48bd6dabb1b3","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846881,"exp":1755850481}
-[2025-08-22T07:14:41.277Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10"}
-  Token: VALID
-  User: {"id":"7d514bf2-55be-4a49-b404-48bd6dabb1b3","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846881,"exp":1755850481}
-[2025-08-22T07:14:41.290Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"9","color":"red","quantity":50}
-  Token: VALID
-  User: {"id":"7d514bf2-55be-4a49-b404-48bd6dabb1b3","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846881,"exp":1755850481}
-[2025-08-22T07:14:41.348Z] Request: GET /timeseries/shoes
-  Query: {}
-  Body: undefined
-  Token: VALID
-  User: {"id":"7d514bf2-55be-4a49-b404-48bd6dabb1b3","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846881,"exp":1755850481}
-[2025-08-22T07:14:41.430Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"11","color":"green","quantity":20}
-  Token: VALID
-  User: {"id":"7d514bf2-55be-4a49-b404-48bd6dabb1b3","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846881,"exp":1755850481}
-[2025-08-22T07:14:41.490Z] Request: GET /timeseries/shoes?size=11
-  Query: {"size":"11"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"7d514bf2-55be-4a49-b404-48bd6dabb1b3","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846881,"exp":1755850481}
-[2025-08-22T07:14:41.562Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"12","color":"black","quantity":30}
-  Token: VALID
-  User: {"id":"7d514bf2-55be-4a49-b404-48bd6dabb1b3","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846881,"exp":1755850481}
-[2025-08-22T07:14:41.621Z] Request: GET /timeseries/shoes?color=black
-  Query: {"color":"black"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"7d514bf2-55be-4a49-b404-48bd6dabb1b3","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846881,"exp":1755850481}
-[2025-08-22T07:14:41.690Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"8","color":"white","quantity":10}
-  Token: VALID
-  User: {"id":"7d514bf2-55be-4a49-b404-48bd6dabb1b3","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846881,"exp":1755850481}
-[2025-08-22T07:14:41.748Z] Request: POST /timeseries/shoes/sell
-  Query: {}
-  Body: {"size":"8","color":"white"}
-  Token: VALID
-  User: {"id":"7d514bf2-55be-4a49-b404-48bd6dabb1b3","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846881,"exp":1755850481}
-[2025-08-22T07:14:41.803Z] Request: GET /timeseries/shoes?size=8&color=white
-  Query: {"size":"8","color":"white"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"7d514bf2-55be-4a49-b404-48bd6dabb1b3","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846881,"exp":1755850481}
-[2025-08-22T07:16:20.174Z] Request: POST /auth/register
-  Query: {}
-  Body: {"name":"Timeseries Test User","email":"timeseries-test@example.com","password":"password123","role":"Admin"}
-  Token: NOT PROVIDED
-[2025-08-22T07:16:20.368Z] Request: POST /auth/login
-  Query: {}
-  Body: {"email":"timeseries-test@example.com","password":"password123"}
-  Token: NOT PROVIDED
-[2025-08-22T07:16:20.525Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10","color":"blue","quantity":100}
-  Token: VALID
-  User: {"id":"b6b294f7-693f-4108-882c-1a01306e6c4c","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846980,"exp":1755850580}
-[2025-08-22T07:16:20.668Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"10"}
-  Token: VALID
-  User: {"id":"b6b294f7-693f-4108-882c-1a01306e6c4c","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846980,"exp":1755850580}
-[2025-08-22T07:16:20.684Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"9","color":"red","quantity":50}
-  Token: VALID
-  User: {"id":"b6b294f7-693f-4108-882c-1a01306e6c4c","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846980,"exp":1755850580}
-[2025-08-22T07:16:21.751Z] Request: GET /timeseries/shoes
-  Query: {}
-  Body: undefined
-  Token: VALID
-  User: {"id":"b6b294f7-693f-4108-882c-1a01306e6c4c","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846980,"exp":1755850580}
-[2025-08-22T07:16:21.837Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"11","color":"green","quantity":20}
-  Token: VALID
-  User: {"id":"b6b294f7-693f-4108-882c-1a01306e6c4c","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846980,"exp":1755850580}
-[2025-08-22T07:16:21.901Z] Request: GET /timeseries/shoes?size=11
-  Query: {"size":"11"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"b6b294f7-693f-4108-882c-1a01306e6c4c","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846980,"exp":1755850580}
-[2025-08-22T07:16:21.982Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"12","color":"black","quantity":30}
-  Token: VALID
-  User: {"id":"b6b294f7-693f-4108-882c-1a01306e6c4c","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846980,"exp":1755850580}
-[2025-08-22T07:16:22.046Z] Request: GET /timeseries/shoes?color=black
-  Query: {"color":"black"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"b6b294f7-693f-4108-882c-1a01306e6c4c","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846980,"exp":1755850580}
-[2025-08-22T07:16:22.118Z] Request: POST /timeseries/shoes
-  Query: {}
-  Body: {"size":"8","color":"white","quantity":10}
-  Token: VALID
-  User: {"id":"b6b294f7-693f-4108-882c-1a01306e6c4c","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846980,"exp":1755850580}
-[2025-08-22T07:16:22.178Z] Request: POST /timeseries/shoes/sell
-  Query: {}
-  Body: {"size":"8","color":"white"}
-  Token: VALID
-  User: {"id":"b6b294f7-693f-4108-882c-1a01306e6c4c","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846980,"exp":1755850580}
-[2025-08-22T07:16:22.240Z] Request: GET /timeseries/shoes?size=8&color=white
-  Query: {"size":"8","color":"white"}
-  Body: undefined
-  Token: VALID
-  User: {"id":"b6b294f7-693f-4108-882c-1a01306e6c4c","name":"Timeseries Test User","email":"timeseries-test@example.com","role":"Admin","iat":1755846980,"exp":1755850580}
+  Error: This is a test error.
+  Stack: Error: This is a test error.
+    at /app/src/routes/productRoutes.js:17:15
+    at Layer.handleRequest (/app/node_modules/router/lib/layer.js:152:17)
+    at next (/app/node_modules/router/lib/route.js:157:13)
+    at Route.dispatch (/app/node_modules/router/lib/route.js:117:3)
+    at handle (/app/node_modules/router/index.js:435:11)
+    at Layer.handleRequest (/app/node_modules/router/lib/layer.js:152:17)
+    at /app/node_modules/router/index.js:295:15
+    at processParams (/app/node_modules/router/index.js:582:12)
+    at next (/app/node_modules/router/index.js:291:5)
+    at Function.handle (/app/node_modules/router/index.js:186:3)
+    at router (/app/node_modules/router/index.js:60:12)
+    at Layer.handleRequest (/app/node_modules/router/lib/layer.js:152:17)
+    at trimPrefix (/app/node_modules/router/index.js:342:13)
+    at /app/node_modules/router/index.js:297:9
+    at processParams (/app/node_modules/router/index.js:582:12)
+    at next (/app/node_modules/router/index.js:291:5)
+    at loggingMiddleware (/app/src/middleware/loggingMiddleware.js:37:3)
+    at Layer.handleRequest (/app/node_modules/router/lib/layer.js:152:17)
+    at trimPrefix (/app/node_modules/router/index.js:342:13)
+    at /app/node_modules/router/index.js:297:9
+    at processParams (/app/node_modules/router/index.js:582:12)
+    at next (/app/node_modules/router/index.js:291:5)
+    at jsonParser (/app/node_modules/body-parser/lib/types/json.js:100:7)
+    at Layer.handleRequest (/app/node_modules/router/lib/layer.js:152:17)
+    at trimPrefix (/app/node_modules/router/index.js:342:13)
+    at /app/node_modules/router/index.js:297:9
+    at processParams (/app/node_modules/router/index.js:582:12)
+    at next (/app/node_modules/router/index.js:291:5)
+    at cors (/app/node_modules/cors/lib/index.js:188:7)
+    at /app/node_modules/cors/lib/index.js:224:17
+    at originCallback (/app/node_modules/cors/lib/index.js:214:15)
+    at /app/node_modules/cors/lib/index.js:219:13
+    at optionsCallback (/app/node_modules/cors/lib/index.js:199:9)
+    at corsMiddleware (/app/node_modules/cors/lib/index.js:204:7)
+    at Layer.handleRequest (/app/node_modules/router/lib/layer.js:152:17)
+    at trimPrefix (/app/node_modules/router/index.js:342:13)
+    at /app/node_modules/router/index.js:297:9
+    at processParams (/app/node_modules/router/index.js:582:12)
+    at next (/app/node_modules/router/index.js:291:5)
+    at Function.handle (/app/node_modules/router/index.js:186:3)
+    at Function.handle (/app/node_modules/express/lib/application.js:177:15)
+    at Server.app (/app/node_modules/express/lib/express.js:38:9)
+    at Server.emit (node:events:518:28)
+    at parserOnIncoming (node:_http_server:1155:12)
+    at HTTPParser.parserOnHeadersComplete (node:_http_common:117:17)

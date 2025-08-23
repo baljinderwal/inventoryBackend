@@ -33,6 +33,35 @@ export const createProduct = async (userId, productData) => {
 
   await redisClient.hset(userProductsKey, productId, JSON.stringify(newProduct));
 
+  // After creating the product, send data to the timeseries endpoint
+  const { sizes, color, sku } = newProduct;
+
+  if (sizes && Array.isArray(sizes) && color) {
+    for (const size of sizes) {
+      try {
+        const response = await fetch('https://inventorybackend-loop.onrender.com/timeseries/shoes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            size,
+            color,
+            quantity: 1, // Assuming a quantity of 1 for each new shoe size
+            product_sku: sku,
+          }),
+        });
+
+        if (!response.ok) {
+          // Log the error but don't block the main product creation flow
+          console.error(`Failed to send timeseries data for size ${size}: ${response.statusText}`);
+        }
+      } catch (error) {
+        console.error(`Error sending timeseries data for size ${size}:`, error);
+      }
+    }
+  }
+
   return newProduct;
 };
 

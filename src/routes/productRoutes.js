@@ -61,6 +61,14 @@ router.get('/error', (req, res, next) => {
  *         barcode:
  *           type: string
  *           description: The barcode of the product
+ *         color:
+ *           type: string
+ *           description: The color of the product
+ *         sizes:
+ *           type: array
+ *           items:
+ *             type: number
+ *           description: The available sizes for the product
  *       example:
  *         id: 1
  *         name: "Wireless Mouse"
@@ -71,6 +79,8 @@ router.get('/error', (req, res, next) => {
  *         lowStockThreshold: 20
  *         createdAt: "2024-11-10T10:00:00Z"
  *         barcode: "8901234567890"
+ *         color: "Black"
+ *         sizes: [8, 9, 10]
  */
 
 /**
