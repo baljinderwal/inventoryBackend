@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '../src/app.js';
-import { expect } from '@jest/globals';
+import { expect, jest } from '@jest/globals';
 
 describe('Product APIs', () => {
   let token;
@@ -36,6 +36,7 @@ describe('Product APIs', () => {
       costPrice: 18.50,
       lowStockThreshold: 15,
       barcode: '9876543210123',
+      sku: 'TWM-001',
     };
 
     const res = await request(app)
@@ -48,6 +49,54 @@ describe('Product APIs', () => {
     expect(res.body.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format
     expect(res.body).toHaveProperty('name', newProductData.name);
     expect(res.body).toHaveProperty('price', newProductData.price);
+  });
+
+  it('should create a new product and trigger timeseries calls for each size', async () => {
+    const newProductData = {
+      name: 'Test Shoes',
+      category: 'Footwear',
+      price: 120.00,
+      color: 'Red',
+      sizes: [9, 10, 11],
+      sku: 'SHOE-RED-TEST',
+    };
+
+    // Spy on the global fetch
+    const fetchSpy = jest.spyOn(global, 'fetch');
+    fetchSpy.mockResolvedValue({ ok: true }); // Mock a successful response
+
+    const res = await request(app)
+      .post('/products')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newProductData);
+
+    expect(res.statusCode).toEqual(201);
+    expect(res.body).toHaveProperty('id');
+    expect(res.body.name).toEqual(newProductData.name);
+
+    // Verify fetch was called for each size
+    expect(fetchSpy).toHaveBeenCalledTimes(newProductData.sizes.length);
+
+    for (const size of newProductData.sizes) {
+      expect(fetchSpy).toHaveBeenCalledWith(
+        'https://inventorybackend-loop.onrender.com/timeseries/shoes',
+        expect.objectContaining({
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            size,
+            color: newProductData.color,
+            quantity: 1,
+            product_sku: newProductData.sku,
+          }),
+        })
+      );
+    }
+
+    // Restore the original fetch
+    fetchSpy.mockRestore();
   });
 
   it('should get a product by its ID', async () => {
